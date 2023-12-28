@@ -1,4 +1,6 @@
-namespace Dapper.GraphQL
+using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
+
+namespace AdaskoTheBeAsT.Dapper.GraphQL.Interfaces
 {
     /// <summary>
     /// Maps a row of objects from Dapper into an entity.

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Dapper.GraphQL.Test.Models
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models
 {
     public class Company
     {

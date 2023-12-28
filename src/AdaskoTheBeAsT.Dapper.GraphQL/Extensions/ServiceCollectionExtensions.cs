@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Dapper.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
 {
     public static class ServiceCollectionExtensions
     {

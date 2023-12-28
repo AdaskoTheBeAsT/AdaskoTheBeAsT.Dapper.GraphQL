@@ -1,4 +1,7 @@
-﻿namespace Dapper.GraphQL
+﻿using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
+using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
+
+namespace AdaskoTheBeAsT.Dapper.GraphQL
 {
     public class EntityMapper<TEntityType> :
         IEntityMapper<TEntityType>

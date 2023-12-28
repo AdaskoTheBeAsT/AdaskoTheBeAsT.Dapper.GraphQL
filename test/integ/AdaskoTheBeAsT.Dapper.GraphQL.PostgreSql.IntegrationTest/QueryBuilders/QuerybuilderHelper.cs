@@ -1,53 +1,58 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using GraphQLParser.AST;
 
-
-namespace Dapper.GraphQL.Test.QueryBuilders
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders
 {
     public static class QueryBuilderHelper
     {
-        public static Dictionary<string, Field> CollectFields(SelectionSet selectionSet)
+        public static IList<GraphQLField> CollectFields(GraphQLSelectionSet? selectionSet)
         {
-            return CollectFields(selectionSet, Fields.Empty());
+            return CollectFields(selectionSet, new List<GraphQLField>());
         }
 
-        private static Fields CollectFields(SelectionSet selectionSet, Fields fields)
+        public static IList<GraphQLField> CollectFields(GraphQLSelectionSet? selectionSet, IList<GraphQLField> fields)
         {
-            List<string> skipList = new List<string> { "edges", "node", "cursor" };
-            selectionSet?.Selections.Apply(selection =>
+            var skipList = new List<string> { "edges", "node", "cursor" };
+            selectionSet?.Selections.ForEach(selection =>
             {
-                if (selection is Field field)
+                if (selection is not GraphQLField field)
                 {
-                    if (!skipList.Exists(name => name.ToLower().Equals(field.Name)))
-                    {
-                        fields.Add(field);
-                    }
-
-                    CollectFields(field.SelectionSet, fields);
+                    return;
                 }
+
+                if (!skipList.Exists(name => name.Equals(field.Name.StringValue, StringComparison.OrdinalIgnoreCase)))
+                {
+                    fields.Add(field);
+                }
+
+                CollectFields(field.SelectionSet, fields);
             });
 
             return fields;
         }
 
-        public static bool IsConnection(SelectionSet selectionSet)
+        public static bool IsConnection(GraphQLSelectionSet selectionSet)
         {
-            return IsConnection(selectionSet, new Dictionary<string, Field>());
+            return IsConnection(selectionSet, new Dictionary<GraphQLName, GraphQLField>());
         }
 
-        public static bool IsConnection(SelectionSet selectionSet, Dictionary<string, Field> fields)
+        public static bool IsConnection(GraphQLSelectionSet? selectionSet, IDictionary<GraphQLName, GraphQLField> fields)
         {
-            selectionSet?.Selections.Apply(selection =>
+            selectionSet?.Selections.ForEach(selection =>
             {
-                if (selection is Field field)
+                if (selection is not GraphQLField field)
                 {
-                    if (field.Name == "edges")
-                    {
-                        fields.Add(field.Name, field);
-                    }
-
-                    IsConnection(field.SelectionSet, fields);
+                    return;
                 }
+
+                if (field.Name.StringValue.Equals("edges", StringComparison.OrdinalIgnoreCase))
+                {
+                    fields.Add(field.Name, field);
+                }
+
+                IsConnection(field.SelectionSet, fields);
             });
 
             return fields.Any();

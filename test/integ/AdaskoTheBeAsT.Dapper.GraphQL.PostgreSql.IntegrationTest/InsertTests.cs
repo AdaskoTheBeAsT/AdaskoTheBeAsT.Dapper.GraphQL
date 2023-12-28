@@ -1,10 +1,10 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Dapper.GraphQL.Test.EntityMappers;
-using Dapper.GraphQL.Test.Models;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
 using Xunit;
 
-namespace Dapper.GraphQL.Test
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 {
     public class InsertTests : IClassFixture<TestFixture>
     {
@@ -33,7 +33,7 @@ namespace Dapper.GraphQL.Test
 
                     // Get the next identity aggressively, as we need to assign
                     // it to both Id/MergedToPersonId
-                    personId = PostgreSql.NextIdentity(db, (Person p) => p.Id);
+                    personId = Extensions.PostgreSql.NextIdentity(db, (Person p) => p.Id);
                     Assert.True(personId > 0);
 
                     person = new Person
@@ -45,12 +45,12 @@ namespace Dapper.GraphQL.Test
                     };
 
                     int insertedCount;
-                    insertedCount = SqlBuilder
+                    insertedCount = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                         .Insert(person)
                         .Execute(db);
                     Assert.Equal(1, insertedCount);
 
-                    emailId = PostgreSql.NextIdentity(db, (Email e) => e.Id);
+                    emailId = Extensions.PostgreSql.NextIdentity(db, (Email e) => e.Id);
                     var email = new Email
                     {
                         Id = emailId,
@@ -63,7 +63,7 @@ namespace Dapper.GraphQL.Test
                         EmailId = emailId,
                     };
 
-                    phoneId = PostgreSql.NextIdentity(db, (Phone p) => p.Id);
+                    phoneId = Extensions.PostgreSql.NextIdentity(db, (Phone p) => p.Id);
                     var phone = new Phone
                     {
                         Id = phoneId,
@@ -78,7 +78,7 @@ namespace Dapper.GraphQL.Test
                     };
 
                     // Add email and phone number to the person
-                    insertedCount = SqlBuilder
+                    insertedCount = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                         .Insert(email)
                         .Insert(phone)
                         .Insert("PersonEmail", personEmail)
@@ -92,7 +92,7 @@ namespace Dapper.GraphQL.Test
                     var personMapper = new PersonEntityMapper();
 
                     // Query the person from the database
-                    var query = SqlBuilder
+                    var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                         .From<Person>("person")
                         .LeftJoin("PersonEmail personEmail on person.Id = personEmail.Id")
                         .LeftJoin("Email email on personEmail.EmailId = email.Id")
@@ -142,7 +142,7 @@ namespace Dapper.GraphQL.Test
                 {
                     if (emailId != default(int))
                     {
-                        SqlBuilder
+                        AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                             .Delete("PersonEmail", new { EmailId = emailId })
                             .Delete("Email", new { Id = emailId })
                             .Execute(db);
@@ -150,7 +150,7 @@ namespace Dapper.GraphQL.Test
 
                     if (phoneId != default(int))
                     {
-                        SqlBuilder
+                        AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                             .Delete("PersonPhone", new { PhoneId = phoneId })
                             .Delete("Phone", new { Id = phoneId })
                             .Execute(db);
@@ -158,7 +158,7 @@ namespace Dapper.GraphQL.Test
 
                     if (personId != default(int))
                     {
-                        SqlBuilder
+                        AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                             .Delete<Person>(new { Id = personId })
                             .Execute(db);
                     }
@@ -184,7 +184,7 @@ namespace Dapper.GraphQL.Test
 
                     // Get the next identity aggressively, as we need to assign
                     // it to both Id/MergedToPersonId
-                    personId = PostgreSql.NextIdentity(db, (Person p) => p.Id);
+                    personId = Extensions.PostgreSql.NextIdentity(db, (Person p) => p.Id);
                     Assert.True(personId > 0);
 
                     person = new Person
@@ -196,12 +196,12 @@ namespace Dapper.GraphQL.Test
                     };
 
                     int insertedCount;
-                    insertedCount = await SqlBuilder
+                    insertedCount = await AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                         .Insert(person)
                         .ExecuteAsync(db);
                     Assert.Equal(1, insertedCount);
 
-                    emailId = PostgreSql.NextIdentity(db, (Email e) => e.Id);
+                    emailId = Extensions.PostgreSql.NextIdentity(db, (Email e) => e.Id);
                     var email = new Email
                     {
                         Id = emailId,
@@ -214,7 +214,7 @@ namespace Dapper.GraphQL.Test
                         EmailId = emailId,
                     };
 
-                    phoneId = PostgreSql.NextIdentity(db, (Phone p) => p.Id);
+                    phoneId = Extensions.PostgreSql.NextIdentity(db, (Phone p) => p.Id);
                     var phone = new Phone
                     {
                         Id = phoneId,
@@ -229,7 +229,7 @@ namespace Dapper.GraphQL.Test
                     };
 
                     // Add email and phone number to the person
-                    insertedCount = await SqlBuilder
+                    insertedCount = await AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                         .Insert(email)
                         .Insert(phone)
                         .Insert("PersonEmail", personEmail)
@@ -243,7 +243,7 @@ namespace Dapper.GraphQL.Test
                     var personMapper = new PersonEntityMapper();
 
                     // Query the person from the database
-                    var query = SqlBuilder
+                    var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                         .From<Person>("person")
                         .LeftJoin("PersonEmail personEmail on person.Id = personEmail.Id")
                         .LeftJoin("Email email on personEmail.EmailId = email.Id")
@@ -294,7 +294,7 @@ namespace Dapper.GraphQL.Test
                 {
                     if (emailId != default(int))
                     {
-                        await SqlBuilder
+                        await AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                             .Delete("PersonEmail", new { EmailId = emailId })
                             .Delete("Email", new { Id = emailId })
                             .ExecuteAsync(db);
@@ -302,7 +302,7 @@ namespace Dapper.GraphQL.Test
 
                     if (phoneId != default(int))
                     {
-                        await SqlBuilder
+                        await AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                             .Delete("PersonPhone", new { PhoneId = phoneId })
                             .Delete("Phone", new { Id = phoneId })
                             .ExecuteAsync(db);
@@ -310,7 +310,7 @@ namespace Dapper.GraphQL.Test
 
                     if (personId != default(int))
                     {
-                        await SqlBuilder
+                        await AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                             .Delete<Person>(new { Id = personId })
                             .ExecuteAsync(db);
                     }

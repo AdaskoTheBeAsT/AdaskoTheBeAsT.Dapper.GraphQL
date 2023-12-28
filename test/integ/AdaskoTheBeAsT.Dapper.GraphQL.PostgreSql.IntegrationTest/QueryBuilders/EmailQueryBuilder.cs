@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
-using Dapper.GraphQL.Test.Models;
-using GraphQL.Language.AST;
+using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
+using AdaskoTheBeAsT.Dapper.GraphQL.Extensions;
+using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
 using GraphQLParser.AST;
 
-namespace Dapper.GraphQL.Test.QueryBuilders
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders
 {
     public class EmailQueryBuilder :
         IQueryBuilder<Email>

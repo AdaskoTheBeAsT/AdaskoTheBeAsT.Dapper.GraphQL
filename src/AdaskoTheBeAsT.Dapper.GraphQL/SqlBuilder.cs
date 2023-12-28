@@ -1,4 +1,6 @@
-﻿namespace Dapper.GraphQL
+﻿using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
+
+namespace AdaskoTheBeAsT.Dapper.GraphQL
 {
     /// <summary>
     /// A builder for SQL queries and statements.

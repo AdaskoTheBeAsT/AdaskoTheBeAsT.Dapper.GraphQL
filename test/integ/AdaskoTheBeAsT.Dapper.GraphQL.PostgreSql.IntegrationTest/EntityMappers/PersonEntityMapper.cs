@@ -1,7 +1,9 @@
 ﻿using System.Linq;
-using Dapper.GraphQL.Test.Models;
+using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
+using AdaskoTheBeAsT.Dapper.GraphQL.Extensions;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
 
-namespace Dapper.GraphQL.Test.EntityMappers
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers
 {
     public class PersonEntityMapper :
         DeduplicatingEntityMapper<Person>

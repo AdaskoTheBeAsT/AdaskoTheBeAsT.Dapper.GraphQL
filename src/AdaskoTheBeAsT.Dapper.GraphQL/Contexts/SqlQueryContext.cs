@@ -3,22 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
+using Dapper;
 using GraphQLParser.AST;
 
-namespace Dapper.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
 {
-    public class SqlQueryContext<TEntityType> :
-        SqlQueryContext
-        where TEntityType : class
-    {
-        public SqlQueryContext(string alias = null, dynamic parameters = null)
-            : base(alias == null ? typeof(TEntityType).Name : $"{typeof(TEntityType).Name} {alias}")
-        {
-            _types.Add(typeof(TEntityType));
-        }
-    }
-
-    public class SqlQueryContext 
+    public class SqlQueryContext
     {
         protected List<string> _splitOn;
         protected List<Type> _types;
@@ -26,7 +17,7 @@ namespace Dapper.GraphQL
         public DynamicParameters Parameters { get; set; }
         protected DapperSqlBuilder SqlBuilder { get; set; }
 
-        protected Dapper.SqlBuilder.Template QueryTemplate { get; set; }
+        protected global::Dapper.SqlBuilder.Template QueryTemplate { get; set; }
 
         public SqlQueryContext(string from, dynamic parameters = null)
         {
@@ -107,9 +98,9 @@ FROM {from}/**innerjoin**//**leftjoin**//**rightjoin**//**join**/
         public IEnumerable<TEntityType> Execute<TEntityType>(
             IDbConnection connection,
             IHasSelectionSetNode selectionSet,
-            IEntityMapper<TEntityType> mapper = null,
-            IDbTransaction transaction = null,
-            SqlMapperOptions options = null)
+            IEntityMapper<TEntityType>? mapper = null,
+            IDbTransaction? transaction = null,
+            SqlMapperOptions? options = null)
             where TEntityType : class
         {
             if (options == null)

@@ -4,16 +4,16 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Dapper.GraphQL.Test.EntityMappers;
-using Dapper.GraphQL.Test.Models;
+using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories;
 using GraphQL.Builders;
 using GraphQL.Types;
 using GraphQL.Types.Relay.DataObjects;
 using Microsoft.Extensions.DependencyInjection;
-using Dapper.GraphQL.Test.Repositories;
 
-
-namespace Dapper.GraphQL.Test.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
 {
     public class PersonQuery :
         ObjectGraphType
@@ -33,7 +33,7 @@ namespace Dapper.GraphQL.Test.GraphQL
                 .Resolve(context =>
                     {
                         var alias = "person";
-                        var query = SqlBuilder
+                        var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                             .From<Person>(alias)
                             .OrderBy($"{alias}.Id");
                         query = personQueryBuilder.Build(query, context.FieldAst, alias);
@@ -56,7 +56,7 @@ namespace Dapper.GraphQL.Test.GraphQL
                 .ResolveAsync(async context =>
                 {
                     var alias = "person";
-                    var query = SqlBuilder
+                    var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                         .From($"Person {alias}")
                         .OrderBy($"{alias}.Id");
                     query = personQueryBuilder.Build(query, context.FieldAst, alias);
@@ -82,7 +82,7 @@ namespace Dapper.GraphQL.Test.GraphQL
                 {
                     var id = context.Arguments["id"].Value;
                     var alias = "person";
-                    var query = SqlBuilder
+                    var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                         .From($"Person {alias}")
                         .Where($"{alias}.Id = @id", new { id })
 

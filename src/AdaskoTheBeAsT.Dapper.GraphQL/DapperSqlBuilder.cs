@@ -1,9 +1,9 @@
-﻿namespace Dapper.GraphQL
+﻿namespace AdaskoTheBeAsT.Dapper.GraphQL
 {
     /// <summary>
     /// A builder for SQL queries and statements inheriting the official Dapper.Sql Builder to extend its functions.
     /// </summary>
-    public class DapperSqlBuilder : Dapper.SqlBuilder
+    public class DapperSqlBuilder : global::Dapper.SqlBuilder
     {
         /// <summary>
         /// If the object has an offset there is no need to the fetch function to add an offset with 0 rows to skip 
@@ -78,8 +78,11 @@
         /// <returns>The query builder.</returns>
         public DapperSqlBuilder Fetch(int rowsToReturn)
         {
-            if(!_hasOffset)
+            if (!_hasOffset)
+            {
                 Offset(0);
+            }
+
             return AddClause("fetch", $"{rowsToReturn}", null, " + ", "FETCH FIRST ", " ROWS ONLY\n", false) as DapperSqlBuilder;
         }
     }

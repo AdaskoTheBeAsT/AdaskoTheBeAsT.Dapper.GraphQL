@@ -1,8 +1,9 @@
 using System;
+using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Dapper.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL
 {
     /// <summary>
     /// Options used to configure the dependency injection container for GraphQL and Dapper.

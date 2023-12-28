@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using Dapper.GraphQL.Test.GraphQL;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace Dapper.GraphQL.Test
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 {
     public class GraphQLInsertTests
         : IClassFixture<TestFixture>

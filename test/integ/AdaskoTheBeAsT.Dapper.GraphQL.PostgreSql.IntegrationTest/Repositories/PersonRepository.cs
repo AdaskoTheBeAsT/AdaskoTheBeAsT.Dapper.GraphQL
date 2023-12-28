@@ -1,16 +1,17 @@
 ﻿using System;
-using System.Data;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
+using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
 using GraphQL.Builders;
-using Dapper.GraphQL.Test.Models;
-using Dapper.GraphQL.Test.EntityMappers;
 using Microsoft.Extensions.DependencyInjection;
 
-
-namespace Dapper.GraphQL.Test.Repositories
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories
 {
     public class PersonRepository : IPersonRepository
     {
@@ -180,7 +181,7 @@ namespace Dapper.GraphQL.Test.Repositories
         {
             var alias = "Person";
 
-            var query = SqlBuilder
+            var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                        .From<Person>(alias)
                        .OrderBy($"{alias}.CreateDate");
 

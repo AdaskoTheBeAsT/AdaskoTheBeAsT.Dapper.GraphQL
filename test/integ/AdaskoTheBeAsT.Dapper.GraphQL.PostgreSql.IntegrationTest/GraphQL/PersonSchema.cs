@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Dapper.GraphQL.Test.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
 {
     public class PersonSchema :
         global::GraphQL.Types.Schema

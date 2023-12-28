@@ -1,6 +1,6 @@
 using System.Data;
 
-namespace Dapper.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL
 {
     /// <summary>
     /// Options for database queries and commands.

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
+using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
 using GraphQLParser;
 using GraphQLParser.AST;
 
-namespace Dapper.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
 {
     public static class EntityMapContextExtensions
     {

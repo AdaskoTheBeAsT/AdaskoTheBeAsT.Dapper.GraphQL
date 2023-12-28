@@ -3,8 +3,11 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AdaskoTheBeAsT.Dapper.GraphQL.Extensions;
+using Dapper;
+using SqlBuilder = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder;
 
-namespace Dapper.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
 {
     public class SqlDeleteContext
     {

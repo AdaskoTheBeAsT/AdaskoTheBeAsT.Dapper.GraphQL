@@ -1,9 +1,10 @@
 using System;
-using System.Linq;
-using Dapper.GraphQL.Test.Models;
+using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
+using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
 using GraphQLParser.AST;
 
-namespace Dapper.GraphQL.Test.QueryBuilders
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders
 {
     public class PersonQueryBuilder :
         IQueryBuilder<Person>

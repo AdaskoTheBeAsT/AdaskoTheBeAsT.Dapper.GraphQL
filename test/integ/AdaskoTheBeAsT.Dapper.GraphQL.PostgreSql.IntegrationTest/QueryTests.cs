@@ -1,7 +1,7 @@
-using Dapper.GraphQL.Test.Models;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
 using Xunit;
 
-namespace Dapper.GraphQL.Test
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 {
     public class QueryTests : IClassFixture<TestFixture>
     {
@@ -15,7 +15,7 @@ namespace Dapper.GraphQL.Test
         [Fact(DisplayName = "ORDER BY should work")]
         public void OrderByShouldWork()
         {
-            var query = SqlBuilder
+            var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                 .From("Person person")
                 .Select("person.Id")
                 .SplitOn<Person>("Id")
@@ -29,7 +29,7 @@ namespace Dapper.GraphQL.Test
         {
             Assert.Throws<Npgsql.PostgresException>(() =>
             {
-                var query = SqlBuilder
+                var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                     .From("Person person")
                     .Select("person.Id", "notAnAlias.Id")
                     .SplitOn<Person>("Id");

@@ -1,6 +1,6 @@
 using GraphQL.Types;
 
-namespace Dapper.GraphQL.Test.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
 {
     public class PhoneEnumType
         : EnumerationGraphType<Models.PhoneType>

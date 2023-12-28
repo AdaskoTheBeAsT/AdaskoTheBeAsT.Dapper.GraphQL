@@ -1,6 +1,7 @@
+using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
 using GraphQLParser.AST;
 
-namespace Dapper.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL.Interfaces
 {
     /// <summary>
     /// Builds queries for a given entity type.

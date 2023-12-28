@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
+using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
 
-namespace Dapper.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL
 {
     /// <summary>
     /// An entity mapper that deduplicates as it maps.

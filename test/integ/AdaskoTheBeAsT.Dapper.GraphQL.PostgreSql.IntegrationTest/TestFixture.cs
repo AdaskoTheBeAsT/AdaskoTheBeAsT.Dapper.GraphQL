@@ -3,22 +3,24 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Dapper.GraphQL.Test.GraphQL;
-using Dapper.GraphQL.Test.Models;
-using Dapper.GraphQL.Test.QueryBuilders;
-using Dapper.GraphQL.Test.Repositories;
+using AdaskoTheBeAsT.Dapper.GraphQL.Extensions;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories;
 using DbUp;
 using GraphQL;
 using GraphQL.Execution;
 using GraphQL.NewtonsoftJson;
-using GraphQLParser.AST;
 using GraphQL.Types.Relay;
+using GraphQLParser.AST;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Npgsql;
+using PhoneType = AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL.PhoneType;
 
 
-namespace Dapper.GraphQL.Test
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 {
     public class TestFixture : IDisposable
     {
@@ -174,7 +176,7 @@ namespace Dapper.GraphQL.Test
                 options.AddType<EmailType>();
                 options.AddType<PersonType>();
                 options.AddType<PhoneEnumType>();
-                options.AddType<GraphQL.PhoneType>();
+                options.AddType<PhoneType>();
                 options.AddType<PersonQuery>();
                 options.AddType<PersonMutation>();
                 options.AddType<PersonInputType>();

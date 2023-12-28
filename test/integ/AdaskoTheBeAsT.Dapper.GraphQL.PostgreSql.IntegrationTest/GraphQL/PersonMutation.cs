@@ -1,13 +1,14 @@
 using System;
 using System.Data;
 using System.Linq;
-using Dapper.GraphQL.Test.EntityMappers;
-using Dapper.GraphQL.Test.Models;
+using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Dapper.GraphQL.Test.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
 {
     public class PersonMutation : ObjectGraphType
     {
@@ -23,9 +24,9 @@ namespace Dapper.GraphQL.Test.GraphQL
 
                     using (var connection = serviceProvider.GetRequiredService<IDbConnection>())
                     {
-                        person.Id = person.MergedToPersonId = PostgreSql.NextIdentity(connection, (Person p) => p.Id);
+                        person.Id = person.MergedToPersonId = Extensions.PostgreSql.NextIdentity(connection, (Person p) => p.Id);
 
-                        var success = SqlBuilder
+                        var success = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                             .Insert(person)
                             .Execute(connection) > 0;
 
@@ -33,7 +34,7 @@ namespace Dapper.GraphQL.Test.GraphQL
                         {
                             var personMapper = new PersonEntityMapper();
 
-                            var query = SqlBuilder
+                            var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                                 .From<Person>("Person")
                                 .Select("FirstName, LastName")
                                 .Where("ID = @personId", new { personId = person.Id });

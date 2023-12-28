@@ -1,8 +1,9 @@
-using Dapper.GraphQL.Test.EntityMappers;
-using Dapper.GraphQL.Test.Models;
+using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
 using Xunit;
 
-namespace Dapper.GraphQL.Test
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 {
     public class EntityMapContextTests : IClassFixture<TestFixture>
     {
@@ -78,46 +79,48 @@ namespace Dapper.GraphQL.Test
 }";
 
             var selectionSet = _fixture.BuildGraphQlSelection(graphql);
-            var context1 = new EntityMapContext
+            using (var context1 = new EntityMapContext
             {
                 Items = new object[]
-                {
-                    person1,
-                    email1,
-                    phone,
-                },
+                       {
+                           person1,
+                           email1,
+                           phone,
+                       },
                 SelectionSet = selectionSet,
                 SplitOn = splitOn,
-            };
-
-            person1 = personEntityMapper.Map(context1);
-            Assert.Equal(3, context1.MappedCount);
-
-            Assert.Equal(2, person1.Id);
-            Assert.Equal("Doug", person1.FirstName);
-            Assert.Single(person1.Emails);
-            Assert.Single(person1.Phones);
-
-            var context2 = new EntityMapContext
+            })
             {
-                Items = new object[]
+                person1 = personEntityMapper.Map(context1);
+                Assert.Equal(3, context1.MappedCount);
+
+                Assert.Equal(2, person1.Id);
+                Assert.Equal("Doug", person1.FirstName);
+                Assert.Single(person1.Emails);
+                Assert.Single(person1.Phones);
+
+                using (var context2 = new EntityMapContext
                 {
-                    person2,
-                    email2,
-                    null,
-                },
-                SelectionSet = selectionSet,
-                SplitOn = splitOn,
-            };
+                    Items = new object[]
+                           {
+                               person2,
+                               email2,
+                               null,
+                           },
+                    SelectionSet = selectionSet,
+                    SplitOn = splitOn,
+                })
+                {
+                    person2 = personEntityMapper.Map(context2);
+                    Assert.Equal(3, context2.MappedCount);
 
-            person2 = personEntityMapper.Map(context2);
-            Assert.Equal(3, context2.MappedCount);
+                    // The same reference should have been returned
+                    Assert.Same(person1, person2);
 
-            // The same reference should have been returned
-            Assert.Same(person1, person2);
-
-            // A 2nd email was added to person
-            Assert.Equal(2, person1.Emails.Count);
+                    // A 2nd email was added to person
+                    Assert.Equal(2, person1.Emails.Count);
+                }
+            }
         }
     }
 }

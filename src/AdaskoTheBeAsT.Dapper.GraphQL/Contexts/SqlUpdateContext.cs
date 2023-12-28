@@ -3,8 +3,9 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
 
-namespace Dapper.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
 {
     public class SqlUpdateContext
     {
@@ -12,11 +13,11 @@ namespace Dapper.GraphQL
 
         public DynamicParameters Parameters { get; set; }
 
-        private Dapper.SqlBuilder SqlBuilder { get; set; }
+        private global::Dapper.SqlBuilder SqlBuilder { get; set; }
 
         public string Table { get; private set; }
 
-        private Dapper.SqlBuilder.Template Template { get; set; }
+        private global::Dapper.SqlBuilder.Template Template { get; set; }
 
         public SqlUpdateContext(
             string table,
@@ -28,7 +29,7 @@ namespace Dapper.GraphQL
             }
 
             Parameters = new DynamicParameters(parameters);
-            SqlBuilder = new Dapper.SqlBuilder();
+            SqlBuilder = new global::Dapper.SqlBuilder();
             Table = table;
             Template = SqlBuilder.AddTemplate(@"
 /**where**/");

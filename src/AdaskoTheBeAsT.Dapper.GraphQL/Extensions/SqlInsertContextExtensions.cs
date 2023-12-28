@@ -4,8 +4,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
+using Dapper;
 
-namespace Dapper.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
 {
     public static class SqlInsertContextExtensions
     {

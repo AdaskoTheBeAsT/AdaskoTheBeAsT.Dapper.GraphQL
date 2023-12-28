@@ -1,9 +1,9 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Dapper.GraphQL.Test.Models;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
 using Xunit;
 
-namespace Dapper.GraphQL.Test
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 {
     public class UpdateTests : IClassFixture<TestFixture>
     {
@@ -38,20 +38,20 @@ namespace Dapper.GraphQL.Test
                 // Update the person with Id = 2 with a new FirstName
                 using (var db = _fixture.GetDbConnection())
                 {
-                    previousPerson = SqlBuilder
+                    previousPerson = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                         .From<Person>()
                         .Select("Id", "FirstName")
                         .Where("FirstName = @firstName", new { firstName = "Doug" })
                         .Execute<Person>(db, selectionSet)
                         .FirstOrDefault();
 
-                    SqlBuilder
+                    AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                         .Update(person)
                         .Where("Id = @id", new { id = previousPerson.Id })
                         .Execute(db);
 
                     // Get the same person back
-                    person = SqlBuilder
+                    person = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                         .From<Person>()
                         .Select("Id", "FirstName")
                         .Where("Id = @id", new { id = previousPerson.Id })
@@ -75,7 +75,7 @@ namespace Dapper.GraphQL.Test
                         };
 
                         // Put the entity back to the way it was
-                        SqlBuilder
+                        AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                             .Update<Person>(person)
                             .Where("Id = @id", new { id = 2 })
                             .Execute(db);
@@ -110,7 +110,7 @@ namespace Dapper.GraphQL.Test
 
                     var selectionSet = _fixture.BuildGraphQlSelection(graphql);
 
-                    var previousPeople = await SqlBuilder
+                    var previousPeople = await AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                         .From<Person>()
                         .Select("Id", "FirstName")
                         .Where("FirstName = @firstName", new { firstName = "Doug" })
@@ -118,13 +118,13 @@ namespace Dapper.GraphQL.Test
 
                     previousPerson = previousPeople.FirstOrDefault();
 
-                    await SqlBuilder
+                    await AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                         .Update(person)
                         .Where("Id = @id", new { id = previousPerson.Id })
                         .ExecuteAsync(db);
 
                     // Get the same person back
-                    var people = await SqlBuilder
+                    var people = await AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                         .From<Person>()
                         .Select("Id", "FirstName")
                         .Where("Id = @id", new { id = previousPerson.Id })
@@ -151,7 +151,7 @@ namespace Dapper.GraphQL.Test
                         };
 
                         // Put the entity back to the way it was
-                        await SqlBuilder
+                        await AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
                             .Update<Person>(person)
                             .Where("Id = @id", new { id = 2 })
                             .ExecuteAsync(db);

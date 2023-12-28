@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GraphQL.Language.AST;
+using AdaskoTheBeAsT.Dapper.GraphQL.Extensions;
+using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
 using GraphQLParser.AST;
 
-namespace Dapper.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
 {
     public sealed class EntityMapContext : IDisposable
     {
@@ -69,19 +70,24 @@ namespace Dapper.GraphQL
         /// Maps the next object from Dapper.
         /// </summary>
         /// <param name="fieldNames">The names of one or more GraphQL fields associated with the item.</param>
-        /// /// <param name="getSelectionSet">Gets information if node is selected.</param>
+        /// <param name="getSelectionSet">Gets information if node is selected.</param>
         /// <param name="entityMapper">An optional entity mapper.  This is used to map complex objects from Dapper mapping results.</param>
         /// <typeparam name="TItemType">The item type to be mapped.</typeparam>
         /// <returns>The mapped item.</returns>
         public TItemType Next<TItemType>(
             IEnumerable<string> fieldNames,
             Func<IDictionary<GraphQLName, GraphQLField>, IHasSelectionSetNode, IHasSelectionSetNode> getSelectionSet,
-            IEntityMapper<TItemType> entityMapper = null)
+            IEntityMapper<TItemType>? entityMapper = null)
             where TItemType : class
         {
             if (fieldNames == null)
             {
                 throw new ArgumentNullException(nameof(fieldNames));
+            }
+
+            if (getSelectionSet == null)
+            {
+                throw new ArgumentNullException(nameof(getSelectionSet));
             }
 
             if (ItemEnumerator == null ||
@@ -92,7 +98,7 @@ namespace Dapper.GraphQL
 
             lock (_lockObject)
             {
-                var keys = fieldNames.Intersect(CurrentSelectionSet.Keys.Select(k => k.StringValue));
+                var keys = fieldNames.Intersect(CurrentSelectionSet.Keys.Select(k => k.StringValue), StringComparer.OrdinalIgnoreCase);
                 if (keys.Any())
                 {
                     var item = default(TItemType);

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphQLParser.AST;
 
-namespace GraphQL.Language.AST
+namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
 {
     public static class IHasSelectionSetNodeExtensions
     {
