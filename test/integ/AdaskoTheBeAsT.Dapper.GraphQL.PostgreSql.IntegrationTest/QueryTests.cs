@@ -1,3 +1,4 @@
+using System;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
 using Xunit;
 
@@ -15,13 +16,13 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         [Fact(DisplayName = "ORDER BY should work")]
         public void OrderByShouldWork()
         {
-            var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
+            var query = SqlBuilder
                 .From("Person person")
                 .Select("person.Id")
                 .SplitOn<Person>("Id")
                 .OrderBy("LastName");
 
-            Assert.Contains("ORDER BY", query.ToString());
+            Assert.Contains("ORDER BY", query.ToString(), StringComparison.OrdinalIgnoreCase);
         }
 
         [Fact(DisplayName = "SELECT without matching alias should throw")]
@@ -29,9 +30,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         {
             Assert.Throws<Npgsql.PostgresException>(() =>
             {
-                var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
+                var query = SqlBuilder
                     .From("Person person")
-                    .Select("person.Id", "notAnAlias.Id")
+                    .Select(new[] { "person.Id", "notAnAlias.Id" })
                     .SplitOn<Person>("Id");
 
                 var graphql = "{ person { id } }";

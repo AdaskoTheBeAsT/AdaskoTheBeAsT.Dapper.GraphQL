@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -21,7 +22,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
             var memberExpression = identityNameSelector.Body as MemberExpression;
 
             var sb = new StringBuilder();
-            sb.AppendLine($"SELECT nextval(pg_get_serial_sequence('{typeof(TEntityType).Name.ToLower()}', '{memberExpression.Member.Name.ToLower()}'));");
+            sb.AppendLine($"SELECT nextval(pg_get_serial_sequence('{typeof(TEntityType).Name.ToLower(CultureInfo.InvariantCulture)}', '{memberExpression?.Member.Name.ToLower(CultureInfo.InvariantCulture)}'));");
 
             return dbConnection
                 .Query<TIdentityType>(sb.ToString())
@@ -39,9 +40,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
             var memberExpression = identityNameSelector.Body as MemberExpression;
 
             var sb = new StringBuilder();
-            sb.AppendLine($"SELECT nextval(pg_get_serial_sequence('{typeof(TEntityType).Name.ToLower()}', '{memberExpression.Member.Name.ToLower()}'));");
+            sb.AppendLine($"SELECT nextval(pg_get_serial_sequence('{typeof(TEntityType).Name.ToLower(CultureInfo.InvariantCulture)}', '{memberExpression?.Member.Name.ToLower(CultureInfo.InvariantCulture)}'));");
 
-            var result = await dbConnection.QueryAsync<TIdentityType>(sb.ToString());
+            var result = await dbConnection.QueryAsync<TIdentityType>(sb.ToString()).ConfigureAwait(false);
             return result.Single();
         }
     }

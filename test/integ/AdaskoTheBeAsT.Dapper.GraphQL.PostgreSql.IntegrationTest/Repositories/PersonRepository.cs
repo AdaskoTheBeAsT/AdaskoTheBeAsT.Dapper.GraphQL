@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
 using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
@@ -16,9 +15,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories
     public class PersonRepository : IPersonRepository
     {
         private readonly IQueryBuilder<Person> _personQueryBuilder;
-        private PersonEntityMapper personMapper = new PersonEntityMapper();
-        private string pAlias = "Person";
-        private IServiceProvider _serviceProvider;
+        private readonly PersonEntityMapper _personMapper = new PersonEntityMapper();
+#pragma warning disable CC0021 // Use nameof
+        private readonly string _alias = "Person";
+#pragma warning restore CC0021 // Use nameof
+        private readonly IServiceProvider _serviceProvider;
 
         public PersonRepository(IQueryBuilder<Person> personQueryBuilder, IServiceProvider serviceProvider)
         {
@@ -26,181 +27,128 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories
             _serviceProvider = serviceProvider;
         }
 
-        public ResolveConnectionContext<object> Context { get; set; }
+        public IResolveConnectionContext<object?>? Context { get; set; }
 
-        public Task<int> GetTotalCount(CancellationToken cancellationToken)
+        public Task<int> GetTotalCountAsync(CancellationToken cancellationToken)
         {
+            if (Context == null)
+            {
+                throw new ArgumentNullException(string.Empty);
+            }
+
             var query = this.GetQuery(Context, _personQueryBuilder);
 
-            try
+            using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
             {
-                using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
-                {
-                    var results = query
-                        .Execute(connection, Context.FieldAst, personMapper)
-                        .Distinct()
-                        .Count();
+                var results = query
+                    .Execute(connection, Context.FieldAst, _personMapper)
+                    .Distinct()
+                    .Count();
 
-                    return Task.FromResult(results);
-                }
+                return Task.FromResult(results);
             }
-            catch (Exception ex)
-            {
-                // log
-            }
-
-            return Task.FromResult(0);
         }
 
-        public Task<List<Person>> GetPeople(int? first,
-                                                    DateTime? createdAfter,
-                                                    CancellationToken cancellationToken)
+        public Task<IList<Person>> GetPeopleAsync(
+            int? first,
+            DateTime? createdAfter,
+            CancellationToken cancellationToken)
         {
-            string sWhere = createdAfter != null ? ($"{pAlias}.CreateDate > '{createdAfter}'") : "";
+            if (Context == null)
+            {
+                throw new ArgumentNullException(string.Empty);
+            }
+
+            var sWhere = createdAfter != null ? $"{_alias}.CreateDate > '{createdAfter}'" : string.Empty;
             var query = this.GetQuery(Context, _personQueryBuilder, sWhere);
 
-            try
+            using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
             {
-                using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
-                {
-                    List<Person> results = query
-                        .Execute(connection, Context.FieldAst, personMapper)
-                        .Distinct()
-                        .If(first.HasValue, x => x.Take(first.Value))
-                        .ToList();
+                var results = query
+                    .Execute(connection, Context.FieldAst, _personMapper)
+                    .Distinct()
+                    .If(first.HasValue, x => x.Take(first!.Value))
+                    .ToList();
 
-                    return Task.FromResult(results);
-                }
+                return Task.FromResult(results as IList<Person>);
             }
-            catch (Exception ex)
-            {
-                // log
-            }
-
-            return Task.FromResult<List<Person>>(null);
         }
 
-        public Task<List<Person>> GetPeopleReversed(int? last,
-                                                    DateTime? createdBefore,
-                                                    CancellationToken cancellationToken)
+#if NET6_0_OR_GREATER
+        public Task<IList<Person>> GetPeopleReversedAsync(
+            int? last,
+            DateTime? createdBefore,
+            CancellationToken cancellationToken)
         {
-            string sWhere = createdBefore != null ? ($"{pAlias}.CreateDate < @{createdBefore}") : "";
+            if (Context == null)
+            {
+                throw new ArgumentNullException(string.Empty);
+            }
+
+            var sWhere = createdBefore != null ? $"{_alias}.CreateDate < @{createdBefore}" : string.Empty;
             var query = this.GetQuery(Context, _personQueryBuilder, sWhere);
 
-            try
+            using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
             {
-                using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
-                {
-                    List<Person> results = query
-                        .Execute(connection, Context.FieldAst, personMapper)
-                        .Distinct()
-                        .If(last.HasValue, x => x.TakeLast(last.Value))
-                        .ToList();
+                var results = query
+                    .Execute(connection, Context.FieldAst, _personMapper)
+                    .Distinct()
+                    .If(last.HasValue, x => x.TakeLast(last ?? 0))
+                    .ToList();
 
-                    return Task.FromResult(results);
-                }
+                return Task.FromResult(results as IList<Person>);
             }
-            catch (Exception ex)
-            {
-                // log
-            }
-
-            return Task.FromResult<List<Person>>(null);
         }
+#endif
 
-
-        public Task<bool> GetHasNextPage(int? first,
-                                        DateTime? createdAfter,
-                                        CancellationToken cancellationToken)
+        public Task<bool> GetHasNextPageAsync(
+            int? first,
+            DateTime? createdAfter,
+            CancellationToken cancellationToken)
         {
-            string sWhere = createdAfter != null ? ($"{pAlias}.CreateDate > '{createdAfter}'") : "";
+            if (Context == null)
+            {
+                throw new ArgumentNullException(string.Empty);
+            }
+
+            var sWhere = createdAfter != null ? $"{_alias}.CreateDate > '{createdAfter}'" : string.Empty;
             var query = this.GetQuery(Context, _personQueryBuilder, sWhere);
 
-            try
+            using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
             {
-                using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
-                {
-                    return Task.FromResult(query
-                        .Execute(connection, Context.FieldAst, personMapper)
+                return Task.FromResult(
+                    query
+                        .Execute(connection, Context.FieldAst, _personMapper)
                         .Distinct()
-                        .Skip(first.Value)
+                        .Skip(first ?? 0)
                         .Any());
-                }
             }
-            catch (Exception ex)
-            {
-                // log
-            }
-
-            return Task.FromResult(false);
         }
 
-        public Task<bool> GetHasPreviousPage(int? last,
-                                        DateTime? createdBefore,
-                                        CancellationToken cancellationToken)
+#if NET6_0_OR_GREATER
+        public Task<bool> GetHasPreviousPageAsync(
+            int? last,
+            DateTime? createdBefore,
+            CancellationToken cancellationToken)
         {
-            string sWhere = createdBefore != null ? ($"{pAlias}.CreateDate < '{createdBefore}'") : "";
+            if (Context == null)
+            {
+                throw new ArgumentNullException(string.Empty);
+            }
+
+            var sWhere = createdBefore != null ? $"{_alias}.CreateDate < '{createdBefore}'" : string.Empty;
             var query = this.GetQuery(Context, _personQueryBuilder, sWhere);
 
-            try
+            using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
             {
-                using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
-                {
-                    return Task.FromResult(query
-                        .Execute(connection, Context.FieldAst, personMapper)
+                return Task.FromResult(
+                    query
+                        .Execute(connection, Context.FieldAst, _personMapper)
                         .Distinct()
-                        .SkipLast(last.Value)
+                        .SkipLast(last ?? 0)
                         .Any());
-                }
             }
-            catch (Exception ex)
-            {
-                // log
-            }
-
-            return Task.FromResult(false);
         }
-    }
-
-    public interface IPersonRepository
-    {
-        ResolveConnectionContext<object> Context { get; set; }
-        Task<int> GetTotalCount(CancellationToken cancellationToken);
-        Task<List<Person>> GetPeople(int? first, DateTime? createdAfter, CancellationToken cancellationToken);
-        Task<List<Person>> GetPeopleReversed(int? last, DateTime? createdBefore, CancellationToken cancellationToken);
-        Task<bool> GetHasNextPage(int? first, DateTime? createdAfter, CancellationToken cancellationToken);
-        Task<bool> GetHasPreviousPage(int? last, DateTime? createdBefore, CancellationToken cancellationToken);
-    }
-
-    public static class IPersonRepositoryExtensions
-    {
-        public static SqlQueryContext GetQuery(this IPersonRepository personRepository,
-                                        ResolveConnectionContext<object> context,
-                                        IQueryBuilder<Person> personQueryBuilder,
-                                        string sWhere = "")
-        {
-            var alias = "Person";
-
-            var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
-                       .From<Person>(alias)
-                       .OrderBy($"{alias}.CreateDate");
-
-            query = !string.IsNullOrEmpty(sWhere) ? query.Where(sWhere) : query;
-
-            return personQueryBuilder.Build(query, context.FieldAst, alias);
-        }
-    }
-
-    public static class EnumerableExtensions
-    {
-        public static IEnumerable<T> If<T>(this IEnumerable<T> enumerable, bool condition, Func<IEnumerable<T>, IEnumerable<T>> action)
-        {
-            if (condition)
-            {
-                return action(enumerable);
-            }
-
-            return enumerable;
-        }
+#endif
     }
 }

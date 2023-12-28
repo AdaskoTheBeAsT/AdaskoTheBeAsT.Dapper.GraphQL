@@ -21,19 +21,22 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
         private const int MaxPageSize = 10;
         private readonly IPersonRepository _personRepository;
 
+#pragma warning disable MA0051 // Method is too long
         public PersonQuery(
             IQueryBuilder<Person> personQueryBuilder,
             IServiceProvider serviceProvider,
             IPersonRepository personRepository)
+#pragma warning restore MA0051 // Method is too long
         {
             _personRepository = personRepository;
 
+#pragma warning disable MA0056 // Do not call overridable members in constructor
             Field<ListGraphType<PersonType>>("people")
                 .Description("A list of people.")
                 .Resolve(context =>
                     {
                         var alias = "person";
-                        var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
+                        var query = SqlBuilder
                             .From<Person>(alias)
                             .OrderBy($"{alias}.Id");
                         query = personQueryBuilder.Build(query, context.FieldAst, alias);
@@ -56,7 +59,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                 .ResolveAsync(async context =>
                 {
                     var alias = "person";
-                    var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
+                    var query = SqlBuilder
                         .From($"Person {alias}")
                         .OrderBy($"{alias}.Id");
                     query = personQueryBuilder.Build(query, context.FieldAst, alias);
@@ -80,9 +83,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                     new QueryArgument<IntGraphType> { Name = "id", Description = "The ID of the person." }))
                 .Resolve(context =>
                 {
-                    var id = context.Arguments["id"].Value;
+                    var id = context!.Arguments!["id"].Value;
                     var alias = "person";
-                    var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
+                    var query = SqlBuilder
                         .From($"Person {alias}")
                         .Where($"{alias}.Id = @id", new { id })
 
@@ -105,18 +108,20 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                         return results.FirstOrDefault();
                     }
                 });
+#pragma warning restore MA0056 // Do not call overridable members in constructor
 
-            Connection<PersonType>()
-                .Name("personConnection")
+            Connection<PersonType>("personConnection")
                 .Description("Gets pages of Person objects.")
+
                 // Enable the last and before arguments to do paging in reverse.
                 .Bidirectional()
+
                 // Set the maximum size of a page, use .ReturnAll() to set no maximum size.
                 .PageSize(MaxPageSize)
-                .ResolveAsync(context => ResolveConnection(context, personQueryBuilder));
+                .ResolveAsync(context => ResolveConnectionAsync(context));
         }
 
-        private async Task<object> ResolveConnection(ResolveConnectionContext<object> context, IQueryBuilder<Person> personQueryBuilder)
+        private async Task<object?> ResolveConnectionAsync(IResolveConnectionContext<object?> context)
         {
             _personRepository.Context = context;
 
@@ -126,29 +131,33 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
             var beforeCursor = Cursor.FromCursor<DateTime?>(context.Before);
             var cancellationToken = context.CancellationToken;
 
-            var getPersonTask = GetPeople(first, afterCursor, last, beforeCursor, cancellationToken);
-            var getHasNextPageTask = GetHasNextPage(first, afterCursor, cancellationToken);
-            var getHasPreviousPageTask = GetHasPreviousPage(last, beforeCursor, cancellationToken);
-            var totalCountTask = _personRepository.GetTotalCount(cancellationToken);
+            var getPersonTask = GetPeopleAsync(first, afterCursor, last, beforeCursor, cancellationToken);
+            var getHasNextPageTask = GetHasNextPageAsync(first, afterCursor, cancellationToken);
+            var getHasPreviousPageTask = GetHasPreviousPageAsync(last, beforeCursor, cancellationToken);
+            var totalCountTask = _personRepository.GetTotalCountAsync(cancellationToken);
 
             await Task.WhenAll(getPersonTask, getHasNextPageTask, getHasPreviousPageTask, totalCountTask);
+#pragma warning disable VSTHRD103 // Call async methods when in an async method
+#pragma warning disable AsyncifyVariable // Use Task Async
             var people = getPersonTask.Result;
             var hasNextPage = getHasNextPageTask.Result;
             var hasPreviousPage = getHasPreviousPageTask.Result;
             var totalCount = totalCountTask.Result;
+#pragma warning restore AsyncifyVariable // Use Task Async
+#pragma warning restore VSTHRD103 // Call async methods when in an async method
             var (firstCursor, lastCursor) = Cursor.GetFirstAndLastCursor(people, x => x.CreateDate);
 
-            return new Connection<Person>()
+            return new Connection<Person>
             {
                 Edges = people
                     .Select(x =>
-                        new Edge<Person>()
+                        new Edge<Person>
                         {
                             Cursor = Cursor.ToCursor(x.CreateDate),
-                            Node = x
+                            Node = x,
                         })
                     .ToList(),
-                PageInfo = new PageInfo()
+                PageInfo = new PageInfo
                 {
                     HasNextPage = hasNextPage,
                     HasPreviousPage = hasPreviousPage,
@@ -159,31 +168,48 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
             };
         }
 
-        private async Task<bool> GetHasNextPage(
+        private async Task<bool> GetHasNextPageAsync(
             int? first,
             DateTime? afterCursor,
             CancellationToken cancellationToken)
         {
-            return first.HasValue ? await _personRepository.GetHasNextPage(first, afterCursor, cancellationToken) : false;
+            return first.HasValue && await _personRepository.GetHasNextPageAsync(first, afterCursor, cancellationToken);
         }
 
-        private async Task<bool> GetHasPreviousPage(
+#pragma warning disable AsyncFixer01 // Unnecessary async/await usage
+#pragma warning disable S1172 // Unused method parameters should be removed
+        private async Task<bool> GetHasPreviousPageAsync(
             int? last,
             DateTime? beforeCursor,
             CancellationToken cancellationToken)
+#pragma warning restore S1172 // Unused method parameters should be removed
         {
-            return last.HasValue ? await _personRepository.GetHasPreviousPage(last, beforeCursor, cancellationToken) : false;
+#if NET6_0_OR_GREATER
+            return last.HasValue && await _personRepository.GetHasPreviousPageAsync(last, beforeCursor, cancellationToken);
+#endif
+#if NET462_OR_GREATER
+            return await Task.Run(() => false).ConfigureAwait(false);
+#endif
         }
+#pragma warning restore AsyncFixer01 // Unnecessary async/await usage
 
-        private Task<List<Person>> GetPeople(
+#pragma warning disable S1172 // Unused method parameters should be removed
+        private Task<IList<Person>> GetPeopleAsync(
            int? first,
            DateTime? afterCursor,
            int? last,
            DateTime? beforeCursor,
            CancellationToken cancellationToken)
+#pragma warning restore S1172 // Unused method parameters should be removed
         {
-            return first.HasValue ? _personRepository.GetPeople(first, afterCursor, cancellationToken) :
-                                    _personRepository.GetPeopleReversed(last, beforeCursor, cancellationToken);
+#if NET6_0_OR_GREATER
+            return first.HasValue ? _personRepository.GetPeopleAsync(first, afterCursor, cancellationToken) :
+                                    _personRepository.GetPeopleReversedAsync(last, beforeCursor, cancellationToken);
+#endif
+
+#if NET462_OR_GREATER
+            return _personRepository.GetPeopleAsync(first, afterCursor, cancellationToken);
+#endif
         }
     }
 }

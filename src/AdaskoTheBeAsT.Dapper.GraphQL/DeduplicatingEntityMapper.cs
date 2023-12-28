@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
 using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
@@ -19,7 +19,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
         /// <summary>
         /// Sets a function that returns the primary key used to uniquely identify the entity.
         /// </summary>
-        public Func<TEntityType, object> PrimaryKey { get; set; }
+        public Func<TEntityType, object>? PrimaryKey { get; set; }
 
         /// <summary>
         /// A cache used to hold previous entities that this mapper has seen.
@@ -38,7 +38,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
         /// </summary>
         /// <param name="entity">The entity to deduplicate.</param>
         /// <returns>The deduplicated entity.</returns>
-        protected virtual TEntityType Deduplicate(TEntityType entity)
+        protected virtual TEntityType? Deduplicate(TEntityType? entity)
         {
             if (entity == default(TEntityType))
             {
@@ -50,8 +50,6 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
                 throw new InvalidOperationException("PrimaryKey selector is not defined, but is required to use DeduplicatingEntityMapper.");
             }
 
-            var previous = entity;
-
             // Get the primary key for this entity
             var primaryKey = PrimaryKey(entity);
             if (primaryKey == null)
@@ -60,10 +58,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
             }
 
             // Deduplicate the entity using available information
-            if (KeyCache.ContainsKey(primaryKey))
+            if (KeyCache.TryGetValue(primaryKey, out var value))
             {
                 // Get the duplicate entity
-                entity = KeyCache[primaryKey];
+                entity = value;
             }
             else
             {

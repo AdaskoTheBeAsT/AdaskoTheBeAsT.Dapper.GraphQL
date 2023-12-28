@@ -15,7 +15,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         }
 
         [Fact(DisplayName = "EntityMap properly deduplicates")]
+#pragma warning disable MA0051 // Method is too long
         public void EntityMapSucceeds()
+#pragma warning restore MA0051 // Method is too long
         {
             var person1 = new Person
             {
@@ -101,7 +103,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 
                 using (var context2 = new EntityMapContext
                 {
-                    Items = new object[]
+                    Items = new object?[]
                            {
                                person2,
                                email2,

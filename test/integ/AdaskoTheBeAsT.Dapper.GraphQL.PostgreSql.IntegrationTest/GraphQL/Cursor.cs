@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -8,7 +8,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
 {
     public static class Cursor
     {
-        public static T FromCursor<T>(string cursor)
+        public static T? FromCursor<T>(string? cursor)
         {
             if (string.IsNullOrEmpty(cursor))
             {
@@ -18,7 +18,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
             string decodedValue;
             try
             {
-                decodedValue = Base64Decode(cursor);
+                decodedValue = Base64Decode(cursor!);
             }
             catch (FormatException)
             {
@@ -28,7 +28,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
             return (T)Convert.ChangeType(decodedValue, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T), CultureInfo.InvariantCulture);
         }
 
-        public static (string firstCursor, string lastCursor) GetFirstAndLastCursor<TItem, TCursor>(
+        public static (string? FirstCursor, string? LastCursor) GetFirstAndLastCursor<TItem, TCursor>(
             IEnumerable<TItem> enumerable,
             Func<TItem, TCursor> getCursorProperty)
         {
@@ -37,7 +37,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                 throw new ArgumentNullException(nameof(getCursorProperty));
             }
 
-            if (enumerable == null || enumerable.Count() == 0)
+            if (!enumerable.Any())
             {
                 return (null, null);
             }
@@ -55,7 +55,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                 throw new ArgumentNullException(nameof(value));
             }
 
-            return Base64Encode(value.ToString());
+            return Base64Encode(value.ToString() ?? string.Empty);
         }
 
         private static string Base64Decode(string value) => Encoding.UTF8.GetString(Convert.FromBase64String(value));

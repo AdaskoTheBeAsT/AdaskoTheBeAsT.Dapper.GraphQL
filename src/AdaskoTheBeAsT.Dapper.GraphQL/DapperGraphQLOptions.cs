@@ -41,7 +41,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
             var queryBuilderInterface = typeof(IQueryBuilder<>).MakeGenericType(modelType);
             if (queryBuilderType.IsAbstract || queryBuilderType.IsInterface || !queryBuilderInterface.IsAssignableFrom(queryBuilderType))
             {
-                throw new ArgumentException($"QueryBuilder type must be concrete and implement IQueryBuilder<{modelType.Name}>.");
+                throw new ArgumentException(
+                    $"QueryBuilder type must be concrete and implement IQueryBuilder<{modelType.Name}>.",
+                    nameof(queryBuilderType));
             }
 
             serviceCollection.Add(new ServiceDescriptor(queryBuilderInterface, queryBuilderType, ServiceLifetime.Singleton));
@@ -53,7 +55,8 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
         /// </summary>
         /// <typeparam name="TGraphSchema">The schema type to be mapped.</typeparam>
         /// <returns>The GraphQLOptions object.</returns>
-        public DapperGraphQLOptions AddSchema<TGraphSchema>() where TGraphSchema : class, ISchema
+        public DapperGraphQLOptions AddSchema<TGraphSchema>()
+            where TGraphSchema : class, ISchema
         {
             serviceCollection.AddSingleton<TGraphSchema>();
             return this;
@@ -68,7 +71,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
         {
             if (graphSchemaType.IsAbstract || graphSchemaType.IsInterface || !typeof(ISchema).IsAssignableFrom(graphSchemaType))
             {
-                throw new ArgumentException("Type must be concrete and implement ISchema.");
+                throw new ArgumentException("Type must be concrete and implement ISchema.", nameof(graphSchemaType));
             }
 
             serviceCollection.Add(new ServiceDescriptor(graphSchemaType, graphSchemaType, ServiceLifetime.Singleton));
@@ -80,7 +83,8 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
         /// </summary>
         /// <typeparam name="TGraphType">The model type to be mapped.</typeparam>
         /// <returns>The GraphQLOptions object.</returns>
-        public DapperGraphQLOptions AddType<TGraphType>() where TGraphType : class, IGraphType
+        public DapperGraphQLOptions AddType<TGraphType>()
+            where TGraphType : class, IGraphType
         {
             serviceCollection.AddSingleton<TGraphType>();
             return this;
@@ -95,7 +99,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
         {
             if (type.IsAbstract || type.IsInterface || !typeof(IGraphType).IsAssignableFrom(type))
             {
-                throw new ArgumentException("Type must be concrete and implement IGraphType.");
+                throw new ArgumentException("Type must be concrete and implement IGraphType.", nameof(type));
             }
 
             serviceCollection.Add(new ServiceDescriptor(type, type, ServiceLifetime.Singleton));

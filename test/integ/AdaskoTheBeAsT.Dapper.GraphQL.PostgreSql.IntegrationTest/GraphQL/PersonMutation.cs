@@ -26,7 +26,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                     {
                         person.Id = person.MergedToPersonId = Extensions.PostgreSql.NextIdentity(connection, (Person p) => p.Id);
 
-                        var success = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
+                        var success = SqlBuilder
                             .Insert(person)
                             .Execute(connection) > 0;
 
@@ -34,9 +34,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                         {
                             var personMapper = new PersonEntityMapper();
 
-                            var query = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
+                            var query = SqlBuilder
                                 .From<Person>("Person")
-                                .Select("FirstName, LastName")
+                                .Select(new[] { "FirstName, LastName" })
                                 .Where("ID = @personId", new { personId = person.Id });
 
                             var results = query

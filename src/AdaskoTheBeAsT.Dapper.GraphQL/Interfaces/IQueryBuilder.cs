@@ -6,8 +6,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Interfaces
     /// <summary>
     /// Builds queries for a given entity type.
     /// </summary>
-    /// <typeparam name="TEntityType">The type of entity for which to build a query.</typeparam>
-    public interface IQueryBuilder<TEntityType>
+#pragma warning disable S2326
+    public interface IQueryBuilder<TModelType>
+#pragma warning restore S2326
     {
         /// <summary>
         /// Builds a query using a baseline query, the GraphQL context, and the current table alias.

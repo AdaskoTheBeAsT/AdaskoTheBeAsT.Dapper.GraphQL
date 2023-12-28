@@ -11,15 +11,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
 {
     public class SqlDeleteContext
     {
-        public DynamicParameters Parameters { get; set; }
-
-        public string Table { get; private set; }
-
-        private List<SqlDeleteContext> Deletes { get; set; }
+        private List<SqlDeleteContext>? _deletes;
 
         public SqlDeleteContext(
             string table,
-            dynamic parameters = null)
+            dynamic? parameters = null)
         {
             if (parameters != null && !(parameters is IEnumerable<KeyValuePair<string, object>>))
             {
@@ -30,7 +26,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
             Table = table;
         }
 
-        public static SqlDeleteContext Delete<TEntityType>(dynamic parameters = null)
+        public DynamicParameters Parameters { get; set; }
+
+        public string Table { get; }
+
+        public static SqlDeleteContext Delete<TEntityType>(dynamic? parameters = null)
         {
             return new SqlDeleteContext(typeof(TEntityType).Name, parameters);
         }
@@ -41,15 +41,15 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <param name="table">The table to delete data from.</param>
         /// <param name="parameters">The data to be deleted.</param>
         /// <returns>The context of the DELETE statement.</returns>
-        public SqlDeleteContext Delete(string table, dynamic parameters = null)
+        public SqlDeleteContext Delete(string table, dynamic? parameters = null)
         {
-            if (Deletes == null)
+            if (_deletes == null)
             {
-                Deletes = new List<SqlDeleteContext>();
+                _deletes = new List<SqlDeleteContext>();
             }
 
             var delete = SqlBuilder.Delete(table, parameters);
-            Deletes.Add(delete);
+            _deletes.Add(delete);
             return this;
         }
 
@@ -59,7 +59,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <param name="connection">The database connection.</param>
         /// <param name="transaction">The transaction to execute under (optional).</param>
         /// <param name="options">The options for the command (optional).</param>
-        public int Execute(IDbConnection connection, IDbTransaction transaction = null, SqlMapperOptions options = null)
+        public int Execute(IDbConnection connection, IDbTransaction? transaction = null, SqlMapperOptions? options = null)
         {
             if (options == null)
             {
@@ -67,10 +67,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
             }
 
             var result = connection.Execute(BuildSql(), Parameters, transaction, options.CommandTimeout, options.CommandType);
-            if (Deletes != null)
+            if (_deletes != null)
             {
                 // Execute each delete and aggregate the results
-                result = Deletes.Aggregate(result, (current, delete) => current + delete.Execute(connection, transaction, options));
+                result = _deletes.Aggregate(result, (current, delete) => current + delete.Execute(connection, transaction, options));
             }
 
             return result;
@@ -82,18 +82,26 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <param name="connection">The database connection.</param>
         /// <param name="transaction">The transaction to execute under (optional).</param>
         /// <param name="options">The options for the command (optional).</param>
-        public async Task<int> ExecuteAsync(IDbConnection connection, IDbTransaction transaction = null, SqlMapperOptions options = null)
+        public async Task<int> ExecuteAsync(IDbConnection connection, IDbTransaction? transaction = null, SqlMapperOptions? options = null)
         {
             if (options == null)
             {
                 options = SqlMapperOptions.DefaultOptions;
             }
 
-            var result = await connection.ExecuteAsync(BuildSql(), Parameters, transaction, options.CommandTimeout, options.CommandType);
-            if (Deletes != null)
+            var result = await connection.ExecuteAsync(BuildSql(), Parameters, transaction, options.CommandTimeout, options.CommandType)
+                .ConfigureAwait(false);
+
+            if (_deletes != null)
             {
                 // Execute each delete and aggregate the results
-                result = await Deletes.AggregateAsync(result, async (current, delete) => current + await delete.ExecuteAsync(connection, transaction, options));
+                result = await _deletes.AggregateAsync(
+                        result,
+                        async (
+                            current,
+                            delete) => current + await delete.ExecuteAsync(connection, transaction, options)
+                            .ConfigureAwait(false))
+                    .ConfigureAwait(false);
             }
 
             return result;

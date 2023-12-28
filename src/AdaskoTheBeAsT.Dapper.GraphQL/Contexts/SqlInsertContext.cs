@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -5,52 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.Dapper.GraphQL.Extensions;
 using Dapper;
-using SqlBuilder = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder;
 
 namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
 {
-    public class SqlInsertContext<TEntityType> :
-        SqlInsertContext
-        where TEntityType : class
-    {
-        private List<SqlInsertContext<TEntityType>> Inserts { get; set; }
-
-        public SqlInsertContext(string table, TEntityType obj)
-            : base(table, obj)
-        {
-        }
-
-        /// <summary>
-        /// Adds an additional INSERT statement after this one.
-        /// </summary>
-        /// <param name="obj">The data to be inserted.</param>
-        /// <returns>The context of the INSERT statement.</returns>
-        public virtual SqlInsertContext Insert(TEntityType obj)
-        {
-            if (Inserts == null)
-            {
-                Inserts = new List<SqlInsertContext<TEntityType>>();
-            }
-
-            var insert = SqlBuilder.Insert(obj);
-            Inserts.Add(insert);
-            return this;
-        }
-    }
-
     public class SqlInsertContext
     {
-        private readonly HashSet<string> InsertParameterNames;
+        private readonly HashSet<string> _insertParameterNames;
 
-        public DynamicParameters Parameters { get; set; }
-
-        public string Table { get; private set; }
-
-        private List<SqlInsertContext> Inserts { get; set; }
+        private List<SqlInsertContext>? _inserts;
 
         public SqlInsertContext(
             string table,
-            dynamic parameters = null)
+            dynamic? parameters = null)
         {
             if (parameters != null && !(parameters is IEnumerable<KeyValuePair<string, object>>))
             {
@@ -58,9 +25,13 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
             }
 
             Parameters = new DynamicParameters(parameters);
-            InsertParameterNames = new HashSet<string>(Parameters.ParameterNames);
+            _insertParameterNames = new HashSet<string>(Parameters.ParameterNames, StringComparer.OrdinalIgnoreCase);
             Table = table;
         }
+
+        public DynamicParameters Parameters { get; set; }
+
+        public string Table { get; private set; }
 
         /// <summary>
         /// Executes the INSERT statements with Dapper, using the provided database connection.
@@ -68,7 +39,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <param name="connection">The database connection.</param>
         /// <param name="transaction">The transaction to execute under (optional).</param>
         /// <param name="options">The options for the command (optional).</param>
-        public int Execute(IDbConnection connection, IDbTransaction transaction = null, SqlMapperOptions options = null)
+        public int Execute(IDbConnection connection, IDbTransaction? transaction = null, SqlMapperOptions? options = null)
         {
             if (options == null)
             {
@@ -76,10 +47,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
             }
 
             var result = connection.Execute(BuildSql(), Parameters, transaction, options.CommandTimeout, options.CommandType);
-            if (Inserts != null)
+            if (_inserts != null)
             {
                 // Execute each insert and aggregate the results
-                result = Inserts.Aggregate(result, (current, insert) => current + insert.Execute(connection, transaction, options));
+                result = _inserts.Aggregate(result, (current, insert) => current + insert.Execute(connection, transaction, options));
             }
 
             return result;
@@ -91,18 +62,30 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <param name="connection">The database connection.</param>
         /// <param name="transaction">The transaction to execute under (optional).</param>
         /// <param name="options">The options for the command (optional).</param>
-        public async Task<int> ExecuteAsync(IDbConnection connection, IDbTransaction transaction = null, SqlMapperOptions options = null)
+        public async Task<int> ExecuteAsync(IDbConnection connection, IDbTransaction? transaction = null, SqlMapperOptions? options = null)
         {
             if (options == null)
             {
                 options = SqlMapperOptions.DefaultOptions;
             }
 
-            var result = await connection.ExecuteAsync(BuildSql(), Parameters, transaction, options.CommandTimeout, options.CommandType);
-            if (Inserts != null)
+            var result = await connection.ExecuteAsync(
+                BuildSql(),
+                Parameters,
+                transaction,
+                options.CommandTimeout,
+                options.CommandType).ConfigureAwait(false);
+
+            if (_inserts != null)
             {
                 // Execute each insert and aggregate the results
-                result = await Inserts.AggregateAsync(result, async (current, insert) => current + await insert.ExecuteAsync(connection, transaction, options));
+                result = await _inserts.AggregateAsync(
+                        result,
+                        async (
+                            current,
+                            insert) => current + await insert.ExecuteAsync(connection, transaction, options)
+                            .ConfigureAwait(false))
+                    .ConfigureAwait(false);
             }
 
             return result;
@@ -117,13 +100,13 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         public virtual SqlInsertContext Insert<TEntityType>(TEntityType obj)
             where TEntityType : class
         {
-            if (Inserts == null)
+            if (_inserts == null)
             {
-                Inserts = new List<SqlInsertContext>();
+                _inserts = new List<SqlInsertContext>();
             }
 
             var insert = SqlBuilder.Insert(obj);
-            Inserts.Add(insert);
+            _inserts.Add(insert);
             return this;
         }
 
@@ -133,15 +116,15 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <param name="table">The table to insert data into.</param>
         /// <param name="parameters">The data to be inserted.</param>
         /// <returns>The context of the INSERT statement.</returns>
-        public SqlInsertContext Insert(string table, dynamic parameters = null)
+        public SqlInsertContext Insert(string table, dynamic? parameters = null)
         {
-            if (Inserts == null)
+            if (_inserts == null)
             {
-                Inserts = new List<SqlInsertContext>();
+                _inserts = new List<SqlInsertContext>();
             }
 
             var insert = SqlBuilder.Insert(table, parameters);
-            Inserts.Add(insert);
+            _inserts.Add(insert);
             return this;
         }
 
@@ -162,9 +145,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         {
             var sb = new StringBuilder();
             sb.Append($"INSERT INTO {Table} (");
-            sb.Append(string.Join(", ", InsertParameterNames));
+            sb.Append(string.Join(", ", _insertParameterNames));
             sb.Append(") VALUES (");
-            sb.Append(string.Join(", ", InsertParameterNames.Select(name => $"@{name}")));
+            sb.Append(string.Join(", ", _insertParameterNames.Select(name => $"@{name}")));
             sb.Append(");");
             return sb.ToString();
         }

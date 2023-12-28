@@ -8,7 +8,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
     {
         /// <summary>
         /// An async version of the Aggregate with seed method found in dotnet/corefx
-        /// https://github.com/dotnet/corefx/blob/master/src/System.Linq/src/System/Linq/Aggregate.cs
+        /// https://github.com/dotnet/corefx/blob/master/src/System.Linq/src/System/Linq/Aggregate.cs.
         /// </summary>
         /// <typeparam name="TSource"></typeparam>
         /// <typeparam name="TAccumulate"></typeparam>
@@ -16,7 +16,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
         /// <param name="seed"></param>
         /// <param name="funcAsync"></param>
         /// <returns></returns>
-        public static async Task<TAccumulate> AggregateAsync<TSource, TAccumulate>(this IEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, Task<TAccumulate>> funcAsync)
+        public static async Task<TAccumulate> AggregateAsync<TSource, TAccumulate>(
+            this IEnumerable<TSource> source,
+            TAccumulate seed,
+            Func<TAccumulate, TSource, Task<TAccumulate>> funcAsync)
         {
             if (source == null)
             {
@@ -31,7 +34,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
             var result = seed;
             foreach (var element in source)
             {
-                result = await funcAsync(result, element);
+                result = await funcAsync(result, element).ConfigureAwait(false);
             }
 
             return result;

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
 using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
@@ -23,13 +24,15 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders
             _phoneQueryBuilder = phoneQueryBuilder;
         }
 
+#pragma warning disable MA0051 // Method is too long
         public SqlQueryContext Build(SqlQueryContext query, IHasSelectionSetNode context, string alias)
+#pragma warning restore MA0051 // Method is too long
         {
             var mergedAlias = $"{alias}Merged";
 
             // Deduplicate the person
             query.LeftJoin($"Person {mergedAlias} ON {alias}.MergedToPersonId = {mergedAlias}.MergedToPersonId");
-            query.Select($"{alias}.Id", $"{alias}.MergedToPersonId");
+            _ = query.Select(new[] { $"{alias}.Id", $"{alias}.MergedToPersonId" });
             query.SplitOn<Person>("Id");
 
             var fields = QueryBuilderHelper.CollectFields(context.SelectionSet);
@@ -51,7 +54,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders
 
             var companiesKey =
                 fields.Keys.FirstOrDefault(k => k.StringValue.Equals("companies", StringComparison.OrdinalIgnoreCase));
-            if (companiesKey != (GraphQLName)null)
+            if (companiesKey != (GraphQLName?)null)
             {
                 var personCompanyAlias = $"{alias}PersonCompany";
                 var companyAlias = $"{alias}Company";
@@ -63,7 +66,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders
 
             var emailsKey =
                 fields.Keys.FirstOrDefault(k => k.StringValue.Equals("emails", StringComparison.OrdinalIgnoreCase));
-            if (emailsKey != (GraphQLName)null)
+            if (emailsKey != (GraphQLName?)null)
             {
                 var personEmailAlias = $"{alias}PersonEmail";
                 var emailAlias = $"{alias}Email";
@@ -75,7 +78,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders
 
             var phonesKey =
                 fields.Keys.FirstOrDefault(k => k.StringValue.Equals("phones", StringComparison.OrdinalIgnoreCase));
-            if (phonesKey != (GraphQLName)null)
+            if (phonesKey != (GraphQLName?)null)
             {
                 var personPhoneAlias = $"{alias}PersonPhone";
                 var phoneAlias = $"{alias}Phone";
@@ -87,7 +90,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders
 
             var supervisorKey =
                 fields.Keys.FirstOrDefault(k => k.StringValue.Equals("supervisor", StringComparison.OrdinalIgnoreCase));
-            if (supervisorKey != (GraphQLName)null)
+            if (supervisorKey != (GraphQLName?)null)
             {
                 var supervisorAlias = $"{alias}Supervisor";
                 query.LeftJoin($"Person {supervisorAlias} ON {mergedAlias}.SupervisorId = {supervisorAlias}.Id");
@@ -96,7 +99,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders
 
             var careerCounselorKey =
                 fields.Keys.FirstOrDefault(k => k.StringValue.Equals("careerCounselor", StringComparison.OrdinalIgnoreCase));
-            if (careerCounselorKey != (GraphQLName)null)
+            if (careerCounselorKey != (GraphQLName?)null)
             {
                 var careerCounselorAlias = $"{alias}CareerCounselor";
                 query.LeftJoin($"Person {careerCounselorAlias} ON {mergedAlias}.CareerCounselorId = {careerCounselorAlias}.Id");

@@ -20,7 +20,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
         public int? CommandTimeout { get; set; }
 
         /// <summary>
-        /// Is it a stored proc or a batch?
+        /// Is it a stored proc or a batch?.
         /// </summary>
         public CommandType? CommandType { get; set; }
 

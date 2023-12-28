@@ -11,32 +11,29 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
     {
         private readonly object _lockObject = new object();
         private bool _isDisposing = false;
+        private IDictionary<GraphQLName, GraphQLField>? _currentSelectionSet;
+        private IEnumerator<object?>? _itemEnumerator;
+        private IEnumerator<Type>? _splitOnEnumerator;
 
         /// <summary>
         /// A list of objects to be mapped.
         /// </summary>
-        public IEnumerable<object> Items { get; set; }
+        public IEnumerable<object?>? Items { get; set; }
 
         /// <summary>
         /// The count of objects that have been mapped.
         /// </summary>
-        public int MappedCount { get; protected set; } = 0;
+        public int MappedCount { get; private set; } = 0;
 
         /// <summary>
         /// The GraphQL selection criteria.
         /// </summary>
-        public IHasSelectionSetNode SelectionSet { get; set; }
+        public IHasSelectionSetNode? SelectionSet { get; set; }
 
         /// <summary>
         /// The types used to split the GraphQL query.
         /// </summary>
-        public IEnumerable<Type> SplitOn { get; set; }
-
-        protected IDictionary<GraphQLName, GraphQLField> CurrentSelectionSet { get; set; }
-
-        protected IEnumerator<object> ItemEnumerator { get; set; }
-
-        protected IEnumerator<Type> SplitOnEnumerator { get; set; }
+        public IEnumerable<Type>? SplitOn { get; set; }
 
         public void Dispose()
         {
@@ -46,13 +43,13 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
                 {
                     _isDisposing = true;
 
-                    if (ItemEnumerator != null &&
-                        SplitOnEnumerator != null)
+                    if (_itemEnumerator != null &&
+                        _splitOnEnumerator != null)
                     {
-                        ItemEnumerator.Dispose();
-                        ItemEnumerator = null;
-                        SplitOnEnumerator.Dispose();
-                        SplitOnEnumerator = null;
+                        _itemEnumerator.Dispose();
+                        _itemEnumerator = null;
+                        _splitOnEnumerator.Dispose();
+                        _splitOnEnumerator = null;
                     }
                 }
             }
@@ -61,7 +58,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <summary>
         /// Returns a map of selected GraphQL fields.
         /// </summary>
-        public IDictionary<GraphQLName, GraphQLField> GetSelectedFields()
+        public IDictionary<GraphQLName, GraphQLField>? GetSelectedFields()
         {
             return SelectionSet.GetSelectedFields();
         }
@@ -74,11 +71,13 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <param name="entityMapper">An optional entity mapper.  This is used to map complex objects from Dapper mapping results.</param>
         /// <typeparam name="TItemType">The item type to be mapped.</typeparam>
         /// <returns>The mapped item.</returns>
-        public TItemType Next<TItemType>(
+#pragma warning disable MA0051 // Method is too long
+        public TItemType? Next<TItemType>(
             IEnumerable<string> fieldNames,
-            Func<IDictionary<GraphQLName, GraphQLField>, IHasSelectionSetNode, IHasSelectionSetNode> getSelectionSet,
+            Func<IDictionary<GraphQLName, GraphQLField>?, IHasSelectionSetNode?, IHasSelectionSetNode?> getSelectionSet,
             IEntityMapper<TItemType>? entityMapper = null)
             where TItemType : class
+#pragma warning restore MA0051 // Method is too long
         {
             if (fieldNames == null)
             {
@@ -90,27 +89,29 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
                 throw new ArgumentNullException(nameof(getSelectionSet));
             }
 
-            if (ItemEnumerator == null ||
-                SplitOnEnumerator == null)
-            {
-                throw new NotSupportedException("Cannot call Next() before calling Start()");
-            }
-
             lock (_lockObject)
             {
-                var keys = fieldNames.Intersect(CurrentSelectionSet.Keys.Select(k => k.StringValue), StringComparer.OrdinalIgnoreCase);
+                if (_itemEnumerator == null ||
+                _splitOnEnumerator == null)
+                {
+                    throw new NotSupportedException("Cannot call Next() before calling Start()");
+                }
+
+                var keys = fieldNames.Intersect(
+                    _currentSelectionSet?.Keys.Select(k => k.StringValue) ?? Enumerable.Empty<string>(),
+                    StringComparer.OrdinalIgnoreCase);
                 if (keys.Any())
                 {
                     var item = default(TItemType);
                     while (
-                        ItemEnumerator.MoveNext() &&
-                        SplitOnEnumerator.MoveNext())
+                        _itemEnumerator.MoveNext() &&
+                        _splitOnEnumerator.MoveNext())
                     {
                         // Whether a non-null object exists at this position or not,
                         // the SplitOn is expecting this type here, so we will yield it.
-                        if (SplitOnEnumerator.Current == typeof(TItemType))
+                        if (_splitOnEnumerator.Current == typeof(TItemType))
                         {
-                            item = ItemEnumerator.Current as TItemType;
+                            item = _itemEnumerator.Current as TItemType;
                             break;
                         }
                     }
@@ -118,7 +119,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
                     if (entityMapper != null)
                     {
                         // Determine where the next entity mapper will get its selection set from
-                        var selectionSet = getSelectionSet(CurrentSelectionSet, SelectionSet);
+                        var selectionSet = getSelectionSet(_currentSelectionSet, SelectionSet);
 
                         var nextContext = new EntityMapContext
                         {
@@ -139,8 +140,8 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
                                 // Less 1, the next time we iterate we
                                 // will advance by 1 as part of the iteration.
                                 i < mappedCount - 1 &&
-                                ItemEnumerator.MoveNext() &&
-                                SplitOnEnumerator.MoveNext())
+                                _itemEnumerator.MoveNext() &&
+                                _splitOnEnumerator.MoveNext())
                             {
                                 i++;
                             }
@@ -163,20 +164,22 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// </summary>
         /// <typeparam name="TEntityType">The entity type to be mapped.</typeparam>
         /// <returns>The mapped entity.</returns>
-        public TEntityType Start<TEntityType>()
+        public TEntityType? Start<TEntityType>()
             where TEntityType : class
         {
             lock (_lockObject)
             {
-                ItemEnumerator = Items.GetEnumerator();
-                SplitOnEnumerator = SplitOn.GetEnumerator();
-                CurrentSelectionSet = SelectionSet.GetSelectedFields();
+                _itemEnumerator?.Dispose();
+                _itemEnumerator = Items?.GetEnumerator();
+                _splitOnEnumerator?.Dispose();
+                _splitOnEnumerator = SplitOn?.GetEnumerator();
+                _currentSelectionSet = SelectionSet.GetSelectedFields();
                 MappedCount = 0;
 
-                if (ItemEnumerator.MoveNext() &&
-                    SplitOnEnumerator.MoveNext())
+                if ((_itemEnumerator?.MoveNext() ?? false) &&
+                    (_splitOnEnumerator?.MoveNext() ?? false))
                 {
-                    var entity = ItemEnumerator.Current as TEntityType;
+                    var entity = _itemEnumerator.Current as TEntityType;
                     MappedCount++;
                     return entity;
                 }

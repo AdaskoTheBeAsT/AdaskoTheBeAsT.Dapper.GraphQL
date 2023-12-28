@@ -7,12 +7,12 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders
 {
     public static class QueryBuilderHelper
     {
-        public static IList<GraphQLField> CollectFields(GraphQLSelectionSet? selectionSet)
+        public static IDictionary<GraphQLName, GraphQLField> CollectFields(GraphQLSelectionSet? selectionSet)
         {
-            return CollectFields(selectionSet, new List<GraphQLField>());
+            return CollectFields(selectionSet, new Dictionary<GraphQLName, GraphQLField>());
         }
 
-        public static IList<GraphQLField> CollectFields(GraphQLSelectionSet? selectionSet, IList<GraphQLField> fields)
+        public static IDictionary<GraphQLName, GraphQLField> CollectFields(GraphQLSelectionSet? selectionSet, IDictionary<GraphQLName, GraphQLField> fields)
         {
             var skipList = new List<string> { "edges", "node", "cursor" };
             selectionSet?.Selections.ForEach(selection =>
@@ -24,7 +24,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders
 
                 if (!skipList.Exists(name => name.Equals(field.Name.StringValue, StringComparison.OrdinalIgnoreCase)))
                 {
-                    fields.Add(field);
+                    fields[field.Name] = field;
                 }
 
                 CollectFields(field.SelectionSet, fields);
@@ -33,7 +33,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders
             return fields;
         }
 
-        public static bool IsConnection(GraphQLSelectionSet selectionSet)
+        public static bool IsConnection(GraphQLSelectionSet? selectionSet)
         {
             return IsConnection(selectionSet, new Dictionary<GraphQLName, GraphQLField>());
         }

@@ -14,6 +14,6 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Interfaces
         /// </summary>
         /// <param name="context">A context that contains information used to map Dapper objects.</param>
         /// <returns>The mapped entity, or null if the entity has previously been returned.</returns>
-        TEntityType Map(EntityMapContext context);
+        TEntityType? Map(EntityMapContext context);
     }
 }

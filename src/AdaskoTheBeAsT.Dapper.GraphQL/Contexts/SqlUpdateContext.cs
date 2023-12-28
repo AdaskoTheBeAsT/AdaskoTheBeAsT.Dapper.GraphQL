@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -11,17 +12,13 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
     {
         private readonly HashSet<string> _updateParameterNames;
 
-        public DynamicParameters Parameters { get; set; }
+        private readonly global::Dapper.SqlBuilder _sqlBuilder;
 
-        private global::Dapper.SqlBuilder SqlBuilder { get; set; }
-
-        public string Table { get; private set; }
-
-        private global::Dapper.SqlBuilder.Template Template { get; set; }
+        private readonly global::Dapper.SqlBuilder.Template _template;
 
         public SqlUpdateContext(
             string table,
-            dynamic parameters = null)
+            dynamic? parameters = null)
         {
             if (parameters != null && !(parameters is IEnumerable<KeyValuePair<string, object>>))
             {
@@ -29,12 +26,16 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
             }
 
             Parameters = new DynamicParameters(parameters);
-            SqlBuilder = new global::Dapper.SqlBuilder();
+            _sqlBuilder = new global::Dapper.SqlBuilder();
             Table = table;
-            Template = SqlBuilder.AddTemplate(@"
+            _template = _sqlBuilder.AddTemplate(@"
 /**where**/");
-            _updateParameterNames = new HashSet<string>(Parameters.ParameterNames);
+            _updateParameterNames = new HashSet<string>(Parameters.ParameterNames, StringComparer.OrdinalIgnoreCase);
         }
+
+        public DynamicParameters Parameters { get; set; }
+
+        public string Table { get; private set; }
 
         /// <summary>
         /// Adds a WHERE clause to the query, joining it with the previous with an 'AND' operator if needed.
@@ -66,14 +67,15 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         ///     // SELECT customer.id, customer.name
         ///     // FROM Customer customer
         ///     // WHERE customer.id == @id
+        ///     // .
         /// </example>
         /// <param name="where">An array of WHERE clauses.</param>
         /// <param name="parameters">Parameters included in the statement.</param>
         /// <returns>The query builder.</returns>
-        public SqlUpdateContext AndWhere(string where, dynamic parameters = null)
+        public SqlUpdateContext AndWhere(string where, dynamic? parameters = null)
         {
             Parameters.AddDynamicParams(parameters);
-            SqlBuilder.Where(where, parameters);
+            _sqlBuilder.Where(where, parameters);
             return this;
         }
 
@@ -83,7 +85,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <param name="connection">The database connection.</param>
         /// <param name="transaction">The transaction to execute under (optional).</param>
         /// <param name="options">The options for the command (optional).</param>
-        public int Execute(IDbConnection connection, IDbTransaction transaction = null, SqlMapperOptions options = null)
+        public int Execute(IDbConnection connection, IDbTransaction? transaction = null, SqlMapperOptions? options = null)
         {
             if (options == null)
             {
@@ -100,14 +102,15 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <param name="connection">The database connection.</param>
         /// <param name="transaction">The transaction to execute under (optional).</param>
         /// <param name="options">The options for the command (optional).</param>
-        public async Task<int> ExecuteAsync(IDbConnection connection, IDbTransaction transaction = null, SqlMapperOptions options = null)
+        public async Task<int> ExecuteAsync(IDbConnection connection, IDbTransaction? transaction = null, SqlMapperOptions? options = null)
         {
             if (options == null)
             {
                 options = SqlMapperOptions.DefaultOptions;
             }
 
-            var result = await connection.ExecuteAsync(BuildSql(), Parameters, transaction, options.CommandTimeout, options.CommandType);
+            var result = await connection.ExecuteAsync(BuildSql(), Parameters, transaction, options.CommandTimeout, options.CommandType)
+                .ConfigureAwait(false);
             return result;
         }
 
@@ -120,10 +123,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <param name="where">A WHERE clause.</param>
         /// <param name="parameters">Parameters included in the statement.</param>
         /// <returns>The query builder.</returns>
-        public SqlUpdateContext OrWhere(string where, dynamic parameters = null)
+        public SqlUpdateContext OrWhere(string where, dynamic? parameters = null)
         {
             Parameters.AddDynamicParams(parameters);
-            SqlBuilder.OrWhere(where, parameters);
+            _sqlBuilder.OrWhere(where, parameters);
             return this;
         }
 
@@ -141,10 +144,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// </summary>
         /// <param name="where">A WHERE clause.</param>
         /// <param name="parameters">Parameters included in the statement.</param>
-        public SqlUpdateContext Where(string where, dynamic parameters = null)
+        public SqlUpdateContext Where(string where, dynamic? parameters = null)
         {
             Parameters.AddDynamicParams(parameters);
-            SqlBuilder.Where(where);
+            _sqlBuilder.Where(where);
             return this;
         }
 
@@ -157,7 +160,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
             var sb = new StringBuilder();
             sb.Append($"UPDATE {Table} SET ");
             sb.Append(string.Join(", ", _updateParameterNames.Select(name => $"{name} = @{name}")));
-            sb.Append(Template.RawSql);
+            sb.Append(_template.RawSql);
             return sb.ToString();
         }
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -21,7 +22,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
 
             var memberExpression = identityNameSelector.Body as MemberExpression;
 
-            var sb = BuildPostgreSqlIdentityQuery(context, memberExpression.Member.Name.ToLower());
+            var sb = BuildPostgreSqlIdentityQuery(context, memberExpression?.Member.Name.ToLower(CultureInfo.InvariantCulture));
 
             return dbConnection
                 .Query<TIdentityType>(sb.ToString(), context.Parameters)
@@ -38,13 +39,13 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
 
             var memberExpression = identityNameSelector.Body as MemberExpression;
 
-            var sb = BuildPostgreSqlIdentityQuery(context, memberExpression.Member.Name.ToLower());
+            var sb = BuildPostgreSqlIdentityQuery(context, memberExpression?.Member.Name.ToLower(CultureInfo.InvariantCulture));
 
-            var result = await dbConnection.QueryAsync<TIdentityType>(sb.ToString(), context.Parameters);
+            var result = await dbConnection.QueryAsync<TIdentityType>(sb.ToString(), context.Parameters).ConfigureAwait(false);
             return result.Single();
         }
 
-        public static TIdentityType ExecuteWithSqlIdentity<TEntityType, TIdentityType>(this SqlInsertContext<TEntityType> context, IDbConnection dbConnection, Func<TEntityType, TIdentityType> identityTypeSelector)
+        public static TIdentityType ExecuteWithSqlIdentity<TEntityType, TIdentityType>(this SqlInsertContext<TEntityType> context, IDbConnection dbConnection)
             where TEntityType : class
         {
             return ExecuteWithSqlIdentity<TIdentityType>(context, dbConnection);
@@ -59,19 +60,13 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
                 .Single();
         }
 
-        public static Task<TIdentityType> ExecuteWithSqlIdentityAsync<TEntityType, TIdentityType>(this SqlInsertContext context, IDbConnection dbConnection, Func<TEntityType, TIdentityType> identityTypeSelector)
-            where TEntityType : class
-        {
-            return ExecuteWithSqlIdentityAsync<TIdentityType>(context, dbConnection);
-        }
-
         public static async Task<TIdentityType> ExecuteWithSqlIdentityAsync<TIdentityType>(this SqlInsertContext context, IDbConnection dbConnection)
         {
             var sb = BuildSqlIdentityQuery<TIdentityType>(context);
 
             var task = dbConnection
                 .QueryAsync<TIdentityType>(sb.ToString(), context.Parameters);
-            return (await task).Single();
+            return (await task.ConfigureAwait(false)).Single();
         }
 
         public static int ExecuteWithSqliteIdentity(this SqlInsertContext context, IDbConnection dbConnection)
@@ -89,14 +84,14 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
 
             var task = dbConnection
                 .QueryAsync<int>(sb.ToString(), context.Parameters);
-            return (await task).Single();
+            return (await task.ConfigureAwait(false)).Single();
         }
 
-        private static StringBuilder BuildPostgreSqlIdentityQuery(SqlInsertContext context, string idName)
+        private static StringBuilder BuildPostgreSqlIdentityQuery(SqlInsertContext context, string? idName)
         {
             var sb = new StringBuilder();
             sb.AppendLine(context.ToString());
-            sb.AppendLine($"SELECT currval(pg_get_serial_sequence('{context.Table.ToLower()}', '{idName.ToLower()}'));");
+            sb.AppendLine($"SELECT currval(pg_get_serial_sequence('{context.Table.ToLower(CultureInfo.InvariantCulture)}', '{idName?.ToLower(CultureInfo.InvariantCulture)}'));");
             return sb;
         }
 
@@ -115,7 +110,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
                 sb.AppendLine("SELECT CAST(SCOPE_IDENTITY() AS BIGINT)");
             }
             else
+            {
                 throw new InvalidCastException($"Type {typeof(TIdentityType).Name} in not supported this SQL context.");
+            }
 
             return sb;
         }

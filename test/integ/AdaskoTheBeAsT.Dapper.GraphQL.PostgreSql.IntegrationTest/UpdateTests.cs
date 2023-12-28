@@ -19,9 +19,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         {
             var person = new Person
             {
-                FirstName = "Douglas"
+                FirstName = "Douglas",
             };
-            Person previousPerson = null;
+
+            Person? previousPerson = null;
 
             try
             {
@@ -38,22 +39,22 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                 // Update the person with Id = 2 with a new FirstName
                 using (var db = _fixture.GetDbConnection())
                 {
-                    previousPerson = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
+                    previousPerson = SqlBuilder
                         .From<Person>()
-                        .Select("Id", "FirstName")
+                        .Select(new[] { "Id", "FirstName" })
                         .Where("FirstName = @firstName", new { firstName = "Doug" })
                         .Execute<Person>(db, selectionSet)
                         .FirstOrDefault();
 
-                    AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
+                    SqlBuilder
                         .Update(person)
                         .Where("Id = @id", new { id = previousPerson.Id })
                         .Execute(db);
 
                     // Get the same person back
-                    person = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
+                    person = SqlBuilder
                         .From<Person>()
-                        .Select("Id", "FirstName")
+                        .Select(new[] { "Id", "FirstName" })
                         .Where("Id = @id", new { id = previousPerson.Id })
                         .Execute<Person>(db, selectionSet)
                         .FirstOrDefault();
@@ -71,11 +72,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                     {
                         person = new Person
                         {
-                            FirstName = previousPerson.FirstName
+                            FirstName = previousPerson.FirstName,
                         };
 
                         // Put the entity back to the way it was
-                        AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
+                        SqlBuilder
                             .Update<Person>(person)
                             .Where("Id = @id", new { id = 2 })
                             .Execute(db);
@@ -89,9 +90,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         {
             var person = new Person
             {
-                FirstName = "Douglas"
+                FirstName = "Douglas",
             };
-            Person previousPerson = null;
+
+            Person? previousPerson = null;
 
             try
             {
@@ -110,23 +112,23 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 
                     var selectionSet = _fixture.BuildGraphQlSelection(graphql);
 
-                    var previousPeople = await AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
+                    var previousPeople = await SqlBuilder
                         .From<Person>()
-                        .Select("Id", "FirstName")
+                        .Select(new[] { "Id", "FirstName" })
                         .Where("FirstName = @firstName", new { firstName = "Doug" })
                         .ExecuteAsync<Person>(db, selectionSet);
 
                     previousPerson = previousPeople.FirstOrDefault();
 
-                    await AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
+                    await SqlBuilder
                         .Update(person)
                         .Where("Id = @id", new { id = previousPerson.Id })
                         .ExecuteAsync(db);
 
                     // Get the same person back
-                    var people = await AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
+                    var people = await SqlBuilder
                         .From<Person>()
-                        .Select("Id", "FirstName")
+                        .Select(new[] { "Id", "FirstName" })
                         .Where("Id = @id", new { id = previousPerson.Id })
                         .ExecuteAsync<Person>(db, selectionSet);
                     person = people
@@ -147,11 +149,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 
                         person = new Person
                         {
-                            FirstName = previousPerson.FirstName
+                            FirstName = previousPerson.FirstName,
                         };
 
                         // Put the entity back to the way it was
-                        await AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder
+                        await SqlBuilder
                             .Update<Person>(person)
                             .Where("Id = @id", new { id = 2 })
                             .ExecuteAsync(db);

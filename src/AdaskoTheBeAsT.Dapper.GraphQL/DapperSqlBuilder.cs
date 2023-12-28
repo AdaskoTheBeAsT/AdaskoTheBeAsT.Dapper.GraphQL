@@ -1,4 +1,6 @@
-﻿namespace AdaskoTheBeAsT.Dapper.GraphQL
+using System.Globalization;
+
+namespace AdaskoTheBeAsT.Dapper.GraphQL
 {
     /// <summary>
     /// A builder for SQL queries and statements inheriting the official Dapper.Sql Builder to extend its functions.
@@ -6,16 +8,16 @@
     public class DapperSqlBuilder : global::Dapper.SqlBuilder
     {
         /// <summary>
-        /// If the object has an offset there is no need to the fetch function to add an offset with 0 rows to skip 
-        /// (offset clause is a must when using the fetch clause)
+        /// If the object has an offset there is no need to the fetch function to add an offset with 0 rows to skip
+        /// (offset clause is a must when using the fetch clause).
         /// </summary>
         private bool _hasOffset = false;
 
         /// <summary>
-        /// Adds an Offset clause to allow pagination (it will skip N rows)
+        /// Adds an Offset clause to allow pagination (it will skip N rows).
         /// </summary>
         /// <remarks>
-        /// Order by clause is a must when using offset
+        /// Order by clause is a must when using offset.
         /// </remarks>
         /// <example>
         ///     var queryBuilder = new SqlQueryBuilder();
@@ -24,33 +26,41 @@
         ///         "customer.id",
         ///         "customer.name",
         ///     );
-        ///     queryBuilder.SplitOn<Customer>("id");
+        ///     queryBuilder.SplitOn&lt;Customer&gt;("id");
         ///     queryBuilder.Where("customer.id == @id");
         ///     queryBuilder.Parameters.Add("id", 1);
         ///     queryBuilder.Orderby("customer.name");
         ///     queryBuilder.Offset(20);
         ///     var customer = queryBuilder
-        ///         .Execute<Customer>(dbConnection, graphQLSelectionSet);
+        ///         .Execute&lt;Customer&gt;(dbConnection, graphQLSelectionSet);
         ///         .FirstOrDefault();
         ///
         ///     // SELECT customer.id, customer.name
         ///     // FROM Customer customer
         ///     // WHERE customer.id == @id
         ///     // ORDER BY customer.name
+        ///     // .
         /// </example>
-        /// <param name="rowsToSkip">total of rows to skip</param>
-        /// <returns>The query builder</returns>
+        /// <param name="rowsToSkip">total of rows to skip.</param>
+        /// <returns>The query builder.</returns>
         public DapperSqlBuilder Offset(int rowsToSkip)
         {
             _hasOffset = true;
-            return AddClause("offset", $"{rowsToSkip}", null, " + ", "OFFSET ", " ROWS\n", false) as DapperSqlBuilder;
+            return (DapperSqlBuilder)AddClause(
+                "offset",
+                $"{rowsToSkip.ToString(CultureInfo.InvariantCulture)}",
+                parameters: null,
+                " + ",
+                "OFFSET ",
+                " ROWS\n",
+                isInclusive: false);
         }
 
         /// <summary>
-        /// Adds a fetch clause to allow pagination
+        /// Adds a fetch clause to allow pagination.
         /// </summary>
         /// <remarks>
-        /// Order by clause is a must when using fetch
+        /// Order by clause is a must when using fetch.
         /// </remarks>
         /// <example>
         ///     var queryBuilder = new SqlQueryBuilder();
@@ -59,22 +69,23 @@
         ///         "customer.id",
         ///         "customer.name",
         ///     );
-        ///     queryBuilder.SplitOn<Customer>("id");
+        ///     queryBuilder.SplitOn&lt;Customer&gt;("id");
         ///     queryBuilder.Where("customer.id == @id");
         ///     queryBuilder.Parameters.Add("id", 1);
         ///     queryBuilder.Orderby("customer.name");
         ///     queryBuilder.Offset(20);
         ///     queryBuilder.Fetch(10);
         ///     var customer = queryBuilder
-        ///         .Execute<Customer>(dbConnection, graphQLSelectionSet);
+        ///         .Execute&lt;Customer&gt;(dbConnection, graphQLSelectionSet);
         ///         .FirstOrDefault();
         ///
         ///     // SELECT customer.id, customer.name
         ///     // FROM Customer customer
         ///     // WHERE customer.id == @id
         ///     // ORDER BY customer.name
+        ///     // .
         /// </example>
-        /// <param name="rowsToReturn">total of rows to return</param>
+        /// <param name="rowsToReturn">total of rows to return.</param>
         /// <returns>The query builder.</returns>
         public DapperSqlBuilder Fetch(int rowsToReturn)
         {
@@ -83,7 +94,14 @@
                 Offset(0);
             }
 
-            return AddClause("fetch", $"{rowsToReturn}", null, " + ", "FETCH FIRST ", " ROWS ONLY\n", false) as DapperSqlBuilder;
+            return (DapperSqlBuilder)AddClause(
+                "fetch",
+                $"{rowsToReturn}",
+                parameters: null,
+                " + ",
+                "FETCH FIRST ",
+                " ROWS ONLY\n",
+                isInclusive: false);
         }
     }
 }
