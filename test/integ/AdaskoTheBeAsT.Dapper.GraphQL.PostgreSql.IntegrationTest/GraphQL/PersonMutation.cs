@@ -14,6 +14,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
     {
         public PersonMutation(IQueryBuilder<Person> personQueryBuilder, IServiceProvider serviceProvider)
         {
+#pragma warning disable MA0056 // Do not call overridable members in constructor
             Field<PersonType>("addPerson")
                 .Description("Adds new person.")
                 .Arguments(new QueryArguments(
@@ -48,6 +49,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                         return null;
                     }
                 });
+#pragma warning restore MA0056 // Do not call overridable members in constructor
         }
     }
 }

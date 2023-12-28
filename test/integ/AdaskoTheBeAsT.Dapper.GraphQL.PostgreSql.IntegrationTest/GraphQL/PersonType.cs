@@ -11,6 +11,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
             Name = "person";
             Description = "A person.";
 
+#pragma warning disable MA0056 // Do not call overridable members in constructor
             Field<IntGraphType>("id")
                 .Description("A unique identifier for the person.")
                 .Resolve(context => context.Source?.Id);
@@ -42,6 +43,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
             Field<PersonType>("careerCounselor")
                 .Description("This person's career counselor.")
                 .Resolve(context => context.Source?.CareerCounselor);
+#pragma warning restore MA0056 // Do not call overridable members in constructor
         }
     }
 }

@@ -7,7 +7,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
     {
         public PhoneEnumType()
         {
+#pragma warning disable CC0021 // Use nameof
             Name = "PhoneType";
+#pragma warning restore CC0021 // Use nameof
         }
     }
 }

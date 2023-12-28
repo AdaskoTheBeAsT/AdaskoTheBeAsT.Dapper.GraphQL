@@ -17,7 +17,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         }
 
         [Fact(DisplayName = "Simple person insert should succeed")]
-        public async Task SimplePersonInsert()
+        public async Task SimplePersonInsertAsync()
         {
             var graphQuery = new GraphQlQuery();
             graphQuery.OperationName = "addPerson";

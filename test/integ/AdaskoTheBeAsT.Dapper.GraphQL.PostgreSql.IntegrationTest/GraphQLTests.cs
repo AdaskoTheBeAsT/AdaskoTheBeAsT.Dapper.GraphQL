@@ -14,7 +14,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         }
 
         [Fact(DisplayName = "Full people query should succeed")]
-        public async Task FullPeopleQuery()
+        public async Task FullPeopleQueryAsync()
         {
             var json = await _fixture.QueryGraphQlAsync(@"
 query {
@@ -190,7 +190,7 @@ query {
         }
 
         [Fact(DisplayName = "Async query should succeed")]
-        public async Task PeopleAsyncQuery()
+        public async Task PeopleAsyncQueryAsync()
         {
             var json = await _fixture.QueryGraphQlAsync(@"
 query {
@@ -228,7 +228,7 @@ query {
         }
 
         [Fact(DisplayName = "Person query should succeed")]
-        public async Task PersonQuery()
+        public async Task PersonQueryAsync()
         {
             var json = await _fixture.QueryGraphQlAsync(@"
 query {
@@ -275,7 +275,7 @@ query {
         }
 
         [Fact(DisplayName = "Simple people query should succeed")]
-        public async Task SimplePeopleQuery()
+        public async Task SimplePeopleQueryAsync()
         {
             var json = await _fixture.QueryGraphQlAsync(@"
 query {
@@ -309,7 +309,7 @@ query {
         }
 
         [Fact(DisplayName = "Simple person query should succeed")]
-        public async Task SimplePersonQuery()
+        public async Task SimplePersonQueryAsync()
         {
             var json = await _fixture.QueryGraphQlAsync(@"
 query {
@@ -335,7 +335,7 @@ query {
         }
 
         [Fact(DisplayName = "People connection query should succeed")]
-        public async Task PeopleConnectionQuery()
+        public async Task PeopleConnectionQueryAsync()
         {
             var json = await fixture.QueryGraphQLAsync(@"
 query {

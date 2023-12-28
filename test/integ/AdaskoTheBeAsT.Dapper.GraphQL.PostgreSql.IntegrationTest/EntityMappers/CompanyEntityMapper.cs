@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
 using AdaskoTheBeAsT.Dapper.GraphQL.Extensions;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
@@ -13,7 +13,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers
             PrimaryKey = c => c.Id;
         }
 
-        public override Company Map(EntityMapContext context)
+        public override Company? Map(EntityMapContext context)
         {
             // NOTE: Order is very important here.  We must map the objects in
             // the same order they were queried in the QueryBuilder.

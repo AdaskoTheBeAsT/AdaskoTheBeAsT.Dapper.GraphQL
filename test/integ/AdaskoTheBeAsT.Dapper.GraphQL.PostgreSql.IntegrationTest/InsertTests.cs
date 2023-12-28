@@ -18,7 +18,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         [Fact(DisplayName = "INSERT person succeeds")]
         public void InsertPerson()
         {
-            Person person = null;
+            Person? person = null;
 
             // Ensure inserting a person works and we get IDs back
             var emailId = -1;

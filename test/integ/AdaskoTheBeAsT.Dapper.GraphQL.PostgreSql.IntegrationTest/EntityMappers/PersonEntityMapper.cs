@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
 using AdaskoTheBeAsT.Dapper.GraphQL.Extensions;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
@@ -8,8 +8,8 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers
     public class PersonEntityMapper :
         DeduplicatingEntityMapper<Person>
     {
-        private CompanyEntityMapper _companyEntityMapper;
-        private PersonEntityMapper _personEntityMapper;
+        private CompanyEntityMapper? _companyEntityMapper;
+        private PersonEntityMapper? _personEntityMapper;
 
         public PersonEntityMapper()
         {
@@ -17,7 +17,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers
             PrimaryKey = p => p.MergedToPersonId;
         }
 
-        public override Person Map(EntityMapContext context)
+        public override Person? Map(EntityMapContext context)
         {
             // Avoid creating the mappers until they're used
             // NOTE: this avoids an infinite loop (had these been created in the ctor)
