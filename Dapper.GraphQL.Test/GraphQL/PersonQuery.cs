@@ -77,8 +77,7 @@ namespace Dapper.GraphQL.Test.GraphQL
             Field<PersonType>("person")
                 .Description("Gets a person by ID.")
                 .Arguments(new QueryArguments(
-                    new QueryArgument<IntGraphType> { Name = "id", Description = "The ID of the person." }
-                ))
+                    new QueryArgument<IntGraphType> { Name = "id", Description = "The ID of the person." }))
                 .Resolve(context =>
                 {
                     var id = context.Arguments["id"].Value;
@@ -86,6 +85,7 @@ namespace Dapper.GraphQL.Test.GraphQL
                     var query = SqlBuilder
                         .From($"Person {alias}")
                         .Where($"{alias}.Id = @id", new { id })
+
                         // Even though we're only getting a single person, the process of deduplication
                         // may return several entities, so we sort by ID here for consistency
                         // with test results.
