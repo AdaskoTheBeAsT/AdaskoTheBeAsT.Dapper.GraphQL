@@ -3,11 +3,6 @@
   <PropertyGroup>
     <TargetFrameworks>net462;net47;net471;net472;net48;net481;net6.0;net7.0;net8.0</TargetFrameworks>
 	  <IsPackable>false</IsPackable>
-	  <AssemblyVersion>0.4.2.0</AssemblyVersion>
-	  <FileVersion>0.4.2.0</FileVersion>
-	  <Version>0.4.2-beta</Version>
-
-    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,18 +22,11 @@
   <ItemGroup>
     <PackageReference Include="dbup-core" Version="5.0.37" />
     <PackageReference Include="dbup-postgresql" Version="5.0.37" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="Npgsql" Version="8.0.1" />
-    <PackageReference Include="xunit" Version="2.6.3" />
-    <PackageReference Include="xunit.analyzers" Version="1.7.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Dapper.GraphQL\Dapper.GraphQL.csproj" />
+    <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.Dapper.GraphQL\AdaskoTheBeAsT.Dapper.GraphQL.csproj" />
   </ItemGroup>
 
 </Project>

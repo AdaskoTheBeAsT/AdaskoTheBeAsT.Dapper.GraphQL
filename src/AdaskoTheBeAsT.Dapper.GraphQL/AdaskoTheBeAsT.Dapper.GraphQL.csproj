@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>0.4.2-beta</Version>
+    <PackageVersion>0.4.2-beta</PackageVersion>
     <Authors>Doug Day, Kevin Russon, Ben McCallum, Natalya Arbit, Per Liedman, John Stovin</Authors>
     <Company>Landmark Home Warranty</Company>
     <Description>A library designed to integrate the Dapper and graphql-dotnet projects with ease-of-use in mind and performance as the primary concern.</Description>
@@ -13,12 +13,10 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Dapper Dapper.SqlBuilder GraphQL graphql-dotnet core coreclr .NET</PackageTags>
     <PackageReleaseNotes>Resolved
-#15 - Pass commandTimeout to Dapper
-#31 - Add non-generic versions of service registration methods
-#34 - SqlQueryContext: SplitOn() should call RemoveSingleTableQueryItems()
-</PackageReleaseNotes>
-    <AssemblyVersion>0.4.2.0</AssemblyVersion>
-    <FileVersion>0.4.2.0</FileVersion>
+    #15 - Pass commandTimeout to Dapper
+    #31 - Add non-generic versions of service registration methods
+    #34 - SqlQueryContext: SplitOn() should call RemoveSingleTableQueryItems()
+    </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
