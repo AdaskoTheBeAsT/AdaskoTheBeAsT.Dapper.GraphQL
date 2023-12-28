@@ -9,7 +9,7 @@ namespace Dapper.GraphQL.Test
 
         public QueryTests(TestFixture fixture)
         {
-            this._fixture = fixture;
+            _fixture = fixture;
         }
 
         [Fact(DisplayName = "ORDER BY should work")]

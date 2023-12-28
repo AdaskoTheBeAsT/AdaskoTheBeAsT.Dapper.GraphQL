@@ -11,7 +11,7 @@ namespace Dapper.GraphQL.Test
 
         public UpdateTests(TestFixture fixture)
         {
-            this._fixture = fixture;
+            _fixture = fixture;
         }
 
         [Fact(DisplayName = "UPDATE person succeeds")]

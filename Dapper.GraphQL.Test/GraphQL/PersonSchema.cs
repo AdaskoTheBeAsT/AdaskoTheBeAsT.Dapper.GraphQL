@@ -1,5 +1,4 @@
 using System;
-using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Dapper.GraphQL.Test.GraphQL

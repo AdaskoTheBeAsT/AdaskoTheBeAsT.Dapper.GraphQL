@@ -138,11 +138,11 @@ FROM {from}/**innerjoin**//**leftjoin**//**rightjoin**//**join**/
             });
 
             var results = connection.Query<TEntityType>(
-                sql: this.ToString(),
-                types: this._types.ToArray(),
-                param: this.Parameters,
+                sql: ToString(),
+                types: _types.ToArray(),
+                param: Parameters,
                 map: fn,
-                splitOn: string.Join(",", this._splitOn),
+                splitOn: string.Join(",", _splitOn),
                 transaction: transaction,
                 commandTimeout: options.CommandTimeout,
                 commandType: options.CommandType,
@@ -212,11 +212,11 @@ FROM {from}/**innerjoin**//**leftjoin**//**rightjoin**//**join**/
             });
 
             var results = await connection.QueryAsync<TEntityType>(
-                sql: this.ToString(),
-                types: this._types.ToArray(),
-                param: this.Parameters,
+                sql: ToString(),
+                types: _types.ToArray(),
+                param: Parameters,
                 map: fn,
-                splitOn: string.Join(",", this._splitOn),
+                splitOn: string.Join(",", _splitOn),
                 transaction: transaction,
                 commandTimeout: options.CommandTimeout,
                 commandType: options.CommandType,

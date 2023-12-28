@@ -1,7 +1,5 @@
 using System.Threading.Tasks;
 using Xunit;
-using Dapper.GraphQL.Test.GraphQL;
-using Newtonsoft.Json.Linq;
 
 namespace Dapper.GraphQL.Test
 {
@@ -12,7 +10,7 @@ namespace Dapper.GraphQL.Test
         public GraphQlTests(
             TestFixture fixture)
         {
-            this._fixture = fixture;
+            _fixture = fixture;
         }
 
         [Fact(DisplayName = "Full people query should succeed")]

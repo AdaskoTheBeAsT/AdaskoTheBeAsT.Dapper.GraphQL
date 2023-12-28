@@ -54,9 +54,9 @@ namespace Dapper.GraphQL
                 parameters = ParameterHelper.GetSetFlatProperties(parameters);
             }
 
-            this.Parameters = new DynamicParameters(parameters);
-            this.InsertParameterNames = new HashSet<string>(Parameters.ParameterNames);
-            this.Table = table;
+            Parameters = new DynamicParameters(parameters);
+            InsertParameterNames = new HashSet<string>(Parameters.ParameterNames);
+            Table = table;
         }
 
         /// <summary>

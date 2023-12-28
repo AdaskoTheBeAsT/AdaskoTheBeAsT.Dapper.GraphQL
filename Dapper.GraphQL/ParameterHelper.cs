@@ -90,7 +90,7 @@ namespace Dapper.GraphQL
                             var valueType = value.GetType();
                             var valueTypeInfo = GetTypeInfo(valueType);
                             if (valueTypeInfo.IsValueType &&
-                                object.Equals(value, Activator.CreateInstance(valueType)))
+                                Equals(value, Activator.CreateInstance(valueType)))
                             {
                                 return null;
                             }

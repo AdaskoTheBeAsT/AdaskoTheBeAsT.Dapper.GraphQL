@@ -16,8 +16,8 @@ namespace Dapper.GraphQL.Test.QueryBuilders
             IQueryBuilder<Email> emailQueryBuilder,
             IQueryBuilder<Phone> phoneQueryBuilder)
         {
-            this._emailQueryBuilder = emailQueryBuilder;
-            this._phoneQueryBuilder = phoneQueryBuilder;
+            _emailQueryBuilder = emailQueryBuilder;
+            _phoneQueryBuilder = phoneQueryBuilder;
         }
 
         public SqlQueryContext Build(SqlQueryContext query, IHasSelectionSetNode context, string alias)

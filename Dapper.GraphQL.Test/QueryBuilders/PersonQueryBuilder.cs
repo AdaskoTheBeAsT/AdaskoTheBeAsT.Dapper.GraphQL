@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Dapper.GraphQL.Test.Models;
-using GraphQL.Language.AST;
 using GraphQLParser.AST;
 
 namespace Dapper.GraphQL.Test.QueryBuilders
@@ -18,9 +17,9 @@ namespace Dapper.GraphQL.Test.QueryBuilders
             IQueryBuilder<Email> emailQueryBuilder,
             IQueryBuilder<Phone> phoneQueryBuilder)
         {
-            this._companyQueryBuilder = companyQueryBuilder;
-            this._emailQueryBuilder = emailQueryBuilder;
-            this._phoneQueryBuilder = phoneQueryBuilder;
+            _companyQueryBuilder = companyQueryBuilder;
+            _emailQueryBuilder = emailQueryBuilder;
+            _phoneQueryBuilder = phoneQueryBuilder;
         }
 
         public SqlQueryContext Build(SqlQueryContext query, IHasSelectionSetNode context, string alias)

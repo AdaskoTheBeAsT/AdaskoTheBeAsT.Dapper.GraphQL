@@ -13,7 +13,7 @@ namespace Dapper.GraphQL.Test
         public GraphQLInsertTests(
             TestFixture fixture)
         {
-            this._fixture = fixture;
+            _fixture = fixture;
         }
 
         [Fact(DisplayName = "Simple person insert should succeed")]

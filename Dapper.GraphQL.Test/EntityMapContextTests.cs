@@ -10,7 +10,7 @@ namespace Dapper.GraphQL.Test
 
         public EntityMapContextTests(TestFixture fixture)
         {
-            this._fixture = fixture;
+            _fixture = fixture;
         }
 
         [Fact(DisplayName = "EntityMap properly deduplicates")]

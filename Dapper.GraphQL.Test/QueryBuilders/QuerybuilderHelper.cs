@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using GraphQL.Language.AST;
+using System.Collections.Generic;
 using System.Linq;
-using GraphQL;
 
 
 namespace Dapper.GraphQL.Test.QueryBuilders

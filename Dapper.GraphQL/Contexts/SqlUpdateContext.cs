@@ -27,12 +27,12 @@ namespace Dapper.GraphQL
                 parameters = ParameterHelper.GetSetFlatProperties(parameters);
             }
 
-            this.Parameters = new DynamicParameters(parameters);
-            this.SqlBuilder = new Dapper.SqlBuilder();
-            this.Table = table;
-            this.Template = SqlBuilder.AddTemplate(@"
+            Parameters = new DynamicParameters(parameters);
+            SqlBuilder = new Dapper.SqlBuilder();
+            Table = table;
+            Template = SqlBuilder.AddTemplate(@"
 /**where**/");
-            this._updateParameterNames = new HashSet<string>(Parameters.ParameterNames);
+            _updateParameterNames = new HashSet<string>(Parameters.ParameterNames);
         }
 
         /// <summary>

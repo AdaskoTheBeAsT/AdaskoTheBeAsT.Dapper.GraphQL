@@ -23,8 +23,8 @@ namespace Dapper.GraphQL
                 parameters = ParameterHelper.GetSetFlatProperties(parameters);
             }
 
-            this.Parameters = new DynamicParameters(parameters);
-            this.Table = table;
+            Parameters = new DynamicParameters(parameters);
+            Table = table;
         }
 
         public static SqlDeleteContext Delete<TEntityType>(dynamic parameters = null)
