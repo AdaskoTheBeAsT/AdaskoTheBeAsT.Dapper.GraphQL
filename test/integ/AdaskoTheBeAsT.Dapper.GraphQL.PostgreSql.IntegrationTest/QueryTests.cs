@@ -1,6 +1,7 @@
 using System;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
 using Xunit;
+using Xunit.Sdk;
 
 namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 {
@@ -37,6 +38,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 
                 var graphql = "{ person { id } }";
                 var selectionSet = _fixture.BuildGraphQlSelection(graphql);
+                if (selectionSet == null)
+                {
+                    throw new XunitException("Selection set is null");
+                }
 
                 using (var db = _fixture.GetDbConnection())
                 {

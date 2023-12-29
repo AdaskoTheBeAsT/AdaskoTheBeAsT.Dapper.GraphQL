@@ -1,20 +1,23 @@
 using System.Threading.Tasks;
+using FluentAssertions;
 using Xunit;
 
 namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 {
-    public class GraphQlTests : IClassFixture<TestFixture>
+    public class GraphQlTests
+        : IClassFixture<TestFixture>
     {
         private readonly TestFixture _fixture;
 
-        public GraphQlTests(
-            TestFixture fixture)
+        public GraphQlTests(TestFixture fixture)
         {
             _fixture = fixture;
         }
 
         [Fact(DisplayName = "Full people query should succeed")]
+#pragma warning disable MA0051 // Method is too long
         public async Task FullPeopleQueryAsync()
+#pragma warning restore MA0051 // Method is too long
         {
             var json = await _fixture.QueryGraphQlAsync(@"
 query {
@@ -337,7 +340,7 @@ query {
         [Fact(DisplayName = "People connection query should succeed")]
         public async Task PeopleConnectionQueryAsync()
         {
-            var json = await fixture.QueryGraphQLAsync(@"
+            var json = await _fixture.QueryGraphQlAsync(@"
 query {
     personConnection(first:2) {
     edges {
@@ -366,27 +369,27 @@ query {
             'firstName': 'Hyrum',
             'lastName': 'Clyde'
           },
-          'cursor': 'MS8xLzIwMTkgMTI6MDA6MDAgQU0='
+          'cursor': 'MDEuMDEuMjAxOSAwMDowMDowMA=='
         },
         {
           'node': {
             'firstName': 'Doug',
             'lastName': 'Day'
           },
-          'cursor': 'MS8yLzIwMTkgMTI6MDA6MDAgQU0='
+          'cursor': 'MDIuMDEuMjAxOSAwMDowMDowMA=='
         }
       ],
       'pageInfo': {
         'hasNextPage': true,
         'hasPreviousPage': false,
-        'endCursor': 'MS8yLzIwMTkgMTI6MDA6MDAgQU0=',
-        'startCursor': 'MS8xLzIwMTkgMTI6MDA6MDAgQU0='
+        'endCursor': 'MDIuMDEuMjAxOSAwMDowMDowMA==',
+        'startCursor': 'MDEuMDEuMjAxOSAwMDowMDowMA=='
       }
     }
   }
 }";
 
-            Assert.True(fixture.JsonEquals(expectedJson, json));
+            _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
         }
     }
 }

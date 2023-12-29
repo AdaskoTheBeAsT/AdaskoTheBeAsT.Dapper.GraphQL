@@ -1,3 +1,4 @@
+using System.Linq;
 using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
@@ -96,10 +97,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                 person1 = personEntityMapper.Map(context1);
                 Assert.Equal(3, context1.MappedCount);
 
-                Assert.Equal(2, person1.Id);
-                Assert.Equal("Doug", person1.FirstName);
-                Assert.Single(person1.Emails);
-                Assert.Single(person1.Phones);
+                Assert.Equal(2, person1?.Id);
+                Assert.Equal("Doug", person1?.FirstName);
+                Assert.Single(person1?.Emails ?? Enumerable.Empty<Email>());
+                Assert.Single(person1?.Phones ?? Enumerable.Empty<Phone>());
 
                 using (var context2 = new EntityMapContext
                 {
@@ -120,7 +121,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                     Assert.Same(person1, person2);
 
                     // A 2nd email was added to person
-                    Assert.Equal(2, person1.Emails.Count);
+                    Assert.Equal(2, person1?.Emails.Count);
                 }
             }
         }

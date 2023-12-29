@@ -36,7 +36,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                             var personMapper = new PersonEntityMapper();
 
                             var query = SqlBuilder
-                                .From<Person>("Person")
+                                .From<Person>(nameof(Person))
                                 .Select(new[] { "FirstName, LastName" })
                                 .Where("ID = @personId", new { personId = person.Id });
 

@@ -21,11 +21,13 @@ using PhoneType = AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Graph
 
 namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 {
-    public class TestFixture
+    public sealed class TestFixture
         : IDisposable
     {
         private static readonly string _chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+#pragma warning disable SEC0115
         private static readonly Random _random = new Random((int)(DateTime.Now.Ticks << 32));
+#pragma warning restore SEC0115
 
         private readonly string _databaseName;
         private readonly DocumentExecuter _documentExecuter;
@@ -46,9 +48,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 
         public PersonSchema Schema { get; set; }
 
-        public IServiceProvider ServiceProvider { get; set; }
+        public IServiceProvider ServiceProvider { get; }
 
-        private string ConnectionString { get; set; } = null;
+        private string ConnectionString { get; set; } = string.Empty;
 
         private bool IsDisposing { get; set; } = false;
 
@@ -58,7 +60,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
             return document
                 .Definitions
                 .OfType<IHasSelectionSetNode>()
-                .First()?
+                .First()
                 .SelectionSet?
                 .Selections
                 .OfType<GraphQLField>()
@@ -71,6 +73,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
             {
                 IsDisposing = true;
                 TeardownDatabase();
+                (ServiceProvider as IDisposable)?.Dispose();
             }
         }
 
@@ -121,7 +124,6 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         public void SetupDatabaseConnection()
         {
             // Generate a random db name
-
             ConnectionString = $"Server=localhost;Port=5432;Database={_databaseName};User Id=postgres;Password=dapper-graphql;";
 
             // Ensure the database exists

@@ -9,7 +9,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
         public PersonSchema(IServiceProvider services)
             : base(services)
         {
-            Query = services.GetService<PersonQuery>();
+            Query = services.GetService<PersonQuery>()!;
             Mutation = services.GetService<PersonMutation>();
         }
     }

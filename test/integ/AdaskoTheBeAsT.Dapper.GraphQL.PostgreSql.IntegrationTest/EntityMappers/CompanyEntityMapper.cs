@@ -26,7 +26,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers
                 if (email != null &&
 
                     // Eliminate duplicates
-                    !company.Emails.Any(e => e.Address == email.Address))
+                    !company.Emails.Any(e => string.Equals(e.Address, email.Address, System.StringComparison.OrdinalIgnoreCase)))
                 {
                     company.Emails.Add(email);
                 }
@@ -34,7 +34,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers
                 if (phone != null &&
 
                     // Eliminate duplicates
-                    !company.Phones.Any(p => p.Number == phone.Number))
+                    !company.Phones.Any(p => string.Equals(p.Number, phone.Number, System.StringComparison.OrdinalIgnoreCase)))
                 {
                     company.Phones.Add(phone);
                 }

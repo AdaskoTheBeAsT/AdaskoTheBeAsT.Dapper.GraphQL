@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
 using Xunit;
+using Xunit.Sdk;
 
 namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 {
@@ -16,7 +17,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         }
 
         [Fact(DisplayName = "INSERT person succeeds")]
+#pragma warning disable MA0051 // Method is too long
         public void InsertPerson()
+#pragma warning restore MA0051 // Method is too long
         {
             Person? person = null;
 
@@ -93,7 +96,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 
                     // Query the person from the database
                     var query = SqlBuilder
-                        .From<Person>("person")
+                        .From<Person>(nameof(person))
                         .LeftJoin("PersonEmail personEmail on person.Id = personEmail.Id")
                         .LeftJoin("Email email on personEmail.EmailId = email.Id")
                         .LeftJoin("PersonPhone personPhone on person.Id = personPhone.PersonId")
@@ -120,6 +123,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
     }
 }";
                     var selection = _fixture.BuildGraphQlSelection(graphql);
+                    if (selection == null)
+                    {
+                        throw new XunitException("Selection is null");
+                    }
+
                     person = query
                         .Execute(db, selection, personMapper)
                         .Single();
@@ -144,7 +152,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                     {
                         SqlBuilder
                             .Delete("PersonEmail", new { EmailId = emailId })
-                            .Delete("Email", new { Id = emailId })
+                            .Delete(nameof(Email), new { Id = emailId })
                             .Execute(db);
                     }
 
@@ -152,7 +160,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                     {
                         SqlBuilder
                             .Delete("PersonPhone", new { PhoneId = phoneId })
-                            .Delete("Phone", new { Id = phoneId })
+                            .Delete(nameof(Phone), new { Id = phoneId })
                             .Execute(db);
                     }
 
@@ -167,9 +175,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         }
 
         [Fact(DisplayName = "INSERT person asynchronously succeeds")]
+#pragma warning disable MA0051 // Method is too long
         public async Task InsertPersonAsync()
+#pragma warning restore MA0051 // Method is too long
         {
-            Person person = null;
+            Person? person = null;
 
             // Ensure inserting a person works and we get IDs back
             var emailId = -1;
@@ -244,7 +254,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 
                     // Query the person from the database
                     var query = SqlBuilder
-                        .From<Person>("person")
+                        .From<Person>(nameof(person))
                         .LeftJoin("PersonEmail personEmail on person.Id = personEmail.Id")
                         .LeftJoin("Email email on personEmail.EmailId = email.Id")
                         .LeftJoin("PersonPhone personPhone on person.Id = personPhone.PersonId")
@@ -271,6 +281,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
     }
 }";
                     var selection = _fixture.BuildGraphQlSelection(graphql);
+                    if (selection == null)
+                    {
+                        throw new XunitException("Selection is null");
+                    }
 
                     var people = await query.ExecuteAsync(db, selection, personMapper);
                     person = people
@@ -296,7 +310,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                     {
                         await SqlBuilder
                             .Delete("PersonEmail", new { EmailId = emailId })
-                            .Delete("Email", new { Id = emailId })
+                            .Delete(nameof(Email), new { Id = emailId })
                             .ExecuteAsync(db);
                     }
 
@@ -304,7 +318,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                     {
                         await SqlBuilder
                             .Delete("PersonPhone", new { PhoneId = phoneId })
-                            .Delete("Phone", new { Id = phoneId })
+                            .Delete(nameof(Phone), new { Id = phoneId })
                             .ExecuteAsync(db);
                     }
 

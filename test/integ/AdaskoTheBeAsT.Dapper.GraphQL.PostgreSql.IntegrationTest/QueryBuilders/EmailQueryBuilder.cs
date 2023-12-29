@@ -20,6 +20,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders
             query.SplitOn<Email>("Id");
 
             var fields = context.GetSelectedFields();
+            if (fields == null)
+            {
+                return query;
+            }
+
             if (fields.Keys.Any(k => k.StringValue.Equals("address", StringComparison.OrdinalIgnoreCase)))
             {
                 query.Select($"{alias}.Address");
