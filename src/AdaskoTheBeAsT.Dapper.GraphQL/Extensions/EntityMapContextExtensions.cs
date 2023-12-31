@@ -29,7 +29,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
             var graphQlName = new GraphQLName(rom);
             return context.Next<TItemType>(
                 new[] { fieldName },
-                (currentSelectionSet, selectionSet) => currentSelectionSet?[graphQlName],
+                (currentSelectionSet, _) => currentSelectionSet?[graphQlName],
                 entityMapper);
         }
 
@@ -49,7 +49,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
         {
             return context.Next<TItemType>(
                 fieldNames,
-                (currentSelectionSet, selectionSet) => selectionSet,
+                (_, selectionSet) => selectionSet,
                 entityMapper);
         }
 
@@ -75,7 +75,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
                 new[] { fieldName },
                 (
                     currentSelectionSet,
-                    selectionSet) => currentSelectionSet?[graphQlName]?
+                    _) => currentSelectionSet?[graphQlName]?
                     .SelectionSet?
                     .Selections
                     .OfType<GraphQLInlineFragment>()

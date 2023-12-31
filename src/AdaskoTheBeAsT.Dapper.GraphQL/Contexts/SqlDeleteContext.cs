@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.Dapper.GraphQL.Extensions;
 using Dapper;
-using SqlBuilder = AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder;
 
 namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
 {
@@ -43,10 +42,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <returns>The context of the DELETE statement.</returns>
         public SqlDeleteContext Delete(string table, dynamic? parameters = null)
         {
-            if (_deletes == null)
-            {
-                _deletes = new List<SqlDeleteContext>();
-            }
+            _deletes ??= [];
 
             var delete = SqlBuilder.Delete(table, parameters);
             _deletes.Add(delete);
@@ -61,10 +57,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <param name="options">The options for the command (optional).</param>
         public int Execute(IDbConnection connection, IDbTransaction? transaction = null, SqlMapperOptions? options = null)
         {
-            if (options == null)
-            {
-                options = SqlMapperOptions.DefaultOptions;
-            }
+            options ??= SqlMapperOptions.DefaultOptions;
 
             var result = connection.Execute(BuildSql(), Parameters, transaction, options.CommandTimeout, options.CommandType);
             if (_deletes != null)
@@ -84,10 +77,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <param name="options">The options for the command (optional).</param>
         public async Task<int> ExecuteAsync(IDbConnection connection, IDbTransaction? transaction = null, SqlMapperOptions? options = null)
         {
-            if (options == null)
-            {
-                options = SqlMapperOptions.DefaultOptions;
-            }
+            options ??= SqlMapperOptions.DefaultOptions;
 
             var result = await connection.ExecuteAsync(BuildSql(), Parameters, transaction, options.CommandTimeout, options.CommandType)
                 .ConfigureAwait(false);
@@ -123,7 +113,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         private string BuildSql()
         {
             var sb = new StringBuilder();
-            sb.Append($"DELETE FROM {Table} WHERE ");
+            sb.Append("DELETE FROM ").Append(Table).Append(" WHERE ");
             sb.Append(string.Join(" AND ", Parameters.ParameterNames.Select(name => $"{name} = @{name}")));
             return sb.ToString();
         }

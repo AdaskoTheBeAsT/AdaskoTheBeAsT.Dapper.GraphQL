@@ -19,7 +19,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
 
         public SqlQueryContext(string from, dynamic? parameters = null)
         {
-            _splitOn = new List<string>();
+            _splitOn = [];
             Types = new List<Type>();
             Parameters = new DynamicParameters(parameters);
             _sqlBuilder = new DapperSqlBuilder();

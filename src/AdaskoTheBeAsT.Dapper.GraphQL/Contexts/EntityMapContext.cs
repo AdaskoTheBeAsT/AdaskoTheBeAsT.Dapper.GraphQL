@@ -9,8 +9,8 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
 {
     public sealed class EntityMapContext : IDisposable
     {
-        private readonly object _lockObject = new object();
-        private bool _isDisposing = false;
+        private readonly object _lockObject = new();
+        private bool _isDisposing;
         private IDictionary<GraphQLName, GraphQLField>? _currentSelectionSet;
         private IEnumerator<object?>? _itemEnumerator;
         private IEnumerator<Type>? _splitOnEnumerator;
@@ -156,7 +156,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
                 }
             }
 
-            return default(TItemType);
+            return default;
         }
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
                     return entity;
                 }
 
-                return default(TEntityType);
+                return default;
             }
         }
     }

@@ -40,6 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".props", ".props", "{B0A3D4
 		test\integ\Directory.Build.props = test\integ\Directory.Build.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection", "src\AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection\AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection.csproj", "{F8AC0ACC-AE1F-4A36-962C-75AA4173BE83}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +56,10 @@ Global
 		{C074BC2E-0B51-4F50-9AEB-6A9410F8D5C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C074BC2E-0B51-4F50-9AEB-6A9410F8D5C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C074BC2E-0B51-4F50-9AEB-6A9410F8D5C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8AC0ACC-AE1F-4A36-962C-75AA4173BE83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8AC0ACC-AE1F-4A36-962C-75AA4173BE83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8AC0ACC-AE1F-4A36-962C-75AA4173BE83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8AC0ACC-AE1F-4A36-962C-75AA4173BE83}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -64,6 +70,7 @@ Global
 		{B4EDFCFA-1C24-4C0F-ADF8-C014C3B86AE9} = {B3EF17FC-4B66-4721-B56A-61ADB07704D7}
 		{306B1BBA-77D5-4173-B31C-7C4DDC0E87BB} = {B3EF17FC-4B66-4721-B56A-61ADB07704D7}
 		{B0A3D4E8-6C8A-4ED9-AAA5-7E4F0AC00084} = {B4EDFCFA-1C24-4C0F-ADF8-C014C3B86AE9}
+		{F8AC0ACC-AE1F-4A36-962C-75AA4173BE83} = {5B29B236-2A4D-4214-8CFD-BCB6E827172E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7D61D89B-1DF4-4793-9435-FBE49C326560}

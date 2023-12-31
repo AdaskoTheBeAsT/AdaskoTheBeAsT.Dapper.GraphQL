@@ -5,7 +5,7 @@ using GraphQLParser.AST;
 
 namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
 {
-    public static class IHasSelectionSetNodeExtensions
+    public static class HasSelectionSetNodeExtensions
     {
         /// <summary>
         /// Returns a map of selected fields, keyed by the field name.

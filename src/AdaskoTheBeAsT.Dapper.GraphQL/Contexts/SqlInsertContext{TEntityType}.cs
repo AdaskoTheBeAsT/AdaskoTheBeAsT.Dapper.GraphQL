@@ -22,7 +22,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         {
             if (_inserts == null)
             {
-                _inserts = new List<SqlInsertContext<TEntityType>>();
+                _inserts = [];
             }
 
             var insert = SqlBuilder.Insert(obj);

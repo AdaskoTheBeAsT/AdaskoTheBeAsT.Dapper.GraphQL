@@ -8,9 +8,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
 {
     public static class ParameterHelper
     {
-        private static readonly object _lock = new object();
-        private static readonly Dictionary<Type, PropertyInfo[]> _propertyCache = new Dictionary<Type, PropertyInfo[]>();
-        private static readonly Dictionary<Type, TypeInfo> _typeInfoCache = new Dictionary<Type, TypeInfo>();
+        private static readonly object LockProperty = new();
+        private static readonly object LockType = new();
+        private static readonly Dictionary<Type, PropertyInfo[]> PropertyCache = [];
+        private static readonly Dictionary<Type, TypeInfo> TypeInfoCache = [];
 
         /// <summary>
         /// Gets a list of flat properties that have been set on the object.
@@ -25,9 +26,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
             var type = obj!.GetType();
             PropertyInfo[] properties;
 
-            lock (_lock)
+            lock (LockProperty)
             {
-                if (!_propertyCache.ContainsKey(type))
+                if (!PropertyCache.TryGetValue(type, out var value))
                 {
                     // Get a list of properties that are "flat" on this object, i.e. singular values
                     properties = type
@@ -64,11 +65,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
                         .ToArray();
 
                     // Cache those properties
-                    _propertyCache[type] = properties;
+                    PropertyCache[type] = properties;
                 }
                 else
                 {
-                    properties = _propertyCache[type];
+                    properties = value;
                 }
             }
 
@@ -82,15 +83,17 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
                     {
                         // Ensure scalar values are properly skipped if they are set to their initial, default(type) value.
                         var value = prop.GetValue(obj);
-                        if (value != null)
+                        if (value == null)
                         {
-                            var valueType = value.GetType();
-                            var valueTypeInfo = GetTypeInfo(valueType);
-                            if (valueTypeInfo.IsValueType &&
-                                Equals(value, Activator.CreateInstance(valueType)))
-                            {
-                                return null;
-                            }
+                            return value;
+                        }
+
+                        var valueType = value.GetType();
+                        var valueTypeInfo = GetTypeInfo(valueType);
+                        if (valueTypeInfo.IsValueType &&
+                            Equals(value, Activator.CreateInstance(valueType)))
+                        {
+                            return null;
                         }
 
                         return value;
@@ -103,18 +106,21 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
 
         private static TypeInfo GetTypeInfo(Type type)
         {
-            if (!_typeInfoCache.ContainsKey(type))
+            TypeInfo typeInfo;
+            lock (LockType)
             {
-                lock (_typeInfoCache)
+                if (!TypeInfoCache.TryGetValue(type, out var value))
                 {
-                    if (!_typeInfoCache.ContainsKey(type))
-                    {
-                        _typeInfoCache[type] = type.GetTypeInfo();
-                    }
+                    typeInfo = type.GetTypeInfo();
+                    TypeInfoCache[type] = typeInfo;
+                }
+                else
+                {
+                    typeInfo = value;
                 }
             }
 
-            return _typeInfoCache[type];
+            return typeInfo;
         }
     }
 }

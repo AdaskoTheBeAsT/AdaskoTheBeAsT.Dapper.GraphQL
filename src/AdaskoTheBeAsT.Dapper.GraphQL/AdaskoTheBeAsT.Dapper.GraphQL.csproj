@@ -6,26 +6,20 @@
     <Authors>Doug Day, Kevin Russon, Ben McCallum, Natalya Arbit, Per Liedman, John Stovin</Authors>
     <Company>Landmark Home Warranty</Company>
     <Description>A library designed to integrate the Dapper and graphql-dotnet projects with ease-of-use in mind and performance as the primary concern.</Description>
-    <Copyright>Copyright 2018</Copyright>
+    <Copyright>Copyright 2023</Copyright>
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/landmarkhw/Dapper.GraphQL</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/landmarkhw/Dapper.GraphQL.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/AdaskoTheBeAsT/AdaskoTheBeAsT.Dapper.GraphQL</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AdaskoTheBeAsT/AdaskoTheBeAsT.Dapper.GraphQL.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Dapper Dapper.SqlBuilder GraphQL graphql-dotnet core coreclr .NET</PackageTags>
-    <PackageReleaseNotes>Resolved
-    #15 - Pass commandTimeout to Dapper
-    #31 - Add non-generic versions of service registration methods
-    #34 - SqlQueryContext: SplitOn() should call RemoveSingleTableQueryItems()
-    </PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.24" />    
     <PackageReference Include="Dapper.SqlBuilder" Version="2.0.78" />
     <PackageReference Include="GraphQL" Version="7.7.2" />
-    <PackageReference Include="GraphQL.NewtonsoftJson" Version="7.7.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
 
 </Project>

@@ -3,11 +3,11 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using AdaskoTheBeAsT.Dapper.GraphQL.Extensions;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories;
+using AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection;
 using DbUp;
 using GraphQL;
 using GraphQL.Execution;
@@ -24,20 +24,18 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
     public sealed class TestFixture
         : IDisposable
     {
-        private static readonly string _chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-#pragma warning disable SEC0115
-        private static readonly Random _random = new Random((int)(DateTime.Now.Ticks << 32));
-#pragma warning restore SEC0115
+        private const string Chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+        private static readonly Random Random = new((int)(DateTime.Now.Ticks << 32));
 
         private readonly string _databaseName;
         private readonly DocumentExecuter _documentExecuter;
 
         public TestFixture()
         {
-            _databaseName = "test-" + new string(_chars.OrderBy(c => _random.Next()).ToArray());
+            _databaseName = "test-" + new string([.. Chars.OrderBy(_ => Random.Next())]);
 
             _documentExecuter = new DocumentExecuter();
-            var serviceCollection = new ServiceCollection();
+            var serviceCollection = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
             SetupDatabaseConnection();
             SetupDapperGraphQl(serviceCollection);
@@ -146,28 +144,25 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         {
             // Connect to a different database, so we can drop the one we were working with
             var dropConnectionString = ConnectionString.Replace(_databaseName, "template1");
-            using (var connection = new NpgsqlConnection(dropConnectionString))
-            {
-                connection.Open();
-                using (var command = connection.CreateCommand())
-                {
-                    // NOTE: I'm not sure why there are active connections to the database at
-                    // this point, as we're the only ones using this database, and the connection
-                    // is closed at this point.  In any case, we need to take an extra step of
-                    // dropping all connections to the database before dropping it.
-                    //
-                    // See https://stackoverflow.com/a/59021507
+            using var connection = new NpgsqlConnection(dropConnectionString);
+            connection.Open();
+            using var command = connection.CreateCommand();
+
+            // NOTE: I'm not sure why there are active connections to the database at
+            // this point, as we're the only ones using this database, and the connection
+            // is closed at this point.  In any case, we need to take an extra step of
+            // dropping all connections to the database before dropping it.
+            //
+            // See https://stackoverflow.com/a/59021507
 #pragma warning disable CA2100 // Review SQL queries for security vulnerabilities
 #pragma warning disable SCS0002 // Potential SQL injection vulnerability was found where '{0}' in '{1}' may be tainted by user-controlled data from '{2}' in method '{3}'.
-                    command.CommandText = $@"DROP DATABASE ""{_databaseName}"" WITH (FORCE);";
+            command.CommandText = $@"DROP DATABASE ""{_databaseName}"" WITH (FORCE);";
 #pragma warning restore SCS0002 // Potential SQL injection vulnerability was found where '{0}' in '{1}' may be tainted by user-controlled data from '{2}' in method '{3}'.
 #pragma warning restore CA2100 // Review SQL queries for security vulnerabilities
-                    command.CommandType = CommandType.Text;
+            command.CommandType = CommandType.Text;
 
-                    // Drop the database
-                    command.ExecuteNonQuery();
-                }
-            }
+            // Drop the database
+            command.ExecuteNonQuery();
         }
 
         private void SetupDapperGraphQl(IServiceCollection serviceCollection)
@@ -201,7 +196,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
             serviceCollection.AddTransient(typeof(EdgeType<>));
             serviceCollection.AddTransient<PageInfoType>();
 
-            serviceCollection.AddTransient<IDbConnection>(serviceProvider => GetDbConnection());
+            serviceCollection.AddTransient<IDbConnection>(_ => GetDbConnection());
         }
     }
 }

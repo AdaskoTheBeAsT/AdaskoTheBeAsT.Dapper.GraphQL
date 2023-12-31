@@ -42,7 +42,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
         {
             if (entity == default(TEntityType))
             {
-                return default(TEntityType);
+                return default;
             }
 
             if (PrimaryKey == null)
@@ -51,11 +51,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
             }
 
             // Get the primary key for this entity
-            var primaryKey = PrimaryKey(entity);
-            if (primaryKey == null)
-            {
-                throw new InvalidOperationException("A null primary key was provided, which results in an unpredictable state.");
-            }
+            var primaryKey = PrimaryKey(entity) ??
+                 throw new InvalidOperationException(
+                     "A null primary key was provided, which results in an unpredictable state.");
 
             // Deduplicate the entity using available information
             if (KeyCache.TryGetValue(primaryKey, out var value))

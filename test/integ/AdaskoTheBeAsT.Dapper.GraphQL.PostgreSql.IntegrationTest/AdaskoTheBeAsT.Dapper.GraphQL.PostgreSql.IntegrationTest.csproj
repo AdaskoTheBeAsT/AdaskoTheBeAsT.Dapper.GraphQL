@@ -22,10 +22,12 @@
   <ItemGroup>
     <PackageReference Include="dbup-core" Version="5.0.37" />
     <PackageReference Include="dbup-postgresql" Version="5.0.37" />
+    <PackageReference Include="GraphQL.NewtonsoftJson" Version="7.7.2" />
     <PackageReference Include="Npgsql" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection\AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection.csproj" />
     <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.Dapper.GraphQL\AdaskoTheBeAsT.Dapper.GraphQL.csproj" />
   </ItemGroup>
 

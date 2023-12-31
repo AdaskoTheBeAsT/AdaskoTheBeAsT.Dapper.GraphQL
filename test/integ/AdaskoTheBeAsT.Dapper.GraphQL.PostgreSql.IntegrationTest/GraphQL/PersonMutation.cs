@@ -23,31 +23,29 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                 {
                     var person = context.GetArgument<Person>("person");
 
-                    using (var connection = serviceProvider.GetRequiredService<IDbConnection>())
+                    using var connection = serviceProvider.GetRequiredService<IDbConnection>();
+                    person.Id = person.MergedToPersonId = Extensions.PostgreSql.NextIdentity(connection, (Person p) => p.Id);
+
+                    var success = SqlBuilder
+                        .Insert(person)
+                        .Execute(connection) > 0;
+
+                    if (success)
                     {
-                        person.Id = person.MergedToPersonId = Extensions.PostgreSql.NextIdentity(connection, (Person p) => p.Id);
+                        var personMapper = new PersonEntityMapper();
 
-                        var success = SqlBuilder
-                            .Insert(person)
-                            .Execute(connection) > 0;
+                        var query = SqlBuilder
+                            .From<Person>(nameof(Person))
+                            .Select(["FirstName, LastName"])
+                            .Where("ID = @personId", new { personId = person.Id });
 
-                        if (success)
-                        {
-                            var personMapper = new PersonEntityMapper();
-
-                            var query = SqlBuilder
-                                .From<Person>(nameof(Person))
-                                .Select(new[] { "FirstName, LastName" })
-                                .Where("ID = @personId", new { personId = person.Id });
-
-                            var results = query
-                                .Execute(connection, context.FieldAst, personMapper)
-                                .Distinct();
-                            return results.FirstOrDefault();
-                        }
-
-                        return null;
+                        var results = query
+                            .Execute(connection, context.FieldAst, personMapper)
+                            .Distinct();
+                        return results.FirstOrDefault();
                     }
+
+                    return null;
                 });
 #pragma warning restore MA0056 // Do not call overridable members in constructor
         }

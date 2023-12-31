@@ -6,12 +6,12 @@ using Xunit;
 
 namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 {
-    public class GraphQLInsertTests
+    public class GraphQlInsertTests
         : IClassFixture<TestFixture>
     {
         private readonly TestFixture _fixture;
 
-        public GraphQLInsertTests(
+        public GraphQlInsertTests(
             TestFixture fixture)
         {
             _fixture = fixture;

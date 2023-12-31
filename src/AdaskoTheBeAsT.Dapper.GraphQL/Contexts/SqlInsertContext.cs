@@ -102,7 +102,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         {
             if (_inserts == null)
             {
-                _inserts = new List<SqlInsertContext>();
+                _inserts = [];
             }
 
             var insert = SqlBuilder.Insert(obj);
@@ -120,7 +120,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         {
             if (_inserts == null)
             {
-                _inserts = new List<SqlInsertContext>();
+                _inserts = [];
             }
 
             var insert = SqlBuilder.Insert(table, parameters);

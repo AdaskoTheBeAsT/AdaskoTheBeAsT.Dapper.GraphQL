@@ -6,7 +6,7 @@ using GraphQL.Builders;
 
 namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories;
 
-public static class IPersonRepositoryExtensions
+public static class PersonRepositoryExtensions
 {
     public static SqlQueryContext GetQuery(
         this IPersonRepository personRepository,
@@ -14,14 +14,14 @@ public static class IPersonRepositoryExtensions
         IQueryBuilder<Person> personQueryBuilder,
         string sWhere = "")
     {
+#pragma warning disable RCS1256 // Invalid argument null check
         if (context == null)
         {
             throw new ArgumentNullException(nameof(context));
         }
+#pragma warning restore RCS1256 // Invalid argument null check
 
-#pragma warning disable CC0021 // Use nameof
         const string alias = "Person";
-#pragma warning restore CC0021 // Use nameof
 
         var query = SqlBuilder
             .From<Person>(alias)

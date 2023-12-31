@@ -15,7 +15,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories
     public class PersonRepository : IPersonRepository
     {
         private readonly IQueryBuilder<Person> _personQueryBuilder;
-        private readonly PersonEntityMapper _personMapper = new PersonEntityMapper();
+        private readonly PersonEntityMapper _personMapper = new();
 #pragma warning disable CC0021 // Use nameof
         private readonly string _alias = "Person";
 #pragma warning restore CC0021 // Use nameof

@@ -90,8 +90,13 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
         private static StringBuilder BuildPostgreSqlIdentityQuery(SqlInsertContext context, string? idName)
         {
             var sb = new StringBuilder();
-            sb.AppendLine(context.ToString());
-            sb.AppendLine($"SELECT currval(pg_get_serial_sequence('{context.Table.ToLower(CultureInfo.InvariantCulture)}', '{idName?.ToLower(CultureInfo.InvariantCulture)}'));");
+            sb.Append(context)
+                .AppendLine()
+                .Append("SELECT currval(pg_get_serial_sequence('")
+                .Append(context.Table.ToLower(CultureInfo.InvariantCulture))
+                .Append("', '")
+                .Append(idName?.ToLower(CultureInfo.InvariantCulture))
+                .AppendLine("'));");
             return sb;
         }
 
@@ -101,13 +106,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
 
             if (typeof(TIdentityType) == typeof(int))
             {
-                sb.AppendLine(context.ToString());
-                sb.AppendLine("SELECT CAST(SCOPE_IDENTITY() AS INT)");
+                sb.Append(context).AppendLine().AppendLine("SELECT CAST(SCOPE_IDENTITY() AS INT)");
             }
             else if (typeof(TIdentityType) == typeof(long))
             {
-                sb.AppendLine(context.ToString());
-                sb.AppendLine("SELECT CAST(SCOPE_IDENTITY() AS BIGINT)");
+                sb.Append(context).AppendLine().AppendLine("SELECT CAST(SCOPE_IDENTITY() AS BIGINT)");
             }
             else
             {
@@ -121,8 +124,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine(context.ToString());
-            sb.AppendLine("SELECT last_insert_rowid();");
+            sb.Append(context).AppendLine().AppendLine("SELECT last_insert_rowid();");
 
             return sb;
         }

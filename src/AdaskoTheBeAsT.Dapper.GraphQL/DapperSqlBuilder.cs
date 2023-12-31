@@ -96,7 +96,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
 
             return (DapperSqlBuilder)AddClause(
                 "fetch",
-                $"{rowsToReturn}",
+                $"{rowsToReturn.ToString(CultureInfo.InvariantCulture)}",
                 parameters: null,
                 " + ",
                 "FETCH FIRST ",

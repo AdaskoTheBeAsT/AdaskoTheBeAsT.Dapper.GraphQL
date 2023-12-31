@@ -12,7 +12,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
         /// <summary>
         /// The default options used unless other are specified.
         /// </summary>
-        public static readonly SqlMapperOptions DefaultOptions = new SqlMapperOptions();
+        public static readonly SqlMapperOptions DefaultOptions = new();
 
         /// <summary>
         /// Number of seconds before command execution timeout.

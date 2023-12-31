@@ -22,7 +22,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
             var memberExpression = identityNameSelector.Body as MemberExpression;
 
             var sb = new StringBuilder();
-            sb.AppendLine($"SELECT nextval(pg_get_serial_sequence('{typeof(TEntityType).Name.ToLower(CultureInfo.InvariantCulture)}', '{memberExpression?.Member.Name.ToLower(CultureInfo.InvariantCulture)}'));");
+            sb.Append("SELECT nextval(pg_get_serial_sequence('")
+                .Append(typeof(TEntityType).Name.ToLower(CultureInfo.InvariantCulture))
+                .Append("', '")
+                .Append(memberExpression?.Member.Name.ToLower(CultureInfo.InvariantCulture))
+                .AppendLine("'));");
 
             return dbConnection
                 .Query<TIdentityType>(sb.ToString())
@@ -40,7 +44,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Extensions
             var memberExpression = identityNameSelector.Body as MemberExpression;
 
             var sb = new StringBuilder();
-            sb.AppendLine($"SELECT nextval(pg_get_serial_sequence('{typeof(TEntityType).Name.ToLower(CultureInfo.InvariantCulture)}', '{memberExpression?.Member.Name.ToLower(CultureInfo.InvariantCulture)}'));");
+            sb.Append("SELECT nextval(pg_get_serial_sequence('")
+                .Append(typeof(TEntityType).Name.ToLower(CultureInfo.InvariantCulture))
+                .Append("', '").Append(memberExpression?.Member.Name.ToLower(CultureInfo.InvariantCulture))
+                .AppendLine("'));");
 
             var result = await dbConnection.QueryAsync<TIdentityType>(sb.ToString()).ConfigureAwait(false);
             return result.Single();
