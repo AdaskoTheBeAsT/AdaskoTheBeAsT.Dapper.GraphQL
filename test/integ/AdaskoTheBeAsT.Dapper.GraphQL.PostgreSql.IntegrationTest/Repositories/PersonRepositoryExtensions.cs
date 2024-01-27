@@ -21,7 +21,7 @@ public static class PersonRepositoryExtensions
         }
 #pragma warning restore RCS1256 // Invalid argument null check
 
-        const string alias = "Person";
+        const string alias = nameof(Person);
 
         var query = SqlBuilder
             .From<Person>(alias)
