@@ -50,12 +50,12 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
 
         public static string ToCursor<T>(T value)
         {
-            if (value == null)
+            if (EqualityComparer<T?>.Default.Equals(value, default))
             {
                 throw new ArgumentNullException(nameof(value));
             }
 
-            return Base64Encode(value.ToString() ?? string.Empty);
+            return Base64Encode(value!.ToString() ?? string.Empty);
         }
 
         private static string Base64Decode(string value) => Encoding.UTF8.GetString(Convert.FromBase64String(value));
