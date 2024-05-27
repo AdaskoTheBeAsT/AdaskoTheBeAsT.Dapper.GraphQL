@@ -194,7 +194,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 
                     // Get the next identity aggressively, as we need to assign
                     // it to both Id/MergedToPersonId
-                    personId = Extensions.PostgreSql.NextIdentity(db, (Person p) => p.Id);
+                    personId = await Extensions.PostgreSql.NextIdentityAsync(db, (Person p) => p.Id);
                     Assert.True(personId > 0);
 
                     person = new Person
@@ -211,7 +211,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                         .ExecuteAsync(db);
                     Assert.Equal(1, insertedCount);
 
-                    emailId = Extensions.PostgreSql.NextIdentity(db, (Email e) => e.Id);
+                    emailId = await Extensions.PostgreSql.NextIdentityAsync(db, (Email e) => e.Id);
                     var email = new Email
                     {
                         Id = emailId,
@@ -224,7 +224,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                         EmailId = emailId,
                     };
 
-                    phoneId = Extensions.PostgreSql.NextIdentity(db, (Phone p) => p.Id);
+                    phoneId = await Extensions.PostgreSql.NextIdentityAsync(db, (Phone p) => p.Id);
                     var phone = new Phone
                     {
                         Id = phoneId,
