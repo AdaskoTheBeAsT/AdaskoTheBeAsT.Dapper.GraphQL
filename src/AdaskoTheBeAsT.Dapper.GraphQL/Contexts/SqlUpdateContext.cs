@@ -35,7 +35,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
 
         public DynamicParameters Parameters { get; set; }
 
-        public string Table { get; private set; }
+        public string Table { get; }
 
         /// <summary>
         /// Adds a WHERE clause to the query, joining it with the previous with an 'AND' operator if needed.
@@ -158,7 +158,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         private string BuildSql()
         {
             var sb = new StringBuilder();
-            sb.Append($"UPDATE {Table} SET ");
+            sb.Append("UPDATE ").Append(Table).Append(" SET ");
             sb.Append(string.Join(", ", _updateParameterNames.Select(name => $"{name} = @{name}")));
             sb.Append(_template.RawSql);
             return sb.ToString();

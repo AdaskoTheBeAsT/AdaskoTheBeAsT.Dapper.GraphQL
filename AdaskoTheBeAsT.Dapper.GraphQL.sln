@@ -40,7 +40,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".props", ".props", "{B0A3D4
 		test\integ\Directory.Build.props = test\integ\Directory.Build.props
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection", "src\AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection\AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection.csproj", "{F8AC0ACC-AE1F-4A36-962C-75AA4173BE83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection", "src\AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection\AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection.csproj", "{F8AC0ACC-AE1F-4A36-962C-75AA4173BE83}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".sarif", ".sarif", "{B1723107-B0EC-4B54-AD17-ABFDF19268CE}"
+	ProjectSection(SolutionItems) = preProject
+		.sarif\.gitkeep = .sarif\.gitkeep
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

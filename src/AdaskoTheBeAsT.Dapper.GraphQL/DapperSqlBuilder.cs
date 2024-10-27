@@ -11,7 +11,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
         /// If the object has an offset there is no need to the fetch function to add an offset with 0 rows to skip
         /// (offset clause is a must when using the fetch clause).
         /// </summary>
-        private bool _hasOffset = false;
+        private bool _hasOffset;
 
         /// <summary>
         /// Adds an Offset clause to allow pagination (it will skip N rows).

@@ -52,6 +52,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 
         private bool IsDisposing { get; set; } = false;
 
+#pragma warning disable S2325 // Methods and properties that don't access instance data should be static
         public IHasSelectionSetNode? BuildGraphQlSelection(string body)
         {
             var document = new GraphQLDocumentBuilder().Build(body);
@@ -64,6 +65,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                 .OfType<GraphQLField>()
                 .FirstOrDefault();
         }
+#pragma warning restore S2325 // Methods and properties that don't access instance data should be static
 
         public void Dispose()
         {
@@ -81,12 +83,14 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
             return connection;
         }
 
+#pragma warning disable S2325 // Methods and properties that don't access instance data should be static
         public bool JsonEquals(string expectedJson, string actualJson)
         {
             // To ensure formatting doesn't affect our results, we first convert to JSON tokens
             // and only compare the structure of the resulting objects.
             return JToken.DeepEquals(JObject.Parse(expectedJson), JObject.Parse(actualJson));
         }
+#pragma warning restore S2325 // Methods and properties that don't access instance data should be static
 
         public async Task<string> QueryGraphQlAsync(string query)
         {

@@ -94,8 +94,8 @@ FROM {from}/**innerjoin**//**leftjoin**//**rightjoin**//**join**/
         /// </example>
         /// <typeparam name="TEntityType">The entity type to be mapped.</typeparam>
         /// <param name="connection">The database connection.</param>
-        /// <param name="mapper">The entity mapper.</param>
         /// <param name="selectionSet">The GraphQL selection set (optional).</param>
+        /// <param name="mapper">The entity mapper.</param>
         /// <param name="transaction">The transaction to execute under (optional).</param>
         /// <param name="options">The options for the query (optional).</param>
         /// <returns>A list of entities returned by the query.</returns>
@@ -136,13 +136,13 @@ FROM {from}/**innerjoin**//**leftjoin**//**rightjoin**//**join**/
             var results = connection.Query<TEntityType>(
                 sql: ToString(),
                 types: Types.ToArray(),
-                param: Parameters,
                 map: fn,
-                splitOn: string.Join(",", _splitOn),
+                param: Parameters,
                 transaction: transaction,
+                buffered: options.Buffered,
+                splitOn: string.Join(",", _splitOn),
                 commandTimeout: options.CommandTimeout,
-                commandType: options.CommandType,
-                buffered: options.Buffered);
+                commandType: options.CommandType);
 #pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
             return results.Where(e => e != null);
         }
@@ -171,8 +171,8 @@ FROM {from}/**innerjoin**//**leftjoin**//**rightjoin**//**join**/
         /// </example>
         /// <typeparam name="TEntityType">The entity type to be mapped.</typeparam>
         /// <param name="connection">The database connection.</param>
-        /// <param name="mapper">The entity mapper.</param>
         /// <param name="selectionSet">The GraphQL selection set (optional).</param>
+        /// <param name="mapper">The entity mapper.</param>
         /// <param name="transaction">The transaction to execute under (optional).</param>
         /// <param name="options">The options for the query (optional).</param>
         /// <returns>A list of entities returned by the query.</returns>
@@ -213,13 +213,13 @@ FROM {from}/**innerjoin**//**leftjoin**//**rightjoin**//**join**/
             var results = await connection.QueryAsync<TEntityType>(
                 sql: ToString(),
                 types: Types.ToArray(),
-                param: Parameters,
                 map: fn,
-                splitOn: string.Join(",", _splitOn),
+                param: Parameters,
                 transaction: transaction,
+                buffered: options.Buffered,
+                splitOn: string.Join(",", _splitOn),
                 commandTimeout: options.CommandTimeout,
-                commandType: options.CommandType,
-                buffered: options.Buffered).ConfigureAwait(false);
+                commandType: options.CommandType).ConfigureAwait(false);
 #pragma warning restore CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
             return results.Where(e => e != null);
         }

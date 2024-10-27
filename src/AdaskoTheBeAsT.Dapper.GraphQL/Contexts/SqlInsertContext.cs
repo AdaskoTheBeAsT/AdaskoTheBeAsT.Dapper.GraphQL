@@ -31,7 +31,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
 
         public DynamicParameters Parameters { get; set; }
 
-        public string Table { get; private set; }
+        public string Table { get; }
 
         /// <summary>
         /// Executes the INSERT statements with Dapper, using the provided database connection.
@@ -144,7 +144,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         private string BuildSql()
         {
             var sb = new StringBuilder();
-            sb.Append($"INSERT INTO {Table} (");
+            sb.Append("INSERT INTO ").Append(Table).Append(" (");
             sb.Append(string.Join(", ", _insertParameterNames));
             sb.Append(") VALUES (");
             sb.Append(string.Join(", ", _insertParameterNames.Select(name => $"@{name}")));

@@ -178,11 +178,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
 
 #pragma warning disable AsyncFixer01 // Unnecessary async/await usage
 #pragma warning disable S1172 // Unused method parameters should be removed
+#pragma warning disable S2325 // Methods and properties that don't access instance data should be static
         private async Task<bool> GetHasPreviousPageAsync(
             int? last,
             DateTime? beforeCursor,
             CancellationToken cancellationToken)
-#pragma warning restore S1172 // Unused method parameters should be removed
         {
 #if NET6_0_OR_GREATER
             return last.HasValue && await _personRepository.GetHasPreviousPageAsync(last, beforeCursor, cancellationToken);
@@ -191,6 +191,8 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
             return await Task.Run(() => false).ConfigureAwait(false);
 #endif
         }
+#pragma warning restore S2325 // Methods and properties that don't access instance data should be static
+#pragma warning restore S1172 // Unused method parameters should be removed
 #pragma warning restore AsyncFixer01 // Unnecessary async/await usage
 
 #pragma warning disable S1172 // Unused method parameters should be removed
