@@ -1,0 +1,84 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest", "test\integ\AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest\AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.csproj", "{C95C441C-B612-4D8B-9B54-734FDF1DEAA2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.Dapper.GraphQL", "src\AdaskoTheBeAsT.Dapper.GraphQL\AdaskoTheBeAsT.Dapper.GraphQL.csproj", "{C074BC2E-0B51-4F50-9AEB-6A9410F8D5C2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".props", ".props", "{23162B28-87A2-4AB5-8E5B-E2F59CC6A428}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		AdaskoTheBeAsT.Dapper.GraphQL.sln.DotSettings = AdaskoTheBeAsT.Dapper.GraphQL.sln.DotSettings
+		AdaskoTheBeAsT.ruleset = AdaskoTheBeAsT.ruleset
+		DeterministicBuild.targets = DeterministicBuild.targets
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		global.json = global.json
+		LICENSE = LICENSE
+		README.md = README.md
+		SecurityCodeScan.config.yml = SecurityCodeScan.config.yml
+		Settings.StyleCop = Settings.StyleCop
+		stylecop.json = stylecop.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5B29B236-2A4D-4214-8CFD-BCB6E827172E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B3EF17FC-4B66-4721-B56A-61ADB07704D7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "integ", "integ", "{B4EDFCFA-1C24-4C0F-ADF8-C014C3B86AE9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".props", ".props", "{306B1BBA-77D5-4173-B31C-7C4DDC0E87BB}"
+	ProjectSection(SolutionItems) = preProject
+		test\Directory.Build.props = test\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".props", ".props", "{B0A3D4E8-6C8A-4ED9-AAA5-7E4F0AC00084}"
+	ProjectSection(SolutionItems) = preProject
+		test\integ\Directory.Build.props = test\integ\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection", "src\AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection\AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection.csproj", "{F8AC0ACC-AE1F-4A36-962C-75AA4173BE83}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".sarif", ".sarif", "{B1723107-B0EC-4B54-AD17-ABFDF19268CE}"
+	ProjectSection(SolutionItems) = preProject
+		.sarif\.gitkeep = .sarif\.gitkeep
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C95C441C-B612-4D8B-9B54-734FDF1DEAA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C95C441C-B612-4D8B-9B54-734FDF1DEAA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C95C441C-B612-4D8B-9B54-734FDF1DEAA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C95C441C-B612-4D8B-9B54-734FDF1DEAA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C074BC2E-0B51-4F50-9AEB-6A9410F8D5C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C074BC2E-0B51-4F50-9AEB-6A9410F8D5C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C074BC2E-0B51-4F50-9AEB-6A9410F8D5C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C074BC2E-0B51-4F50-9AEB-6A9410F8D5C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8AC0ACC-AE1F-4A36-962C-75AA4173BE83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8AC0ACC-AE1F-4A36-962C-75AA4173BE83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8AC0ACC-AE1F-4A36-962C-75AA4173BE83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8AC0ACC-AE1F-4A36-962C-75AA4173BE83}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C95C441C-B612-4D8B-9B54-734FDF1DEAA2} = {B4EDFCFA-1C24-4C0F-ADF8-C014C3B86AE9}
+		{C074BC2E-0B51-4F50-9AEB-6A9410F8D5C2} = {5B29B236-2A4D-4214-8CFD-BCB6E827172E}
+		{B4EDFCFA-1C24-4C0F-ADF8-C014C3B86AE9} = {B3EF17FC-4B66-4721-B56A-61ADB07704D7}
+		{306B1BBA-77D5-4173-B31C-7C4DDC0E87BB} = {B3EF17FC-4B66-4721-B56A-61ADB07704D7}
+		{B0A3D4E8-6C8A-4ED9-AAA5-7E4F0AC00084} = {B4EDFCFA-1C24-4C0F-ADF8-C014C3B86AE9}
+		{F8AC0ACC-AE1F-4A36-962C-75AA4173BE83} = {5B29B236-2A4D-4214-8CFD-BCB6E827172E}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7D61D89B-1DF4-4793-9435-FBE49C326560}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Authors>Doug Day, Kevin Russon, Ben McCallum, Natalya Arbit, Per Liedman, John Stovin</Authors>
+    <Company>Landmark Home Warranty</Company>
+    <Description>A library designed to integrate the Dapper and graphql-dotnet projects with ease-of-use in mind and performance as the primary concern.</Description>
+    <Copyright>Copyright 2023</Copyright>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/AdaskoTheBeAsT/AdaskoTheBeAsT.Dapper.GraphQL</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AdaskoTheBeAsT/AdaskoTheBeAsT.Dapper.GraphQL.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Dapper Dapper.SqlBuilder GraphQL graphql-dotnet core coreclr .NET</PackageTags>
+    <PackageReleaseNotes></PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.35" />    
+    <PackageReference Include="Dapper.SqlBuilder" Version="2.0.78" />
+    <PackageReference Include="GraphQL" Version="8.2.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+  </ItemGroup>
+
+</Project>

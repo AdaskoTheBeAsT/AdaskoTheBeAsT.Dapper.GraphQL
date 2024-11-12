@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net462;net47;net471;net472;net48;net481;net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
+	  <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Sql\1-Create.sql" />
+    <None Remove="Sql\2-Data.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\1-Create.sql">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sql\2-Data.sql">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="dbup-core" Version="6.0.3" />
+    <PackageReference Include="dbup-postgresql" Version="5.0.40" />
+    <PackageReference Include="GraphQL.NewtonsoftJson" Version="8.2.1" />
+    <PackageReference Include="Npgsql" Version="8.0.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection\AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection.csproj" />
+    <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.Dapper.GraphQL\AdaskoTheBeAsT.Dapper.GraphQL.csproj" />
+  </ItemGroup>
+
+</Project>
