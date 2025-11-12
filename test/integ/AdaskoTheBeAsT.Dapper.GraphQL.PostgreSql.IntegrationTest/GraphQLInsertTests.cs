@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL;
-using FluentAssertions;
+using AwesomeAssertions;
 using Newtonsoft.Json.Linq;
 using Xunit;
 

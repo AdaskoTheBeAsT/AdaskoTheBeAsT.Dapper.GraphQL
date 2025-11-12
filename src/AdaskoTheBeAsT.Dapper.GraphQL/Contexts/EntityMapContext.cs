@@ -43,11 +43,14 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
                 {
                     _isDisposing = true;
 
-                    if (_itemEnumerator != null &&
-                        _splitOnEnumerator != null)
+                    if (_itemEnumerator != null)
                     {
                         _itemEnumerator.Dispose();
                         _itemEnumerator = null;
+                    }
+
+                    if (_splitOnEnumerator != null)
+                    {
                         _splitOnEnumerator.Dispose();
                         _splitOnEnumerator = null;
                     }
