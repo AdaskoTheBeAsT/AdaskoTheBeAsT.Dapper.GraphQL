@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+#if NET9_0_OR_GREATER
+using System.Threading;
+#endif
 using AdaskoTheBeAsT.Dapper.GraphQL.Extensions;
 using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
 using GraphQLParser.AST;
@@ -9,7 +12,12 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
 {
     public sealed class EntityMapContext : IDisposable
     {
+#if NET9_0_OR_GREATER
+        private readonly Lock _lockObject = new();
+#endif
+#if NET8_0 || NETSTANDARD2_0
         private readonly object _lockObject = new();
+#endif
         private bool _isDisposing;
         private IDictionary<GraphQLName, GraphQLField>? _currentSelectionSet;
         private IEnumerator<object?>? _itemEnumerator;
@@ -126,9 +134,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
 
                         var nextContext = new EntityMapContext
                         {
-                            Items = Items.Skip(MappedCount),
+                            Items = Items!.Skip(MappedCount),
                             SelectionSet = selectionSet,
-                            SplitOn = SplitOn.Skip(MappedCount),
+                            SplitOn = SplitOn!.Skip(MappedCount),
                         };
                         using (nextContext)
                         {

@@ -30,6 +30,12 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models
 
         public Person? Supervisor { get; set; }
 
+#if NET6_0_OR_GREATER
+        // .NET 6+ uses DateOnly for PostgreSQL DATE columns
+        public DateOnly CreateDate { get; set; }
+#else
+        // .NET Framework uses DateTime for PostgreSQL DATE columns
         public DateTime CreateDate { get; set; }
+#endif
     }
 }

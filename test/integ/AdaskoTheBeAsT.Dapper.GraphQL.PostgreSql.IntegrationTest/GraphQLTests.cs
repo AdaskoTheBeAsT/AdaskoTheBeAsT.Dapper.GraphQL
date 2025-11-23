@@ -338,7 +338,9 @@ query {
         }
 
         [Fact(DisplayName = "People connection query should succeed")]
+#pragma warning disable MA0051 // Method is too long
         public async Task PeopleConnectionQueryAsync()
+#pragma warning restore MA0051 // Method is too long
         {
             var json = await _fixture.QueryGraphQlAsync(@"
 query {
@@ -359,6 +361,8 @@ query {
     }
 }");
 
+#if NET6_0_OR_GREATER
+            // GraphQL.NET v8 with DateOnly (NET 6+) uses culture-invariant date formatting without time
             var expectedJson = @"
 {
   'data': {
@@ -369,25 +373,57 @@ query {
             'firstName': 'Hyrum',
             'lastName': 'Clyde'
           },
-          'cursor': 'MDEuMDEuMjAxOSAwMDowMDowMA=='
+          'cursor': 'MS4wMS4yMDE5'
         },
         {
           'node': {
             'firstName': 'Doug',
             'lastName': 'Day'
           },
-          'cursor': 'MDIuMDEuMjAxOSAwMDowMDowMA=='
+          'cursor': 'Mi4wMS4yMDE5'
         }
       ],
       'pageInfo': {
         'hasNextPage': true,
         'hasPreviousPage': false,
-        'endCursor': 'MDIuMDEuMjAxOSAwMDowMDowMA==',
-        'startCursor': 'MDEuMDEuMjAxOSAwMDowMDowMA=='
+        'endCursor': 'Mi4wMS4yMDE5',
+        'startCursor': 'MS4wMS4yMDE5'
       }
     }
   }
 }";
+#else
+            // GraphQL.NET v8 with DateTime (.NET Framework) uses culture-invariant date formatting with time
+            var expectedJson = @"
+{
+  'data': {
+    'personConnection': {
+      'edges': [
+        {
+          'node': {
+            'firstName': 'Hyrum',
+            'lastName': 'Clyde'
+          },
+          'cursor': 'MS4wMS4yMDE5IDAwOjAwOjAw'
+        },
+        {
+          'node': {
+            'firstName': 'Doug',
+            'lastName': 'Day'
+          },
+          'cursor': 'Mi4wMS4yMDE5IDAwOjAwOjAw'
+        }
+      ],
+      'pageInfo': {
+        'hasNextPage': true,
+        'hasPreviousPage': false,
+        'endCursor': 'Mi4wMS4yMDE5IDAwOjAwOjAw',
+        'startCursor': 'MS4wMS4yMDE5IDAwOjAwOjAw'
+      }
+    }
+  }
+}";
+#endif
 
             _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
         }

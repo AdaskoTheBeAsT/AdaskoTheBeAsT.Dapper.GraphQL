@@ -17,22 +17,49 @@ using GraphQLParser.AST;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Npgsql;
+using Testcontainers.PostgreSql;
+using Xunit;
 using PhoneType = AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL.PhoneType;
 
 namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 {
     public sealed class TestFixture
-        : IDisposable
+        : IAsyncLifetime,
+            IDisposable
     {
         private const string Chars = "abcdefghijklmnopqrstuvwxyz0123456789";
         private static readonly Random Random = new((int)(DateTime.Now.Ticks << 32));
 
         private readonly string _databaseName;
-        private readonly DocumentExecuter _documentExecuter;
+        private DocumentExecuter? _documentExecuter;
+
+        private PostgreSqlContainer? _postgreSqlContainer;
 
         public TestFixture()
         {
             _databaseName = "test-" + new string([.. Chars.OrderBy(_ => Random.Next())]);
+        }
+
+        public PersonSchema? Schema { get; set; }
+
+        public IServiceProvider? ServiceProvider { get; private set; }
+
+        private string? ConnectionString { get; set; }
+
+        private bool IsDisposing { get; set; } = false;
+
+        public async Task InitializeAsync()
+        {
+            _postgreSqlContainer
+                = new PostgreSqlBuilder()
+                    .WithImage("postgres:18.1")
+                    .WithDatabase(_databaseName)
+                    .WithUsername("admin")
+                    .WithPassword("TestPass123!")
+                    .WithPortBinding(5432, true)
+                    .Build();
+
+            await _postgreSqlContainer!.StartAsync();
 
             _documentExecuter = new DocumentExecuter();
             var serviceCollection = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
@@ -40,17 +67,24 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
             SetupDatabaseConnection();
             SetupDapperGraphQl(serviceCollection);
 
+            (ServiceProvider as IDisposable)?.Dispose();
             ServiceProvider = serviceCollection.BuildServiceProvider();
             Schema = ServiceProvider.GetRequiredService<PersonSchema>();
         }
 
-        public PersonSchema Schema { get; set; }
+        public async Task DisposeAsync()
+        {
+            if (!IsDisposing)
+            {
+                IsDisposing = true;
+                if (_postgreSqlContainer != null)
+                {
+                    await _postgreSqlContainer.DisposeAsync().AsTask();
+                }
 
-        public IServiceProvider ServiceProvider { get; }
-
-        private string ConnectionString { get; set; } = string.Empty;
-
-        private bool IsDisposing { get; set; } = false;
+                (ServiceProvider as IDisposable)?.Dispose();
+            }
+        }
 
 #pragma warning disable S2325 // Methods and properties that don't access instance data should be static
         public IHasSelectionSetNode? BuildGraphQlSelection(string body)
@@ -72,7 +106,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
             if (!IsDisposing)
             {
                 IsDisposing = true;
-                TeardownDatabase();
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
+                _postgreSqlContainer?.DisposeAsync().GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
                 (ServiceProvider as IDisposable)?.Dispose();
             }
         }
@@ -94,7 +130,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 
         public async Task<string> QueryGraphQlAsync(string query)
         {
-            var result = await _documentExecuter
+            var result = await _documentExecuter!
                 .ExecuteAsync(options =>
                 {
                     options.Schema = Schema;
@@ -110,7 +146,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         {
             var serializer = new GraphQLSerializer();
             var inputs = serializer.ReadNode<Inputs>(query.Variables) ?? Inputs.Empty;
-            var result = await _documentExecuter
+            var result = await _documentExecuter!
                 .ExecuteAsync(options =>
                 {
                     options.Schema = Schema;
@@ -126,7 +162,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         public void SetupDatabaseConnection()
         {
             // Generate a random db name
-            ConnectionString = $"Server=localhost;Port=5432;Database={_databaseName};User Id=postgres;Password=dapper-graphql;";
+            ConnectionString = _postgreSqlContainer?.GetConnectionString();
 
             // Ensure the database exists
             EnsureDatabase.For.PostgresqlDatabase(ConnectionString);
@@ -142,31 +178,6 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
             {
                 throw new InvalidOperationException("The database upgrade did not succeed for unit testing.", upgradeResult.Error);
             }
-        }
-
-        public void TeardownDatabase()
-        {
-            // Connect to a different database, so we can drop the one we were working with
-            var dropConnectionString = ConnectionString.Replace(_databaseName, "template1");
-            using var connection = new NpgsqlConnection(dropConnectionString);
-            connection.Open();
-            using var command = connection.CreateCommand();
-
-            // NOTE: I'm not sure why there are active connections to the database at
-            // this point, as we're the only ones using this database, and the connection
-            // is closed at this point.  In any case, we need to take an extra step of
-            // dropping all connections to the database before dropping it.
-            //
-            // See https://stackoverflow.com/a/59021507
-#pragma warning disable CA2100 // Review SQL queries for security vulnerabilities
-#pragma warning disable SCS0002 // Potential SQL injection vulnerability was found where '{0}' in '{1}' may be tainted by user-controlled data from '{2}' in method '{3}'.
-            command.CommandText = $@"DROP DATABASE ""{_databaseName}"" WITH (FORCE);";
-#pragma warning restore SCS0002 // Potential SQL injection vulnerability was found where '{0}' in '{1}' may be tainted by user-controlled data from '{2}' in method '{3}'.
-#pragma warning restore CA2100 // Review SQL queries for security vulnerabilities
-            command.CommandType = CommandType.Text;
-
-            // Drop the database
-            command.ExecuteNonQuery();
         }
 
         private void SetupDapperGraphQl(IServiceCollection serviceCollection)
@@ -195,8 +206,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 
             serviceCollection.AddSingleton<IPersonRepository, PersonRepository>();
 
-            // Support for GraphQL paging
+            // Support for GraphQL paging - GraphQL.NET v8 requires both ConnectionType<> and ConnectionType<,>
             serviceCollection.AddTransient(typeof(ConnectionType<>));
+            serviceCollection.AddTransient(typeof(ConnectionType<,>));
             serviceCollection.AddTransient(typeof(EdgeType<>));
             serviceCollection.AddTransient<PageInfoType>();
 
