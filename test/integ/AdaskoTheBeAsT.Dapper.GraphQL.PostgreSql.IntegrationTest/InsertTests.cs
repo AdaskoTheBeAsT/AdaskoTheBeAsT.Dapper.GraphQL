@@ -9,6 +9,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 {
     public class InsertTests : IClassFixture<TestFixture>
     {
+        public const string NameSteven = "Steven";
+        public const string NameRollman = "Rollman";
+        public const string PhoneNumber = "8011115555";
+        public const string Email = "srollman@landmarkhw.com";
         private readonly TestFixture _fixture;
 
         public InsertTests(TestFixture fixture)
@@ -42,8 +46,8 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                     person = new Person
                     {
                         Id = personId,
-                        FirstName = "Steven",
-                        LastName = "Rollman",
+                        FirstName = NameSteven,
+                        LastName = NameRollman,
                         MergedToPersonId = personId,
                     };
 
@@ -57,7 +61,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                     var email = new Email
                     {
                         Id = emailId,
-                        Address = "srollman@landmarkhw.com",
+                        Address = Email,
                     };
 
                     var personEmail = new
@@ -70,7 +74,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                     var phone = new Phone
                     {
                         Id = phoneId,
-                        Number = "8011115555",
+                        Number = PhoneNumber,
                         Type = PhoneType.Mobile,
                     };
 
@@ -136,12 +140,12 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                 // Ensure all inserted data is present
                 Assert.NotNull(person);
                 Assert.Equal(personId, person.Id);
-                Assert.Equal("Steven", person.FirstName);
-                Assert.Equal("Rollman", person.LastName);
+                Assert.Equal(NameSteven, person.FirstName);
+                Assert.Equal(NameRollman, person.LastName);
                 Assert.Single(person.Emails);
-                Assert.Equal("srollman@landmarkhw.com", person.Emails[0].Address);
+                Assert.Equal(Email, person.Emails[0].Address);
                 Assert.Single(person.Phones);
-                Assert.Equal("8011115555", person.Phones[0].Number);
+                Assert.Equal(PhoneNumber, person.Phones[0].Number);
             }
             finally
             {
@@ -200,8 +204,8 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                     person = new Person
                     {
                         Id = personId,
-                        FirstName = "Steven",
-                        LastName = "Rollman",
+                        FirstName = NameSteven,
+                        LastName = NameRollman,
                         MergedToPersonId = personId,
                     };
 
@@ -228,7 +232,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                     var phone = new Phone
                     {
                         Id = phoneId,
-                        Number = "8011115555",
+                        Number = PhoneNumber,
                         Type = PhoneType.Mobile,
                     };
 
@@ -294,12 +298,12 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                 // Ensure all inserted data is present
                 Assert.NotNull(person);
                 Assert.Equal(personId, person.Id);
-                Assert.Equal("Steven", person.FirstName);
-                Assert.Equal("Rollman", person.LastName);
+                Assert.Equal(NameSteven, person.FirstName);
+                Assert.Equal(NameRollman, person.LastName);
                 Assert.Single(person.Emails);
-                Assert.Equal("srollman@landmarkhw.com", person.Emails[0].Address);
+                Assert.Equal(Email, person.Emails[0].Address);
                 Assert.Single(person.Phones);
-                Assert.Equal("8011115555", person.Phones[0].Number);
+                Assert.Equal(PhoneNumber, person.Phones[0].Number);
             }
             finally
             {

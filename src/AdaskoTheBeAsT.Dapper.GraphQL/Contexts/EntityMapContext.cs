@@ -82,92 +82,29 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <param name="entityMapper">An optional entity mapper.  This is used to map complex objects from Dapper mapping results.</param>
         /// <typeparam name="TItemType">The item type to be mapped.</typeparam>
         /// <returns>The mapped item.</returns>
-#pragma warning disable MA0051 // Method is too long
         public TItemType? Next<TItemType>(
             IEnumerable<string> fieldNames,
             Func<IDictionary<GraphQLName, GraphQLField>?, IHasSelectionSetNode?, IHasSelectionSetNode?> getSelectionSet,
             IEntityMapper<TItemType>? entityMapper = null)
             where TItemType : class
-#pragma warning restore MA0051 // Method is too long
         {
-            if (fieldNames == null)
-            {
-                throw new ArgumentNullException(nameof(fieldNames));
-            }
-
-            if (getSelectionSet == null)
-            {
-                throw new ArgumentNullException(nameof(getSelectionSet));
-            }
+            ValidateNextParameters(fieldNames, getSelectionSet);
 
             lock (_lockObject)
             {
-                if (_itemEnumerator == null ||
-                _splitOnEnumerator == null)
+                EnsureEnumeratorsInitialized();
+
+                if (!IsFieldSelected(fieldNames))
                 {
-                    throw new NotSupportedException("Cannot call Next() before calling Start()");
+                    return default;
                 }
 
-                var keys = fieldNames.Intersect(
-                    _currentSelectionSet?.Keys.Select(k => k.StringValue) ?? Enumerable.Empty<string>(),
-                    StringComparer.OrdinalIgnoreCase);
-                if (keys.Any())
-                {
-                    var item = default(TItemType);
-                    while (
-                        _itemEnumerator.MoveNext() &&
-                        _splitOnEnumerator.MoveNext())
-                    {
-                        // Whether a non-null object exists at this position or not,
-                        // the SplitOn is expecting this type here, so we will yield it.
-                        if (_splitOnEnumerator.Current == typeof(TItemType))
-                        {
-                            item = _itemEnumerator.Current as TItemType;
-                            break;
-                        }
-                    }
+                var item = FindNextItemOfType<TItemType>();
 
-                    if (entityMapper != null)
-                    {
-                        // Determine where the next entity mapper will get its selection set from
-                        var selectionSet = getSelectionSet(_currentSelectionSet, SelectionSet);
-
-                        var nextContext = new EntityMapContext
-                        {
-                            Items = Items!.Skip(MappedCount),
-                            SelectionSet = selectionSet,
-                            SplitOn = SplitOn!.Skip(MappedCount),
-                        };
-                        using (nextContext)
-                        {
-                            item = entityMapper.Map(nextContext);
-
-                            // Update enumerators to skip past items already mapped
-                            var mappedCount = nextContext.MappedCount;
-                            MappedCount += nextContext.MappedCount;
-                            var i = 0;
-                            while (
-
-                                // Less 1, the next time we iterate we
-                                // will advance by 1 as part of the iteration.
-                                i < mappedCount - 1 &&
-                                _itemEnumerator.MoveNext() &&
-                                _splitOnEnumerator.MoveNext())
-                            {
-                                i++;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        MappedCount++;
-                    }
-
-                    return item;
-                }
+                return entityMapper != null
+                    ? MapEntityWithMapper(item, getSelectionSet, entityMapper)
+                    : IncrementCountAndReturn(item);
             }
-
-            return default;
         }
 
         /// <summary>
@@ -197,6 +134,100 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
 
                 return default;
             }
+        }
+
+        private static void ValidateNextParameters(
+            IEnumerable<string> fieldNames,
+            Func<IDictionary<GraphQLName, GraphQLField>?, IHasSelectionSetNode?, IHasSelectionSetNode?> getSelectionSet)
+        {
+            if (fieldNames == null)
+            {
+                throw new ArgumentNullException(nameof(fieldNames));
+            }
+
+            if (getSelectionSet == null)
+            {
+                throw new ArgumentNullException(nameof(getSelectionSet));
+            }
+        }
+
+        private void EnsureEnumeratorsInitialized()
+        {
+            if (_itemEnumerator == null || _splitOnEnumerator == null)
+            {
+                throw new NotSupportedException("Cannot call Next() before calling Start()");
+            }
+        }
+
+        private bool IsFieldSelected(IEnumerable<string> fieldNames)
+        {
+            var selectedFieldNames = _currentSelectionSet?.Keys.Select(k => k.StringValue) ?? Enumerable.Empty<string>();
+            var matchingKeys = fieldNames.Intersect(selectedFieldNames, StringComparer.OrdinalIgnoreCase);
+            return matchingKeys.Any();
+        }
+
+        private TItemType? FindNextItemOfType<TItemType>()
+            where TItemType : class
+        {
+            while (_itemEnumerator!.MoveNext() && _splitOnEnumerator!.MoveNext())
+            {
+                // Whether a non-null object exists at this position or not,
+                // the SplitOn is expecting this type here, so we will yield it.
+                if (_splitOnEnumerator.Current == typeof(TItemType))
+                {
+                    return _itemEnumerator.Current as TItemType;
+                }
+            }
+
+            return default;
+        }
+
+        private TItemType? MapEntityWithMapper<TItemType>(
+            TItemType? item,
+            Func<IDictionary<GraphQLName, GraphQLField>?, IHasSelectionSetNode?, IHasSelectionSetNode?> getSelectionSet,
+            IEntityMapper<TItemType> entityMapper)
+            where TItemType : class
+        {
+#pragma warning disable CC0031 // Verify if delegate 'getSelectionSet' is null before invoking it - validated in ValidateNextParameters
+            var selectionSet = getSelectionSet(_currentSelectionSet, SelectionSet);
+#pragma warning restore CC0031
+
+            var nextContext = new EntityMapContext
+            {
+                Items = Items!.Skip(MappedCount),
+                SelectionSet = selectionSet,
+                SplitOn = SplitOn!.Skip(MappedCount),
+            };
+
+            using (nextContext)
+            {
+                item = entityMapper.Map(nextContext);
+                AdvanceEnumeratorsPastMappedItems(nextContext.MappedCount);
+                MappedCount += nextContext.MappedCount;
+            }
+
+            return item;
+        }
+
+        private void AdvanceEnumeratorsPastMappedItems(int mappedCount)
+        {
+            // Less 1, the next time we iterate we will advance by 1 as part of the iteration.
+            var advanceCount = mappedCount - 1;
+
+            for (var i = 0; i < advanceCount; i++)
+            {
+                if (!_itemEnumerator!.MoveNext() || !_splitOnEnumerator!.MoveNext())
+                {
+                    break;
+                }
+            }
+        }
+
+        private TItemType? IncrementCountAndReturn<TItemType>(TItemType? item)
+            where TItemType : class
+        {
+            MappedCount++;
+            return item;
         }
     }
 }
