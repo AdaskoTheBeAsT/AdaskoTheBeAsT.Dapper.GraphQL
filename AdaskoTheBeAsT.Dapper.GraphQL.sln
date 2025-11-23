@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.8.34330.188
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11217.181 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest", "test\integ\AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest\AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.csproj", "{C95C441C-B612-4D8B-9B54-734FDF1DEAA2}"
 EndProject
@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".props", ".props", "{23162B
 		.gitignore = .gitignore
 		AdaskoTheBeAsT.Dapper.GraphQL.sln.DotSettings = AdaskoTheBeAsT.Dapper.GraphQL.sln.DotSettings
 		AdaskoTheBeAsT.ruleset = AdaskoTheBeAsT.ruleset
+		azure-pipelines.yml = azure-pipelines.yml
+		coverage.settings.xml = coverage.settings.xml
 		DeterministicBuild.targets = DeterministicBuild.targets
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
@@ -46,6 +48,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".sarif", ".sarif", "{B1723107-B0EC-4B54-AD17-ABFDF19268CE}"
 	ProjectSection(SolutionItems) = preProject
 		.sarif\.gitkeep = .sarif\.gitkeep
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".config", ".config", "{C9AF5E03-F92F-4976-B13A-09D5579B27B2}"
+	ProjectSection(SolutionItems) = preProject
+		.config\dotnet-tools.json = .config\dotnet-tools.json
 	EndProjectSection
 EndProject
 Global

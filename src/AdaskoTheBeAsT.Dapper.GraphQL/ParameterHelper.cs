@@ -29,110 +29,115 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
         /// <typeparam name="TType">The type to get properties from.</typeparam>
         /// <param name="obj">The object to get properties from.</param>
         /// <returns>A list of key-value pairs of property names and values.</returns>
-#pragma warning disable MA0051 // Method is too long
         public static IEnumerable<KeyValuePair<string, object?>> GetSetFlatProperties<TType>(TType obj)
-#pragma warning restore MA0051 // Method is too long
         {
             var type = obj!.GetType();
-            PropertyInfo[] properties;
+            var properties = GetCachedFlatProperties(type);
 
-            lock (LockProperty)
-            {
-                if (!PropertyCache.TryGetValue(type, out var value))
-                {
-                    // Get a list of properties that are "flat" on this object, i.e. singular values
-                    properties = type
-                        .GetProperties()
-                        .Where(p =>
-                        {
-                            var typeInfo = GetTypeInfo(p.PropertyType);
-
-#if NET8_0_OR_GREATER
-                            // Explicitly permit primitive, value types
-                            if (typeInfo.IsPrimitive || typeInfo.IsValueType)
-                            {
-                                return true;
-                            }
-
-                            // Explicitly permit strings (they implement IEnumerable but should be treated as scalar values)
-                            if (p.PropertyType == typeof(string))
-                            {
-                                return true;
-                            }
-#endif
-#if NETSTANDARD2_0
-                            // Explicitly permit primitive, value, and serializable types
-                            if (typeInfo.IsSerializable || typeInfo.IsPrimitive || typeInfo.IsValueType)
-                            {
-                                return true;
-                            }
-
-                            // Explicitly permit strings (they implement IEnumerable but should be treated as scalar values)
-                            if (p.PropertyType == typeof(string))
-                            {
-                                return true;
-                            }
-#endif
-
-                            // Filter out list-types
-                            if (typeof(IEnumerable).IsAssignableFrom(p.PropertyType))
-                            {
-                                return false;
-                            }
-
-                            if (p.PropertyType.IsConstructedGenericType)
-                            {
-                                var typeDef = p.PropertyType.GetGenericTypeDefinition();
-                                if (typeof(IEnumerable<>).IsAssignableFrom(typeDef) ||
-                                    typeof(ICollection<>).IsAssignableFrom(typeDef) ||
-                                    typeof(IList<>).IsAssignableFrom(typeDef))
-                                {
-                                    return false;
-                                }
-                            }
-
-                            return true;
-                        })
-                        .ToArray();
-
-                    // Cache those properties
-                    PropertyCache[type] = properties;
-                }
-                else
-                {
-                    properties = value;
-                }
-            }
-
-            // Convert the properties to a dictionary where:
-            // Key   = property name
-            // Value = property value, or null if the property is set to its default value
             return properties
                 .ToDictionary(
                     prop => prop.Name,
-                    prop =>
-                    {
-                        // Ensure scalar values are properly skipped if they are set to their initial, default(type) value.
-                        var value = prop.GetValue(obj);
-                        if (value == null)
-                        {
-                            return value;
-                        }
-
-                        var valueType = value.GetType();
-                        var valueTypeInfo = GetTypeInfo(valueType);
-                        if (valueTypeInfo.IsValueType &&
-                            Equals(value, Activator.CreateInstance(valueType)))
-                        {
-                            return null;
-                        }
-
-                        return value;
-                    },
+                    prop => GetPropertyValueOrDefault(prop, obj),
                     StringComparer.OrdinalIgnoreCase)
-
-                // Then, filter out "unset" properties, or properties that are set to their default value
                 .Where(kvp => kvp.Value != null);
+        }
+
+        private static PropertyInfo[] GetCachedFlatProperties(Type type)
+        {
+            lock (LockProperty)
+            {
+                if (!PropertyCache.TryGetValue(type, out var cachedProperties))
+                {
+                    cachedProperties = type
+                        .GetProperties()
+                        .Where(IsPropertyFlat)
+                        .ToArray();
+
+                    PropertyCache[type] = cachedProperties;
+                }
+
+                return cachedProperties;
+            }
+        }
+
+        private static bool IsPropertyFlat(PropertyInfo property)
+        {
+            var typeInfo = GetTypeInfo(property.PropertyType);
+
+            if (IsPrimitiveOrValueTypeOrString(property.PropertyType, typeInfo))
+            {
+                return true;
+            }
+
+            return !IsExcludedEnumerableType(property.PropertyType);
+        }
+
+        private static bool IsPrimitiveOrValueTypeOrString(Type propertyType, TypeInfo typeInfo)
+        {
+#if NET8_0_OR_GREATER
+            // Explicitly permit primitive, value types, and strings
+            if (typeInfo.IsPrimitive || typeInfo.IsValueType || propertyType == typeof(string))
+            {
+                return true;
+            }
+#endif
+#if NETSTANDARD2_0
+            // Explicitly permit primitive, value, serializable types, and strings
+            if (typeInfo.IsSerializable || typeInfo.IsPrimitive || typeInfo.IsValueType || propertyType == typeof(string))
+            {
+                return true;
+            }
+#endif
+
+            return false;
+        }
+
+        private static bool IsExcludedEnumerableType(Type propertyType)
+        {
+            // Filter out IEnumerable types (but not strings, which are handled above)
+            if (typeof(IEnumerable).IsAssignableFrom(propertyType))
+            {
+                return true;
+            }
+
+            // Filter out generic collection types
+            if (propertyType.IsConstructedGenericType)
+            {
+                var typeDef = propertyType.GetGenericTypeDefinition();
+                if (typeof(IEnumerable<>).IsAssignableFrom(typeDef) ||
+                    typeof(ICollection<>).IsAssignableFrom(typeDef) ||
+                    typeof(IList<>).IsAssignableFrom(typeDef))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static object? GetPropertyValueOrDefault<TType>(PropertyInfo property, TType obj)
+        {
+            var value = property.GetValue(obj);
+            if (value == null)
+            {
+                return null;
+            }
+
+            if (IsValueSetToDefault(value))
+            {
+                return null;
+            }
+
+            return value;
+        }
+
+        private static bool IsValueSetToDefault(object value)
+        {
+            var valueType = value.GetType();
+            var valueTypeInfo = GetTypeInfo(valueType);
+
+            return valueTypeInfo.IsValueType &&
+                   Equals(value, Activator.CreateInstance(valueType));
         }
 
         private static TypeInfo GetTypeInfo(Type type)

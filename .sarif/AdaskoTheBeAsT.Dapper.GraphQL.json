@@ -1,0 +1,785 @@
+{
+  "$schema": "http://json.schemastore.org/sarif-1.0.0",
+  "version": "1.0.0",
+  "runs": [
+    {
+      "tool": {
+        "name": "Kompilator Microsoft (R) Visual C#",
+        "version": "5.0.0.0",
+        "fileVersion": "5.0.0-2.25523.111 (b0f34d51)",
+        "semanticVersion": "5.0.0",
+        "language": "pl-PL"
+      },
+      "results": [
+        {
+          "ruleId": "CS8620",
+          "level": "error",
+          "message": "Argumentu typu „Func<object[], TEntityType?>” nie można użyć dla parametru „map” typu „Func<object[], TEntityType>” w elemencie „IEnumerable<TEntityType> SqlMapper.Query<TEntityType>(IDbConnection cnn, string sql, Type[] types, Func<object[], TEntityType> map, object? param = null, IDbTransaction? transaction = null, bool buffered = true, string splitOn = \"Id\", int? commandTimeout = null, CommandType? commandType = null)” z powodu różnic w dopuszczalności wartości null przez typy referencyjne.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/SqlQueryContext.cs",
+                "region": {
+                  "startLine": 139,
+                  "startColumn": 22,
+                  "endLine": 139,
+                  "endColumn": 24
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CS8620",
+          "level": "error",
+          "message": "Argumentu typu „Func<object[], TEntityType?>” nie można użyć dla parametru „map” typu „Func<object[], TEntityType>” w elemencie „Task<IEnumerable<TEntityType>> SqlMapper.QueryAsync<TEntityType>(IDbConnection cnn, string sql, Type[] types, Func<object[], TEntityType> map, object? param = null, IDbTransaction? transaction = null, bool buffered = true, string splitOn = \"Id\", int? commandTimeout = null, CommandType? commandType = null)” z powodu różnic w dopuszczalności wartości null przez typy referencyjne.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/SqlQueryContext.cs",
+                "region": {
+                  "startLine": 216,
+                  "startColumn": 22,
+                  "endLine": 216,
+                  "endColumn": 24
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "S2326",
+          "level": "error",
+          "message": "'TModelType' is not used in the interface.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Interfaces/IQueryBuilder.cs",
+                "region": {
+                  "startLine": 10,
+                  "startColumn": 36,
+                  "endLine": 10,
+                  "endColumn": 46
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "IDE0028",
+          "level": "note",
+          "message": "Można uprościć inicjowanie kolekcji",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/SqlQueryContext.cs",
+                "region": {
+                  "startLine": 23,
+                  "startColumn": 21,
+                  "endLine": 23,
+                  "endColumn": 24
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/SqlQueryContext.cs",
+                "region": {
+                  "startLine": 23,
+                  "startColumn": 21,
+                  "endLine": 23,
+                  "endColumn": 37
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "UseCollectionExpressionName": "UseCollectionExpressionName"
+            }
+          }
+        },
+        {
+          "ruleId": "CC0014",
+          "level": "note",
+          "message": "You can use a ternary operator.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/SqlUpdateContext.cs",
+                "region": {
+                  "startLine": 43,
+                  "startColumn": 18,
+                  "endLine": 43,
+                  "endColumn": 20
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "MA0089",
+          "level": "note",
+          "message": "Use an overload with char instead of string",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/SqlQueryContext.cs",
+                "region": {
+                  "startLine": 143,
+                  "startColumn": 38,
+                  "endLine": 143,
+                  "endColumn": 41
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1510",
+          "level": "note",
+          "message": "Użyj „ArgumentNullException.ThrowIfNull” zamiast jawnego zgłaszania nowego wystąpienia wyjątku",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/EntityMapContext.cs",
+                "region": {
+                  "startLine": 143,
+                  "startColumn": 13,
+                  "endLine": 146,
+                  "endColumn": 14
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/EntityMapContext.cs",
+                "region": {
+                  "startLine": 143,
+                  "startColumn": 17,
+                  "endLine": 143,
+                  "endColumn": 27
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1510",
+          "level": "note",
+          "message": "Użyj „ArgumentNullException.ThrowIfNull” zamiast jawnego zgłaszania nowego wystąpienia wyjątku",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/EntityMapContext.cs",
+                "region": {
+                  "startLine": 148,
+                  "startColumn": 13,
+                  "endLine": 151,
+                  "endColumn": 14
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/EntityMapContext.cs",
+                "region": {
+                  "startLine": 148,
+                  "startColumn": 17,
+                  "endLine": 148,
+                  "endColumn": 32
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1510",
+          "ruleKey": "CA1510-001",
+          "level": "note",
+          "message": "Użyj „ArgumentNullException.ThrowIfNull” zamiast jawnego zgłaszania nowego wystąpienia wyjątku",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/EntityMapContext.cs",
+                "region": {
+                  "startLine": 143,
+                  "startColumn": 13,
+                  "endLine": 146,
+                  "endColumn": 14
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/EntityMapContext.cs",
+                "region": {
+                  "startLine": 143,
+                  "startColumn": 17,
+                  "endLine": 143,
+                  "endColumn": 27
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1510",
+          "ruleKey": "CA1510-001",
+          "level": "note",
+          "message": "Użyj „ArgumentNullException.ThrowIfNull” zamiast jawnego zgłaszania nowego wystąpienia wyjątku",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/EntityMapContext.cs",
+                "region": {
+                  "startLine": 148,
+                  "startColumn": 13,
+                  "endLine": 151,
+                  "endColumn": 14
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/EntityMapContext.cs",
+                "region": {
+                  "startLine": 148,
+                  "startColumn": 17,
+                  "endLine": 148,
+                  "endColumn": 32
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "RCS1197",
+          "level": "note",
+          "message": "Optimize StringBuilder.Append call",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/SqlDeleteContext.cs",
+                "region": {
+                  "startLine": 117,
+                  "startColumn": 23,
+                  "endLine": 117,
+                  "endColumn": 106
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1510",
+          "level": "note",
+          "message": "Użyj „ArgumentNullException.ThrowIfNull” zamiast jawnego zgłaszania nowego wystąpienia wyjątku",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Extensions/EnumerableExtensions.cs",
+                "region": {
+                  "startLine": 24,
+                  "startColumn": 13,
+                  "endLine": 27,
+                  "endColumn": 14
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Extensions/EnumerableExtensions.cs",
+                "region": {
+                  "startLine": 24,
+                  "startColumn": 17,
+                  "endLine": 24,
+                  "endColumn": 23
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1510",
+          "level": "note",
+          "message": "Użyj „ArgumentNullException.ThrowIfNull” zamiast jawnego zgłaszania nowego wystąpienia wyjątku",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Extensions/EnumerableExtensions.cs",
+                "region": {
+                  "startLine": 29,
+                  "startColumn": 13,
+                  "endLine": 32,
+                  "endColumn": 14
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Extensions/EnumerableExtensions.cs",
+                "region": {
+                  "startLine": 29,
+                  "startColumn": 17,
+                  "endLine": 29,
+                  "endColumn": 26
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1510",
+          "ruleKey": "CA1510-001",
+          "level": "note",
+          "message": "Użyj „ArgumentNullException.ThrowIfNull” zamiast jawnego zgłaszania nowego wystąpienia wyjątku",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Extensions/EnumerableExtensions.cs",
+                "region": {
+                  "startLine": 24,
+                  "startColumn": 13,
+                  "endLine": 27,
+                  "endColumn": 14
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Extensions/EnumerableExtensions.cs",
+                "region": {
+                  "startLine": 24,
+                  "startColumn": 17,
+                  "endLine": 24,
+                  "endColumn": 23
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1510",
+          "ruleKey": "CA1510-001",
+          "level": "note",
+          "message": "Użyj „ArgumentNullException.ThrowIfNull” zamiast jawnego zgłaszania nowego wystąpienia wyjątku",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Extensions/EnumerableExtensions.cs",
+                "region": {
+                  "startLine": 29,
+                  "startColumn": 13,
+                  "endLine": 32,
+                  "endColumn": 14
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Extensions/EnumerableExtensions.cs",
+                "region": {
+                  "startLine": 29,
+                  "startColumn": 17,
+                  "endLine": 29,
+                  "endColumn": 26
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "MA0028",
+          "level": "note",
+          "message": "Replace with AppendJoin()",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/SqlDeleteContext.cs",
+                "region": {
+                  "startLine": 117,
+                  "startColumn": 13,
+                  "endLine": 117,
+                  "endColumn": 107
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "Data": "ReplaceStringJoinWithAppendJoin"
+            }
+          }
+        },
+        {
+          "ruleId": "CC0031",
+          "level": "error",
+          "message": "Verify if delegate 'getSelectionSet' is null before invoking it.",
+          "suppressionStates": [
+            "suppressedInSource"
+          ],
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/EntityMapContext.cs",
+                "region": {
+                  "startLine": 192,
+                  "startColumn": 32,
+                  "endLine": 192,
+                  "endColumn": 83
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "MA0089",
+          "level": "note",
+          "message": "Use an overload with char instead of string",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/SqlQueryContext.cs",
+                "region": {
+                  "startLine": 220,
+                  "startColumn": 38,
+                  "endLine": 220,
+                  "endColumn": 41
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "RCS1197",
+          "level": "note",
+          "message": "Optimize StringBuilder.Append call",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/SqlUpdateContext.cs",
+                "region": {
+                  "startLine": 181,
+                  "startColumn": 23,
+                  "endLine": 181,
+                  "endColumn": 99
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "RCS1197",
+          "level": "note",
+          "message": "Optimize StringBuilder.Append call",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/SqlInsertContext.cs",
+                "region": {
+                  "startLine": 148,
+                  "startColumn": 23,
+                  "endLine": 148,
+                  "endColumn": 63
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "RCS1197",
+          "level": "note",
+          "message": "Optimize StringBuilder.Append call",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/SqlInsertContext.cs",
+                "region": {
+                  "startLine": 150,
+                  "startColumn": 23,
+                  "endLine": 150,
+                  "endColumn": 90
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "MA0028",
+          "level": "note",
+          "message": "Replace with AppendJoin()",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/SqlUpdateContext.cs",
+                "region": {
+                  "startLine": 181,
+                  "startColumn": 13,
+                  "endLine": 181,
+                  "endColumn": 100
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "Data": "ReplaceStringJoinWithAppendJoin"
+            }
+          }
+        },
+        {
+          "ruleId": "MA0028",
+          "level": "note",
+          "message": "Replace with AppendJoin()",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/SqlInsertContext.cs",
+                "region": {
+                  "startLine": 148,
+                  "startColumn": 13,
+                  "endLine": 148,
+                  "endColumn": 64
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "Data": "ReplaceStringJoinWithAppendJoin"
+            }
+          }
+        },
+        {
+          "ruleId": "MA0028",
+          "level": "note",
+          "message": "Replace with AppendJoin()",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///D:/GitHub/AdaskoTheBeAsT.Dapper.GraphQL/src/AdaskoTheBeAsT.Dapper.GraphQL/Contexts/SqlInsertContext.cs",
+                "region": {
+                  "startLine": 150,
+                  "startColumn": 13,
+                  "endLine": 150,
+                  "endColumn": 91
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "Data": "ReplaceStringJoinWithAppendJoin"
+            }
+          }
+        }
+      ],
+      "rules": {
+        "CA1510": {
+          "id": "CA1510",
+          "shortDescription": "Użyj pomocnika zgłaszania ArgumentNullException",
+          "fullDescription": "Pomocnicy zgłaszania są prostsi i wydajniejsi niż blok if konstruujący nowe wystąpienie wyjątku.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1510",
+          "properties": {
+            "category": "Maintainability",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CA1510-001": {
+          "id": "CA1510",
+          "shortDescription": "Użyj pomocnika zgłaszania ArgumentNullException",
+          "fullDescription": "Pomocnicy zgłaszania są prostsi i wydajniejsi niż blok if konstruujący nowe wystąpienie wyjątku.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1510",
+          "properties": {
+            "category": "Maintainability",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CC0014": {
+          "id": "CC0014",
+          "shortDescription": "Use ternary operator",
+          "defaultLevel": "note",
+          "helpUri": "https://code-cracker.github.io/diagnostics/CC0014.html",
+          "properties": {
+            "category": "Style",
+            "isEnabledByDefault": true
+          }
+        },
+        "CC0031": {
+          "id": "CC0031",
+          "shortDescription": "Check for null before calling a delegate",
+          "fullDescription": "In C#6 a delegate can be invoked using the null-propagating operator (?.) and it's invoke method to avoid throwing a NullReference exception when there is no method attached to the delegate. Or you can check for null before calling the delegate.",
+          "defaultLevel": "warning",
+          "helpUri": "https://code-cracker.github.io/diagnostics/CC0031.html",
+          "properties": {
+            "category": "Design",
+            "isEnabledByDefault": true
+          }
+        },
+        "CS8620": {
+          "id": "CS8620",
+          "shortDescription": "Argumentu nie można użyć dla parametru z powodu różnic w dopuszczalności wartości null przez typy referencyjne.",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8620)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "IDE0028": {
+          "id": "IDE0028",
+          "shortDescription": "Uprość inicjowanie kolekcji",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0028",
+          "properties": {
+            "category": "Style",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnforceOnBuild_Recommended"
+            ]
+          }
+        },
+        "MA0028": {
+          "id": "MA0028",
+          "shortDescription": "Optimize StringBuilder usage",
+          "defaultLevel": "note",
+          "helpUri": "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0028.md",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true
+          }
+        },
+        "MA0089": {
+          "id": "MA0089",
+          "shortDescription": "Optimize string method usage",
+          "defaultLevel": "note",
+          "helpUri": "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0089.md",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true
+          }
+        },
+        "RCS1197": {
+          "id": "RCS1197",
+          "shortDescription": "Optimize StringBuilder.Append/AppendLine call",
+          "defaultLevel": "note",
+          "helpUri": "https://josefpihrt.github.io/docs/roslynator/analyzers/RCS1197",
+          "properties": {
+            "category": "Roslynator",
+            "isEnabledByDefault": true
+          }
+        },
+        "S2326": {
+          "id": "S2326",
+          "shortDescription": "Unused type parameters should be removed",
+          "fullDescription": "Type parameters that aren’t used are dead code, which can only distract and possibly confuse developers during maintenance. Therefore, unused type parameters should be removed.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-2326",
+          "properties": {
+            "category": "Major Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

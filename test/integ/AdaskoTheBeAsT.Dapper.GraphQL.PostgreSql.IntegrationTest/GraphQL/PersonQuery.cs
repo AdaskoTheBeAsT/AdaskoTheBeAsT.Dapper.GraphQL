@@ -19,6 +19,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
         ObjectGraphType
     {
         private const int MaxPageSize = 10;
+        private const string PersonTableAlias = "person";
         private readonly IPersonRepository _personRepository;
 
 #pragma warning disable MA0051 // Method is too long
@@ -35,11 +36,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                 .Description("A list of people.")
                 .Resolve(context =>
                     {
-                        var alias = "person";
                         var query = SqlBuilder
-                            .From<Person>(alias)
-                            .OrderBy($"{alias}.Id");
-                        query = personQueryBuilder.Build(query, context.FieldAst, alias);
+                            .From<Person>(PersonTableAlias)
+                            .OrderBy($"{PersonTableAlias}.Id");
+                        query = personQueryBuilder.Build(query, context.FieldAst, PersonTableAlias);
 
                         // Create a mapper that understands how to uniquely identify the 'Person' class,
                         // and will deduplicate people as they pass through it
@@ -58,11 +58,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                 .Description("A list of people fetched asynchronously.")
                 .ResolveAsync(async context =>
                 {
-                    var alias = "person";
                     var query = SqlBuilder
-                        .From($"Person {alias}")
-                        .OrderBy($"{alias}.Id");
-                    query = personQueryBuilder.Build(query, context.FieldAst, alias);
+                        .From($"Person {PersonTableAlias}")
+                        .OrderBy($"{PersonTableAlias}.Id");
+                    query = personQueryBuilder.Build(query, context.FieldAst, PersonTableAlias);
 
                     // Create a mapper that understands how to uniquely identify the 'Person' class,
                     // and will deduplicate people as they pass through it
@@ -84,17 +83,16 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                 .Resolve(context =>
                 {
                     var id = context!.Arguments!["id"].Value;
-                    var alias = "person";
                     var query = SqlBuilder
-                        .From($"Person {alias}")
-                        .Where($"{alias}.Id = @id", new { id })
+                        .From($"Person {PersonTableAlias}")
+                        .Where($"{PersonTableAlias}.Id = @id", new { id })
 
                         // Even though we're only getting a single person, the process of deduplication
                         // may return several entities, so we sort by ID here for consistency
                         // with test results.
-                        .OrderBy($"{alias}.Id");
+                        .OrderBy($"{PersonTableAlias}.Id");
 
-                    query = personQueryBuilder.Build(query, context.FieldAst, alias);
+                    query = personQueryBuilder.Build(query, context.FieldAst, PersonTableAlias);
 
                     // Create a mapper that understands how to uniquely identify the 'Person' class,
                     // and will deduplicate people as they pass through it

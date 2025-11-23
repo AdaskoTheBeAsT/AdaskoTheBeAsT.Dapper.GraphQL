@@ -7,18 +7,30 @@
     <Company>Landmark Home Warranty</Company>
     <Description>A library designed to integrate the Dapper and graphql-dotnet projects with ease-of-use in mind and performance as the primary concern.</Description>
     <Copyright>Copyright 2023</Copyright>
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/AdaskoTheBeAsT/AdaskoTheBeAsT.Dapper.GraphQL</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/AdaskoTheBeAsT/AdaskoTheBeAsT.Dapper.GraphQL.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
+    <RepositoryType>github</RepositoryType>
     <PackageTags>Dapper Dapper.SqlBuilder GraphQL graphql-dotnet core coreclr .NET</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="Dapper.SqlBuilder" Version="2.1.66" />
     <PackageReference Include="GraphQL" Version="8.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE" Pack="true" PackagePath="" Visible="false" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
