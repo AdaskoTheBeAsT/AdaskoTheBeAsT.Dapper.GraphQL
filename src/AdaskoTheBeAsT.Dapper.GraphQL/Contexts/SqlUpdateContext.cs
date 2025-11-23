@@ -20,9 +20,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
             string table,
             dynamic? parameters = null)
         {
+            IEnumerable<KeyValuePair<string, object?>>? flatProperties = null;
             if (parameters != null && !(parameters is IEnumerable<KeyValuePair<string, object>>))
             {
-                parameters = ParameterHelper.GetSetFlatProperties(parameters);
+                flatProperties = ParameterHelper.GetSetFlatProperties(parameters);
+                parameters = flatProperties;
             }
 
             Parameters = new DynamicParameters(parameters);
@@ -30,7 +32,24 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
             Table = table;
             _template = _sqlBuilder.AddTemplate(@"
 /**where**/");
-            _updateParameterNames = new HashSet<string>(Parameters.ParameterNames, StringComparer.OrdinalIgnoreCase);
+
+            // Get parameter names from the flat properties if available, otherwise from DynamicParameters
+            if (flatProperties != null)
+            {
+                _updateParameterNames = new HashSet<string>(
+                    flatProperties.Select(kvp => kvp.Key),
+                    StringComparer.OrdinalIgnoreCase);
+            }
+            else if (parameters is IEnumerable<KeyValuePair<string, object>> kvpEnum)
+            {
+                _updateParameterNames = new HashSet<string>(
+                    kvpEnum.Select(kvp => kvp.Key),
+                    StringComparer.OrdinalIgnoreCase);
+            }
+            else
+            {
+                _updateParameterNames = new HashSet<string>(Parameters.ParameterNames, StringComparer.OrdinalIgnoreCase);
+            }
         }
 
         public DynamicParameters Parameters { get; set; }

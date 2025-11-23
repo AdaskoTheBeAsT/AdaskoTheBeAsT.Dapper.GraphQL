@@ -51,7 +51,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories
 
         public Task<IList<Person>> GetPeopleAsync(
             int? first,
+#if NET6_0_OR_GREATER
+            DateOnly? createdAfter,
+#else
             DateTime? createdAfter,
+#endif
             CancellationToken cancellationToken)
         {
             if (Context == null)
@@ -59,7 +63,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories
                 throw new ArgumentNullException(string.Empty);
             }
 
-            var sWhere = createdAfter != null ? $"{_alias}.CreateDate > '{createdAfter}'" : string.Empty;
+            var sWhere = createdAfter != null ? $"{_alias}.CreateDate > '{createdAfter:yyyy-MM-dd}'" : string.Empty;
             var query = this.GetQuery(Context, _personQueryBuilder, sWhere);
 
             using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
@@ -74,10 +78,13 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories
             }
         }
 
-#if NET6_0_OR_GREATER
         public Task<IList<Person>> GetPeopleReversedAsync(
             int? last,
+#if NET6_0_OR_GREATER
+            DateOnly? createdBefore,
+#else
             DateTime? createdBefore,
+#endif
             CancellationToken cancellationToken)
         {
             if (Context == null)
@@ -85,7 +92,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories
                 throw new ArgumentNullException(string.Empty);
             }
 
-            var sWhere = createdBefore != null ? $"{_alias}.CreateDate < @{createdBefore}" : string.Empty;
+            var sWhere = createdBefore != null ? $"{_alias}.CreateDate < '{createdBefore:yyyy-MM-dd}'" : string.Empty;
             var query = this.GetQuery(Context, _personQueryBuilder, sWhere);
 
             using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
@@ -93,17 +100,20 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories
                 var results = query
                     .Execute(connection, Context.FieldAst, _personMapper)
                     .Distinct()
-                    .If(last.HasValue, x => x.TakeLast(last ?? 0))
+                    .If(last.HasValue, x => x.Reverse().Take(last ?? 0).Reverse())
                     .ToList();
 
                 return Task.FromResult(results as IList<Person>);
             }
         }
-#endif
 
         public Task<bool> GetHasNextPageAsync(
             int? first,
+#if NET6_0_OR_GREATER
+            DateOnly? createdAfter,
+#else
             DateTime? createdAfter,
+#endif
             CancellationToken cancellationToken)
         {
             if (Context == null)
@@ -111,7 +121,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories
                 throw new ArgumentNullException(string.Empty);
             }
 
-            var sWhere = createdAfter != null ? $"{_alias}.CreateDate > '{createdAfter}'" : string.Empty;
+            var sWhere = createdAfter != null ? $"{_alias}.CreateDate > '{createdAfter:yyyy-MM-dd}'" : string.Empty;
             var query = this.GetQuery(Context, _personQueryBuilder, sWhere);
 
             using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
@@ -125,10 +135,13 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories
             }
         }
 
-#if NET6_0_OR_GREATER
         public Task<bool> GetHasPreviousPageAsync(
             int? last,
+#if NET6_0_OR_GREATER
+            DateOnly? createdBefore,
+#else
             DateTime? createdBefore,
+#endif
             CancellationToken cancellationToken)
         {
             if (Context == null)
@@ -136,19 +149,20 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories
                 throw new ArgumentNullException(string.Empty);
             }
 
-            var sWhere = createdBefore != null ? $"{_alias}.CreateDate < '{createdBefore}'" : string.Empty;
+            var sWhere = createdBefore != null ? $"{_alias}.CreateDate < '{createdBefore:yyyy-MM-dd}'" : string.Empty;
             var query = this.GetQuery(Context, _personQueryBuilder, sWhere);
 
             using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
             {
+                var items = query
+                    .Execute(connection, Context.FieldAst, _personMapper)
+                    .Distinct()
+                    .ToList();
+
                 return Task.FromResult(
-                    query
-                        .Execute(connection, Context.FieldAst, _personMapper)
-                        .Distinct()
-                        .SkipLast(last ?? 0)
-                        .Any());
+                    items.Count > (last ?? 0) &&
+                    items.Reverse<Person>().Skip(last ?? 0).Any());
             }
         }
-#endif
     }
 }

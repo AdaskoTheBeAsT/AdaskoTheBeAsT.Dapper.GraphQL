@@ -320,6 +320,320 @@ Check out the [`test/integ/AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationT
 
 ---
 
+## 📅 DateOnly & TimeOnly Support (.NET 6+)
+
+### Overview
+
+This project properly supports `DateOnly` and `TimeOnly` types introduced in .NET 6 while maintaining `DateTime` compatibility for .NET Framework through conditional compilation.
+
+### Current Implementation Status ✅
+
+**Person.CreateDate Example:**
+```csharp
+public class Person
+{
+#if NET6_0_OR_GREATER
+    // .NET 6+ uses DateOnly for PostgreSQL DATE columns
+    public DateOnly CreateDate { get; set; }
+#else
+    // .NET Framework uses DateTime for PostgreSQL DATE columns
+    public DateTime CreateDate { get; set; }
+#endif
+}
+```
+
+All repository methods, GraphQL resolvers, and tests have been updated to support both types across all target frameworks.
+
+### Database Provider Support
+
+#### 🐘 PostgreSQL (Npgsql) - ✅ NATIVE SUPPORT
+
+**Status:** Fully supported since Npgsql 6.0+
+
+**Configuration:** None required - automatic mapping!
+
+```csharp
+// Npgsql automatically maps:
+// PostgreSQL DATE     -> DateOnly (on .NET 6+) or DateTime (on .NET Framework)
+// PostgreSQL TIME     -> TimeOnly (on .NET 6+)
+// PostgreSQL TIMESTAMP -> DateTime
+```
+
+**Version Requirements:**
+- Npgsql 6.0+ for .NET 6+ DateOnly support
+- Npgsql 4.0+ for .NET Framework DateTime support
+
+**Benefits:**
+- Zero configuration needed
+- Strongly-typed Dapper queries work out of the box
+- No custom type handlers required
+
+---
+
+#### 🗄️ SQL Server - ⚠️ REQUIRES TYPE HANDLERS (Dapper)
+
+**Status:** EF Core 8+ has native support, but Dapper requires custom TypeHandlers
+
+**Configuration Required:**
+
+```csharp
+using Dapper;
+using System.Data;
+
+// Add these at application startup
+SqlMapper.AddTypeHandler(new DapperSqlDateOnlyTypeHandler());
+SqlMapper.AddTypeHandler(new DapperSqlTimeOnlyTypeHandler());
+
+public class DapperSqlDateOnlyTypeHandler : SqlMapper.TypeHandler<DateOnly>
+{
+    public override DateOnly Parse(object value) => DateOnly.FromDateTime((DateTime)value);
+    
+    public override void SetValue(IDbDataParameter parameter, DateOnly value)
+    {
+        parameter.DbType = DbType.Date;
+        parameter.Value = value.ToDateTime(TimeOnly.MinValue);
+    }
+}
+
+public class DapperSqlTimeOnlyTypeHandler : SqlMapper.TypeHandler<TimeOnly>
+{
+    public override TimeOnly Parse(object value) => TimeOnly.FromTimeSpan((TimeSpan)value);
+    
+    public override void SetValue(IDbDataParameter parameter, TimeOnly value)
+    {
+        parameter.DbType = DbType.Time;
+        parameter.Value = value.ToTimeSpan();
+    }
+}
+```
+
+**Database Schema:**
+```sql
+CREATE TABLE Person (
+    Id INT PRIMARY KEY,
+    FirstName NVARCHAR(50),
+    CreateDate DATE,           -- Maps to DateOnly
+    WorkStartTime TIME         -- Maps to TimeOnly
+)
+```
+
+**Resources:**
+- [Dapper DateOnly/TimeOnly Tutorial](https://dev.to/karenpayneoregon/dapper-dateonlytimeonly-1ii9)
+- [EF Core 8 DateOnly Support](https://erikej.github.io/efcore/sqlserver/2023/09/03/efcore-dateonly-timeonly...)
+
+---
+
+#### 🐬 MySQL - ⚠️ REQUIRES TYPE HANDLERS
+
+**Status:** Limited support - requires custom TypeHandlers
+
+**Known Issues:**
+- MySqlConnector may throw `InvalidCastException` with DateOnly
+- `MySqlDataReader.GetValue` does not natively support DateOnly
+
+**Configuration Required:**
+
+```csharp
+using Dapper;
+using System.Data;
+
+// Add at application startup
+SqlMapper.AddTypeHandler(new MySqlDateOnlyTypeHandler());
+SqlMapper.AddTypeHandler(new MySqlTimeOnlyTypeHandler());
+
+public class MySqlDateOnlyTypeHandler : SqlMapper.TypeHandler<DateOnly>
+{
+    public override DateOnly Parse(object value)
+    {
+        if (value is DateTime dt)
+            return DateOnly.FromDateTime(dt);
+        if (value is MySqlDateTime mySqlDt)
+            return DateOnly.FromDateTime(mySqlDt.GetDateTime());
+        
+        return DateOnly.Parse(value.ToString()!);
+    }
+    
+    public override void SetValue(IDbDataParameter parameter, DateOnly value)
+    {
+        parameter.DbType = DbType.Date;
+        parameter.Value = value.ToDateTime(TimeOnly.MinValue);
+    }
+}
+
+public class MySqlTimeOnlyTypeHandler : SqlMapper.TypeHandler<TimeOnly>
+{
+    public override TimeOnly Parse(object value)
+    {
+        if (value is TimeSpan ts)
+            return TimeOnly.FromTimeSpan(ts);
+        
+        return TimeOnly.Parse(value.ToString()!);
+    }
+    
+    public override void SetValue(IDbDataParameter parameter, TimeOnly value)
+    {
+        parameter.DbType = DbType.Time;
+        parameter.Value = value.ToTimeSpan();
+    }
+}
+```
+
+**Database Schema:**
+```sql
+CREATE TABLE Person (
+    Id INT PRIMARY KEY,
+    FirstName VARCHAR(50),
+    CreateDate DATE,           -- Maps to DateOnly with custom handler
+    WorkStartTime TIME         -- Maps to TimeOnly with custom handler
+)
+```
+
+**Resources:**
+- [Stack Overflow: DateOnly with MySQL](https://stackoverflow.com/questions/79067781/using-dateonly-with-entity-framework-core-and-mysql)
+
+---
+
+#### 🦅 Oracle - ⚠️ REQUIRES TYPE HANDLERS
+
+**Status:** Limited support - requires custom TypeHandlers
+
+**Configuration Required:**
+
+```csharp
+using Dapper;
+using System.Data;
+
+// Add at application startup
+SqlMapper.AddTypeHandler(new OracleDateOnlyTypeHandler());
+
+public class OracleDateOnlyTypeHandler : SqlMapper.TypeHandler<DateOnly>
+{
+    public override DateOnly Parse(object value)
+    {
+        if (value is DateTime dt)
+            return DateOnly.FromDateTime(dt);
+        
+        return DateOnly.Parse(value.ToString()!);
+    }
+    
+    public override void SetValue(IDbDataParameter parameter, DateOnly value)
+    {
+        parameter.DbType = DbType.Date;
+        parameter.Value = value.ToDateTime(TimeOnly.MinValue);
+    }
+}
+```
+
+**Database Schema:**
+```sql
+CREATE TABLE Person (
+    Id NUMBER PRIMARY KEY,
+    FirstName VARCHAR2(50),
+    CreateDate DATE            -- Maps to DateOnly with custom handler
+)
+```
+
+**Note:** Oracle's `DATE` type includes time, so consider using `TIMESTAMP` for full DateTime and custom date-only columns for DateOnly.
+
+---
+
+#### 🪶 SQLite - ✅ NATIVE SUPPORT
+
+**Status:** Fully supported since Microsoft.Data.Sqlite 6.0+
+
+**Configuration:** None required - automatic mapping!
+
+```csharp
+// Microsoft.Data.Sqlite automatically maps:
+// SQLite DATE (TEXT) -> DateOnly (on .NET 6+) or DateTime (on .NET Framework)
+// SQLite TIME (TEXT) -> TimeOnly (on .NET 6+)
+```
+
+**Database Schema:**
+```sql
+CREATE TABLE Person (
+    Id INTEGER PRIMARY KEY,
+    FirstName TEXT,
+    CreateDate DATE,           -- Stored as TEXT, mapped to DateOnly
+    WorkStartTime TIME         -- Stored as TEXT, mapped to TimeOnly
+)
+```
+
+**Version Requirements:**
+- Microsoft.Data.Sqlite 6.0+ for DateOnly/TimeOnly support
+
+---
+
+### Implementation Checklist
+
+When adding new DATE or TIME columns:
+
+- [ ] **Add conditional compilation to model:**
+```csharp
+#if NET6_0_OR_GREATER
+    public DateOnly BirthDate { get; set; }
+#else
+    public DateTime BirthDate { get; set; }
+#endif
+```
+
+- [ ] **Update interface method signatures** with conditional types
+- [ ] **Update repository implementations** with conditional types
+- [ ] **Update GraphQL resolvers** if applicable
+- [ ] **Update cursor handling** for GraphQL connections (DateOnly cursors are shorter)
+- [ ] **Add conditional test expectations:**
+```csharp
+#if NET6_0_OR_GREATER
+    // DateOnly format: "1.01.2019" (no time)
+    var expectedCursor = "MS4wMS4yMDE5";
+#else
+    // DateTime format: "1.01.2019 00:00:00"
+    var expectedCursor = "MS4wMS4yMDE5IDAwOjAwOjAw";
+#endif
+```
+
+- [ ] **Configure TypeHandlers** if using SQL Server, MySQL, or Oracle
+- [ ] **Test on all target frameworks**
+
+### Important Dapper Limitation ⚠️
+
+**Dynamic Queries Issue:**
+```csharp
+// ❌ May return DateTime instead of DateOnly on .NET 6+
+var result = connection.Query("SELECT CreateDate FROM Person").First();
+var date = result.CreateDate; // Might be DateTime, not DateOnly!
+
+// ✅ Strongly-typed queries work correctly
+var result = connection.Query<Person>("SELECT * FROM Person").First();
+var date = result.CreateDate; // Will be DateOnly on .NET 6+
+```
+
+**Solution:** Always use strongly-typed Dapper queries (which this project does).
+
+### GraphQL Cursor Format Differences
+
+DateOnly cursors are shorter than DateTime cursors:
+- **DateTime cursor:** `MS4wMS4yMDE5IDAwOjAwOjAw` (base64: "1.01.2019 00:00:00")
+- **DateOnly cursor:** `MS4wMS4yMDE5` (base64: "1.01.2019")
+
+Use conditional expectations in tests as shown in [`GraphQLTests.cs:364-426`](test/integ/AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest/GraphQLTests.cs).
+
+### Benefits of Using DateOnly
+
+1. **Type Safety** - Can't accidentally add time to dates
+2. **Clarity** - Intent is explicit (date vs timestamp)
+3. **Performance** - Smaller memory footprint (no time component)
+4. **Correctness** - Avoids timezone and midnight confusion
+
+### Additional Resources
+
+- [Npgsql Date/Time Documentation](https://www.npgsql.org/doc/types/datetime.html)
+- [Dapper DateOnly/TimeOnly Tutorial](https://conradakunga.com/blog/dapper-part-7-adding-dateonly-timeonly-support/)
+- [EF Core 8 DateOnly Support](https://erikej.github.io/efcore/sqlserver/2023/09/03/efcore-dateonly-timeonly...)
+- [.NET DateOnly Documentation](https://learn.microsoft.com/en-us/dotnet/api/system.dateonly)
+
+---
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

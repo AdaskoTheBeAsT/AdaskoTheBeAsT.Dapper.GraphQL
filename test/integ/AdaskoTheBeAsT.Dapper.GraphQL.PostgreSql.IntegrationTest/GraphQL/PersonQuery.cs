@@ -126,9 +126,17 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
             _personRepository.Context = context;
 
             var first = context.First;
+#if NET6_0_OR_GREATER
+            var afterCursor = Cursor.FromCursor<DateOnly?>(context.After);
+#else
             var afterCursor = Cursor.FromCursor<DateTime?>(context.After);
+#endif
             var last = context.Last;
+#if NET6_0_OR_GREATER
+            var beforeCursor = Cursor.FromCursor<DateOnly?>(context.Before);
+#else
             var beforeCursor = Cursor.FromCursor<DateTime?>(context.Before);
+#endif
             var cancellationToken = context.CancellationToken;
 
             var getPersonTask = GetPeopleAsync(first, afterCursor, last, beforeCursor, cancellationToken);
@@ -170,7 +178,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
 
         private async Task<bool> GetHasNextPageAsync(
             int? first,
+#if NET6_0_OR_GREATER
+            DateOnly? afterCursor,
+#else
             DateTime? afterCursor,
+#endif
             CancellationToken cancellationToken)
         {
             return first.HasValue && await _personRepository.GetHasNextPageAsync(first, afterCursor, cancellationToken);
@@ -181,7 +193,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
 #pragma warning disable S2325 // Methods and properties that don't access instance data should be static
         private async Task<bool> GetHasPreviousPageAsync(
             int? last,
+#if NET6_0_OR_GREATER
+            DateOnly? beforeCursor,
+#else
             DateTime? beforeCursor,
+#endif
             CancellationToken cancellationToken)
         {
 #if NET6_0_OR_GREATER
@@ -198,9 +214,17 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
 #pragma warning disable S1172 // Unused method parameters should be removed
         private Task<IList<Person>> GetPeopleAsync(
            int? first,
+#if NET6_0_OR_GREATER
+           DateOnly? afterCursor,
+#else
            DateTime? afterCursor,
+#endif
            int? last,
+#if NET6_0_OR_GREATER
+           DateOnly? beforeCursor,
+#else
            DateTime? beforeCursor,
+#endif
            CancellationToken cancellationToken)
 #pragma warning restore S1172 // Unused method parameters should be removed
         {

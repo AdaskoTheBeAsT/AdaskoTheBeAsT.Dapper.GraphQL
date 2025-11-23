@@ -3,13 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+#if NET9_0_OR_GREATER
+using System.Threading;
+#endif
 
 namespace AdaskoTheBeAsT.Dapper.GraphQL
 {
     public static class ParameterHelper
     {
+#if NET9_0_OR_GREATER
+        private static readonly Lock LockProperty = new();
+        private static readonly Lock LockType = new();
+#endif
+#if NET8_0 || NETSTANDARD2_0
         private static readonly object LockProperty = new();
         private static readonly object LockType = new();
+#endif
+
         private static readonly Dictionary<Type, PropertyInfo[]> PropertyCache = [];
         private static readonly Dictionary<Type, TypeInfo> TypeInfoCache = [];
 
@@ -37,11 +47,32 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
                         {
                             var typeInfo = GetTypeInfo(p.PropertyType);
 
+#if NET8_0_OR_GREATER
+                            // Explicitly permit primitive, value types
+                            if (typeInfo.IsPrimitive || typeInfo.IsValueType)
+                            {
+                                return true;
+                            }
+
+                            // Explicitly permit strings (they implement IEnumerable but should be treated as scalar values)
+                            if (p.PropertyType == typeof(string))
+                            {
+                                return true;
+                            }
+#endif
+#if NETSTANDARD2_0
                             // Explicitly permit primitive, value, and serializable types
                             if (typeInfo.IsSerializable || typeInfo.IsPrimitive || typeInfo.IsValueType)
                             {
                                 return true;
                             }
+
+                            // Explicitly permit strings (they implement IEnumerable but should be treated as scalar values)
+                            if (p.PropertyType == typeof(string))
+                            {
+                                return true;
+                            }
+#endif
 
                             // Filter out list-types
                             if (typeof(IEnumerable).IsAssignableFrom(p.PropertyType))
