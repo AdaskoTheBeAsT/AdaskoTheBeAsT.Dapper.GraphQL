@@ -88,9 +88,9 @@ steps:
     displayName: Test
     inputs:
       command: test
-      projects: "$(unitTestProjects)"
       publishTestResults: false
       arguments: >-
+        AdaskoTheBeAsT.Dapper.GraphQL.sln
         --configuration $(buildConfiguration)
         --collect:"Code Coverage"
         --collect:"XPlat Code Coverage"
