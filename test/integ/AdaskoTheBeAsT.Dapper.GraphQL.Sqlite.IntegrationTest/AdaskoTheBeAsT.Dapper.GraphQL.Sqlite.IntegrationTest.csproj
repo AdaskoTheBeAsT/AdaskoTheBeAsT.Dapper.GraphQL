@@ -48,4 +48,8 @@
     <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.Dapper.GraphQL.Sqlite\AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
+  </ItemGroup>
+
 </Project>

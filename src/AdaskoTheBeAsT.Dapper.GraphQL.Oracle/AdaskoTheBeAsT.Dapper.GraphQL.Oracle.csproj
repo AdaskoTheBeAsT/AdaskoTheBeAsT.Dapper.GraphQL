@@ -37,4 +37,8 @@
     <PackageReference Include="Oracle.ManagedDataAccess" Version="[23.26.200,24.0.0)" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
+  </ItemGroup>
+
 </Project>
