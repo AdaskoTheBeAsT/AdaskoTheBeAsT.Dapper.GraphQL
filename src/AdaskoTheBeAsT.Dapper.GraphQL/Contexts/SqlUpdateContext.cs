@@ -111,7 +111,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
                 options = SqlMapperOptions.DefaultOptions;
             }
 
-            var result = connection.Execute(BuildSql(), Parameters, transaction, options.CommandTimeout, options.CommandType);
+            var result = connection.Execute(BuildSql(GetPrefix(connection)), Parameters, transaction, options.CommandTimeout, options.CommandType);
             return result;
         }
 
@@ -128,7 +128,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
                 options = SqlMapperOptions.DefaultOptions;
             }
 
-            var result = await connection.ExecuteAsync(BuildSql(), Parameters, transaction, options.CommandTimeout, options.CommandType)
+            var result = await connection.ExecuteAsync(BuildSql(GetPrefix(connection)), Parameters, transaction, options.CommandTimeout, options.CommandType)
                 .ConfigureAwait(false);
             return result;
         }
@@ -155,7 +155,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <returns>The rendered SQL statement.</returns>
         public override string ToString()
         {
-            return BuildSql();
+            return BuildSql(SqlBuilderOptions.Default.ParameterPrefix);
         }
 
         /// <summary>
@@ -165,20 +165,21 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <param name="parameters">Parameters included in the statement.</param>
         public SqlUpdateContext Where(string where, dynamic? parameters = null)
         {
-            Parameters.AddDynamicParams(parameters);
-            _sqlBuilder.Where(where);
-            return this;
+            return AndWhere(where, parameters);
         }
 
-        /// <summary>
-        /// Builds the UPDATE statement.
-        /// </summary>
-        /// <returns>A SQL UPDATE statement.</returns>
-        private string BuildSql()
+        private static string GetPrefix(IDbConnection connection)
+        {
+            return connection is IDapperGraphQlConnection wrapper
+                ? wrapper.Options.ParameterPrefix
+                : SqlBuilderOptions.Default.ParameterPrefix;
+        }
+
+        private string BuildSql(string parameterPrefix)
         {
             var sb = new StringBuilder();
             sb.Append("UPDATE ").Append(Table).Append(" SET ");
-            sb.Append(string.Join(", ", _updateParameterNames.Select(name => $"{name} = @{name}")));
+            sb.Append(string.Join(", ", _updateParameterNames.Select(name => $"{name} = {parameterPrefix}{name}")));
             sb.Append(_template.RawSql);
             return sb.ToString();
         }

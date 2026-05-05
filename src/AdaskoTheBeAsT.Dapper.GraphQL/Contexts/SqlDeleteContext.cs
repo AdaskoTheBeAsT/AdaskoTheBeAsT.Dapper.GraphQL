@@ -59,7 +59,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         {
             options ??= SqlMapperOptions.DefaultOptions;
 
-            var result = connection.Execute(BuildSql(), Parameters, transaction, options.CommandTimeout, options.CommandType);
+            var result = connection.Execute(BuildSql(GetPrefix(connection)), Parameters, transaction, options.CommandTimeout, options.CommandType);
             if (_deletes != null)
             {
                 // Execute each delete and aggregate the results
@@ -79,7 +79,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         {
             options ??= SqlMapperOptions.DefaultOptions;
 
-            var result = await connection.ExecuteAsync(BuildSql(), Parameters, transaction, options.CommandTimeout, options.CommandType)
+            var result = await connection.ExecuteAsync(BuildSql(GetPrefix(connection)), Parameters, transaction, options.CommandTimeout, options.CommandType)
                 .ConfigureAwait(false);
 
             if (_deletes != null)
@@ -103,18 +103,21 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <returns>The rendered SQL statement.</returns>
         public override string ToString()
         {
-            return BuildSql();
+            return BuildSql(SqlBuilderOptions.Default.ParameterPrefix);
         }
 
-        /// <summary>
-        /// Builds the DELETE statement.
-        /// </summary>
-        /// <returns>A SQL DELETE statement.</returns>
-        private string BuildSql()
+        private static string GetPrefix(IDbConnection connection)
+        {
+            return connection is IDapperGraphQlConnection wrapper
+                ? wrapper.Options.ParameterPrefix
+                : SqlBuilderOptions.Default.ParameterPrefix;
+        }
+
+        private string BuildSql(string parameterPrefix)
         {
             var sb = new StringBuilder();
             sb.Append("DELETE FROM ").Append(Table).Append(" WHERE ");
-            sb.Append(string.Join(" AND ", Parameters.ParameterNames.Select(name => $"{name} = @{name}")));
+            sb.Append(string.Join(" AND ", Parameters.ParameterNames.Select(name => $"{name} = {parameterPrefix}{name}")));
             return sb.ToString();
         }
     }

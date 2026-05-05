@@ -362,7 +362,7 @@ query {
 }");
 
 #if NET6_0_OR_GREATER
-            // GraphQL.NET v8 with DateOnly (NET 6+) uses culture-invariant date formatting without time
+            // Cursor encodes DateOnly as ISO yyyy-MM-dd via InvariantCulture
             var expectedJson = @"
 {
   'data': {
@@ -373,27 +373,27 @@ query {
             'firstName': 'Hyrum',
             'lastName': 'Clyde'
           },
-          'cursor': 'MS4wMS4yMDE5'
+          'cursor': 'MjAxOS0wMS0wMQ=='
         },
         {
           'node': {
             'firstName': 'Doug',
             'lastName': 'Day'
           },
-          'cursor': 'Mi4wMS4yMDE5'
+          'cursor': 'MjAxOS0wMS0wMg=='
         }
       ],
       'pageInfo': {
         'hasNextPage': true,
         'hasPreviousPage': false,
-        'endCursor': 'Mi4wMS4yMDE5',
-        'startCursor': 'MS4wMS4yMDE5'
+        'endCursor': 'MjAxOS0wMS0wMg==',
+        'startCursor': 'MjAxOS0wMS0wMQ=='
       }
     }
   }
 }";
 #else
-            // GraphQL.NET v8 with DateTime (.NET Framework) uses culture-invariant date formatting with time
+            // Cursor encodes DateTime as yyyy-MM-dd HH:mm:ss via InvariantCulture
             var expectedJson = @"
 {
   'data': {
@@ -404,21 +404,21 @@ query {
             'firstName': 'Hyrum',
             'lastName': 'Clyde'
           },
-          'cursor': 'MS4wMS4yMDE5IDAwOjAwOjAw'
+          'cursor': 'MjAxOS0wMS0wMSAwMDowMDowMA=='
         },
         {
           'node': {
             'firstName': 'Doug',
             'lastName': 'Day'
           },
-          'cursor': 'Mi4wMS4yMDE5IDAwOjAwOjAw'
+          'cursor': 'MjAxOS0wMS0wMiAwMDowMDowMA=='
         }
       ],
       'pageInfo': {
         'hasNextPage': true,
         'hasPreviousPage': false,
-        'endCursor': 'Mi4wMS4yMDE5IDAwOjAwOjAw',
-        'startCursor': 'MS4wMS4yMDE5IDAwOjAwOjAw'
+        'endCursor': 'MjAxOS0wMS0wMiAwMDowMDowMA==',
+        'startCursor': 'MjAxOS0wMS0wMSAwMDowMDowMA=='
       }
     }
   }

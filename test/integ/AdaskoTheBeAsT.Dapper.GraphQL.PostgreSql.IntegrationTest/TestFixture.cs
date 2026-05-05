@@ -3,11 +3,11 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.QueryBuilders;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Repositories;
-using AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection;
 using DbUp;
 using GraphQL;
 using GraphQL.Execution;
@@ -48,11 +48,14 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 
         private bool IsDisposing { get; set; } = false;
 
+#if NET8_0_OR_GREATER
+        public async ValueTask InitializeAsync()
+#else
         public async Task InitializeAsync()
+#endif
         {
             _postgreSqlContainer
-                = new PostgreSqlBuilder()
-                    .WithImage("postgres:18.1")
+                = new PostgreSqlBuilder("postgres:18.1")
                     .WithDatabase(_databaseName)
                     .WithUsername("admin")
                     .WithPassword("TestPass123!")
@@ -72,7 +75,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
             Schema = ServiceProvider.GetRequiredService<PersonSchema>();
         }
 
+#if NET8_0_OR_GREATER
+        public async ValueTask DisposeAsync()
+#else
         public async Task DisposeAsync()
+#endif
         {
             if (!IsDisposing)
             {
@@ -113,11 +120,14 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
             }
         }
 
+#pragma warning disable IDISP001, CA2000
         public IDbConnection GetDbConnection()
         {
             var connection = new NpgsqlConnection(ConnectionString);
-            return connection;
+            var options = ServiceProvider?.GetService<PostgreSqlSqlBuilderOptions>() ?? new PostgreSqlSqlBuilderOptions();
+            return connection.WithDapperGraphQlOptions(options);
         }
+#pragma warning restore IDISP001, CA2000
 
 #pragma warning disable S2325 // Methods and properties that don't access instance data should be static
         public bool JsonEquals(string expectedJson, string actualJson)
@@ -182,7 +192,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 
         private void SetupDapperGraphQl(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddDapperGraphQl(options =>
+            serviceCollection.AddDapperGraphQlPostgreSql(options =>
             {
                 // Add GraphQL types
                 options.AddType<CompanyType>();

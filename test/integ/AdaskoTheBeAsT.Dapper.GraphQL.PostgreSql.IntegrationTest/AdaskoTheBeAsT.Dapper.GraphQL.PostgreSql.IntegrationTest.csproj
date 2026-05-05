@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net472;net48;net481;net8.0;net9.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>net10.0;net9.0;net8.0;net481;net48;net472</TargetFrameworks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -20,19 +20,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="dbup-core" Version="6.0.15" />
-    <PackageReference Include="dbup-postgresql" Version="6.1.5" />
-    <PackageReference Include="GraphQL.NewtonsoftJson" Version="8.8.0" />
+    <PackageReference Include="dbup-core" Version="6.1.1" />
+    <PackageReference Include="dbup-postgresql" Version="7.0.1" />
+    <PackageReference Include="GraphQL.NewtonsoftJson" Version="8.8.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="Testcontainers.PostgreSql" Version="4.8.1" />
+    <PackageReference Include="Testcontainers.PostgreSql" Version="4.11.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'net47' OR '$(TargetFramework)' == 'net471' OR '$(TargetFramework)' == 'net472' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net481'">
-    <PackageReference Include="Npgsql" Version="8.0.8" />
+    <PackageReference Include="Npgsql" Version="8.0.9" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0' OR '$(TargetFramework)' == 'net9.0' OR '$(TargetFramework)' == 'net10.0'">
-    <PackageReference Include="Npgsql" Version="10.0.0" />
+    <PackageReference Include="Npgsql" Version="10.0.2" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
@@ -40,16 +40,16 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <PackageReference Include="System.Text.Json" Version="9.0.11" />
+    <PackageReference Include="System.Text.Json" Version="9.0.15" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'net47' OR '$(TargetFramework)' == 'net471' OR '$(TargetFramework)' == 'net472' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net481'  OR '$(TargetFramework)' == 'net10.0'">
-    <PackageReference Include="System.Text.Json" Version="10.0.0" />
+    <PackageReference Include="System.Text.Json" Version="10.0.7" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection\AdaskoTheBeAsT.Dapper.GraphQL.ServiceCollection.csproj" />
     <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.Dapper.GraphQL\AdaskoTheBeAsT.Dapper.GraphQL.csproj" />
+    <ProjectReference Include="..\..\..\src\AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql\AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.csproj" />
   </ItemGroup>
 
 </Project>

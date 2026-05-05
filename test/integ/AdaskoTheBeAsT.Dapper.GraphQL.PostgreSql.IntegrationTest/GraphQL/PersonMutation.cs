@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Linq;
 using AdaskoTheBeAsT.Dapper.GraphQL.Interfaces;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.Extensions;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
 using GraphQL;
@@ -24,7 +25,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                     var person = context.GetArgument<Person>("person");
 
                     using var connection = serviceProvider.GetRequiredService<IDbConnection>();
-                    person.Id = person.MergedToPersonId = Extensions.PostgreSql.NextIdentity(connection, (Person p) => p.Id);
+                    person.Id = person.MergedToPersonId = PostgreSqlIdentity.NextIdentity(connection, (Person p) => p.Id);
 
                     var success = SqlBuilder
                         .Insert(person)

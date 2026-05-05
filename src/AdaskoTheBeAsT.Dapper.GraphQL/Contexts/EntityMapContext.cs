@@ -15,7 +15,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
 #if NET9_0_OR_GREATER
         private readonly Lock _lockObject = new();
 #endif
-#if NET8_0 || NETSTANDARD2_0
+#if NET8_0 || NET472_OR_GREATER
         private readonly object _lockObject = new();
 #endif
         private bool _isDisposing;

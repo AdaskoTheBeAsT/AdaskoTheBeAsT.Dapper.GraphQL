@@ -55,7 +55,17 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                 throw new ArgumentNullException(nameof(value));
             }
 
-            return Base64Encode(value!.ToString() ?? string.Empty);
+            var text = value switch
+            {
+#if NET6_0_OR_GREATER
+                DateOnly d => d.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+#endif
+                DateTime dt => dt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
+                IFormattable f => f.ToString(null, CultureInfo.InvariantCulture),
+                _ => value!.ToString() ?? string.Empty,
+            };
+
+            return Base64Encode(text);
         }
 
         private static string Base64Decode(string value) => Encoding.UTF8.GetString(Convert.FromBase64String(value));

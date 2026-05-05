@@ -46,7 +46,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
                 options = SqlMapperOptions.DefaultOptions;
             }
 
-            var result = connection.Execute(BuildSql(), Parameters, transaction, options.CommandTimeout, options.CommandType);
+            var result = connection.Execute(BuildSql(GetPrefix(connection)), Parameters, transaction, options.CommandTimeout, options.CommandType);
             if (_inserts != null)
             {
                 // Execute each insert and aggregate the results
@@ -70,7 +70,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
             }
 
             var result = await connection.ExecuteAsync(
-                BuildSql(),
+                BuildSql(GetPrefix(connection)),
                 Parameters,
                 transaction,
                 options.CommandTimeout,
@@ -134,20 +134,23 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
         /// <returns>The rendered SQL statement.</returns>
         public override string ToString()
         {
-            return BuildSql();
+            return BuildSql(SqlBuilderOptions.Default.ParameterPrefix);
         }
 
-        /// <summary>
-        /// Builds the INSERT statement.
-        /// </summary>
-        /// <returns>A SQL INSERT statement.</returns>
-        private string BuildSql()
+        private static string GetPrefix(IDbConnection connection)
+        {
+            return connection is IDapperGraphQlConnection wrapper
+                ? wrapper.Options.ParameterPrefix
+                : SqlBuilderOptions.Default.ParameterPrefix;
+        }
+
+        private string BuildSql(string parameterPrefix)
         {
             var sb = new StringBuilder();
             sb.Append("INSERT INTO ").Append(Table).Append(" (");
             sb.Append(string.Join(", ", _insertParameterNames));
             sb.Append(") VALUES (");
-            sb.Append(string.Join(", ", _insertParameterNames.Select(name => $"@{name}")));
+            sb.Append(string.Join(", ", _insertParameterNames.Select(name => $"{parameterPrefix}{name}")));
             sb.Append(");");
             return sb.ToString();
         }

@@ -15,7 +15,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
         private static readonly Lock LockProperty = new();
         private static readonly Lock LockType = new();
 #endif
-#if NET8_0 || NETSTANDARD2_0
+#if NET8_0 || NET472_OR_GREATER
         private static readonly object LockProperty = new();
         private static readonly object LockType = new();
 #endif
@@ -81,7 +81,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL
                 return true;
             }
 #endif
-#if NETSTANDARD2_0
+#if NET472_OR_GREATER
             // Explicitly permit primitive, value, serializable types, and strings
             if (typeInfo.IsSerializable || typeInfo.IsPrimitive || typeInfo.IsValueType || propertyType == typeof(string))
             {
