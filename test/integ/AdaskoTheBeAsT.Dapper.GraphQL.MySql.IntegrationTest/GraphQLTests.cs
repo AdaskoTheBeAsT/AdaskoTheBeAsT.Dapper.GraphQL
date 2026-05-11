@@ -69,7 +69,7 @@ query {
     }
 }");
 
-            var expectedJson = @"
+            const string expectedJson = @"
 {
     ""data"": {
         ""people"": [{
@@ -189,7 +189,7 @@ query {
     }
 }";
 
-            Assert.True(_fixture.JsonEquals(expectedJson, json));
+            _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
         }
 
         [Fact(DisplayName = "Async query should succeed")]
@@ -204,7 +204,7 @@ query {
     }
 }");
 
-            var expectedJson = @"
+            const string expectedJson = @"
 {
   ""data"": {
     ""peopleAsync"": [
@@ -227,7 +227,7 @@ query {
   }
 }";
 
-            Assert.True(_fixture.JsonEquals(expectedJson, json));
+            _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
         }
 
         [Fact(DisplayName = "Person query should succeed")]
@@ -251,7 +251,7 @@ query {
     }
 }");
 
-            var expectedJson = @"
+            const string expectedJson = @"
 {
     data: {
         person: {
@@ -274,7 +274,7 @@ query {
     }
 }";
 
-            Assert.True(_fixture.JsonEquals(expectedJson, json));
+            _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
         }
 
         [Fact(DisplayName = "Simple people query should succeed")]
@@ -288,7 +288,7 @@ query {
     }
 }");
 
-            var expectedJson = @"
+            const string expectedJson = @"
 {
   data: {
     people: [
@@ -308,7 +308,7 @@ query {
   }
 }";
 
-            Assert.True(_fixture.JsonEquals(expectedJson, json));
+            _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
         }
 
         [Fact(DisplayName = "Simple person query should succeed")]
@@ -323,7 +323,7 @@ query {
     }
 }");
 
-            var expectedJson = @"
+            const string expectedJson = @"
 {
     data: {
         person: {
@@ -334,7 +334,7 @@ query {
     }
 }";
 
-            Assert.True(_fixture.JsonEquals(expectedJson, json));
+            _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
         }
 
         [Fact(DisplayName = "People connection query should succeed")]
@@ -363,7 +363,7 @@ query {
 
 #if NET6_0_OR_GREATER
             // Cursor encodes DateOnly as ISO yyyy-MM-dd via InvariantCulture
-            var expectedJson = @"
+            const string expectedJson = @"
 {
   'data': {
     'personConnection': {
@@ -394,7 +394,7 @@ query {
 }";
 #else
             // Cursor encodes DateTime as yyyy-MM-dd HH:mm:ss via InvariantCulture
-            var expectedJson = @"
+            const string expectedJson = @"
 {
   'data': {
     'personConnection': {

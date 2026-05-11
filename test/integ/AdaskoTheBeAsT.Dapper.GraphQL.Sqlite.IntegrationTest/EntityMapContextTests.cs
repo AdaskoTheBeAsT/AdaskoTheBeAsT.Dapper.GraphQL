@@ -2,6 +2,7 @@ using System.Linq;
 using AdaskoTheBeAsT.Dapper.GraphQL.Contexts;
 using AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest.EntityMappers;
 using AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest.Models;
+using AwesomeAssertions;
 using Xunit;
 
 namespace AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest
@@ -63,7 +64,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest
 
             var personEntityMapper = new PersonEntityMapper();
 
-            var graphql = @"
+            const string graphql = @"
 {
     query {
         firstName
@@ -98,7 +99,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest
                 Assert.Equal(3, context1.MappedCount);
 
                 Assert.Equal(2, person1?.Id);
-                Assert.Equal("Doug", person1?.FirstName);
+                (person1?.FirstName).Should().Be("Doug");
                 Assert.Single(person1?.Emails ?? Enumerable.Empty<Email>());
                 Assert.Single(person1?.Phones ?? Enumerable.Empty<Phone>());
 
@@ -118,7 +119,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest
                     Assert.Equal(3, context2.MappedCount);
 
                     // The same reference should have been returned
-                    Assert.Same(person1, person2);
+                    person2.Should().BeSameAs(person1);
 
                     // A 2nd email was added to person
                     Assert.Equal(2, person1?.Emails.Count);

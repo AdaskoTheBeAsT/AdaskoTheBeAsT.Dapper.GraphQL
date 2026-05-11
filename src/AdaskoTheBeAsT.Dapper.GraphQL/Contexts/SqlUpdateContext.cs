@@ -30,8 +30,11 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
             Parameters = new DynamicParameters(parameters);
             _sqlBuilder = new global::Dapper.SqlBuilder();
             Table = table;
-            _template = _sqlBuilder.AddTemplate(@"
-/**where**/");
+            _template = _sqlBuilder.AddTemplate(
+                """
+                
+                    /**where**/
+                """);
 
             // Get parameter names from the flat properties if available, otherwise from DynamicParameters
             if (flatProperties != null)

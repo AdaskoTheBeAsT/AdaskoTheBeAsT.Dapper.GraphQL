@@ -145,10 +145,10 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
             await Task.WhenAll(getPersonTask, getHasNextPageTask, getHasPreviousPageTask, totalCountTask);
 #pragma warning disable VSTHRD103 // Call async methods when in an async method
 #pragma warning disable AsyncifyVariable // Use Task Async
-            var people = getPersonTask.Result;
-            var hasNextPage = getHasNextPageTask.Result;
-            var hasPreviousPage = getHasPreviousPageTask.Result;
-            var totalCount = totalCountTask.Result;
+            var people = await getPersonTask;
+            var hasNextPage = await getHasNextPageTask;
+            var hasPreviousPage = await getHasPreviousPageTask;
+            var totalCount = await totalCountTask;
 #pragma warning restore AsyncifyVariable // Use Task Async
 #pragma warning restore VSTHRD103 // Call async methods when in an async method
             var (firstCursor, lastCursor) = Cursor.GetFirstAndLastCursor(people, x => x.CreateDate);

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AdaskoTheBeAsT.Dapper.GraphQL.MySql.Extensions;
 using AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest.EntityMappers;
 using AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest.Models;
+using AwesomeAssertions;
 using Dapper;
 using Xunit;
 using Xunit.Sdk;
@@ -48,7 +49,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest
                     personId = SqlBuilder
                         .Insert(person)
                         .ExecuteWithMySqlIdentity<int>(db);
-                    Assert.True(personId > 0);
+                    (personId > 0).Should().BeTrue();
 
                     SqlBuilder
                         .Update(nameof(Person), new { MergedToPersonId = personId })
@@ -105,7 +106,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest
                         .SplitOn<Phone>("Id")
                         .Where("person.Id = @id", new { id = personId });
 
-                    var graphql = @"
+                    const string graphql = @"
 {
     person {
         firstName
@@ -131,7 +132,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest
                         .Single();
                 }
 
-                Assert.NotNull(person);
+                person.Should().NotBeNull();
                 Assert.Equal(personId, person.Id);
                 Assert.Equal(NameSteven, person.FirstName);
                 Assert.Equal(NameRollman, person.LastName);
@@ -257,7 +258,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest
                         .SplitOn<Phone>("Id")
                         .Where("person.Id = @id", new { id = personId });
 
-                    var graphql = @"
+                    const string graphql = @"
 {
     person {
         firstName

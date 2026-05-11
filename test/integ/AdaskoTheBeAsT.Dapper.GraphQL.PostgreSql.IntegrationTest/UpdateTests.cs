@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
+using AwesomeAssertions;
 using Xunit;
 using Xunit.Sdk;
 
@@ -29,7 +30,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
 
             try
             {
-                var graphql = @"
+                const string graphql = @"
 {
     person {
         id
@@ -68,7 +69,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                 }
 
                 // Ensure we got a person and their name was indeed changed
-                Assert.NotNull(person);
+                person.Should().NotBeNull();
                 Assert.Equal("Douglas", person.FirstName);
             }
             finally
@@ -111,7 +112,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                 {
                     db.Open();
 
-                    var graphql = @"
+                    const string graphql = @"
 {
     person {
         id
@@ -149,7 +150,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                 }
 
                 // Ensure we got a person and their name was indeed changed
-                Assert.NotNull(person);
+                person.Should().NotBeNull();
                 Assert.Equal("Douglas", person.FirstName);
             }
             finally

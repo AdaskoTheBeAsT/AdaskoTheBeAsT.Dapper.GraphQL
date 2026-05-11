@@ -35,7 +35,7 @@ mutation ($person: PersonInput!) {
 
             var json = await _fixture.QueryGraphQlAsync(graphQuery);
 
-            var expectedJson = @"
+            const string expectedJson = @"
             {
                 data: {
                     addPerson: {

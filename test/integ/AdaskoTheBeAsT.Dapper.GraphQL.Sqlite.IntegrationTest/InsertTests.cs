@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.Extensions;
 using AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest.EntityMappers;
 using AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest.Models;
+using AwesomeAssertions;
 using Xunit;
 using Xunit.Sdk;
 
@@ -47,7 +48,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest
                     personId = SqlBuilder
                         .Insert(person)
                         .ExecuteWithSqliteIdentity(db);
-                    Assert.True(personId > 0);
+                    (personId > 0).Should().BeTrue();
 
                     SqlBuilder
                         .Update(nameof(Person), new { MergedToPersonId = personId })
@@ -104,7 +105,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest
                         .SplitOn<Phone>("Id")
                         .Where("person.Id = @id", new { id = personId });
 
-                    var graphql = @"
+                    const string graphql = @"
 {
     person {
         firstName
@@ -130,7 +131,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest
                         .Single();
                 }
 
-                Assert.NotNull(person);
+                person.Should().NotBeNull();
                 Assert.Equal(personId, person.Id);
                 Assert.Equal(NameSteven, person.FirstName);
                 Assert.Equal(NameRollman, person.LastName);
@@ -252,7 +253,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest
                         .SplitOn<Phone>("Id")
                         .Where("person.Id = @id", new { id = personId });
 
-                    var graphql = @"
+                    const string graphql = @"
 {
     person {
         firstName

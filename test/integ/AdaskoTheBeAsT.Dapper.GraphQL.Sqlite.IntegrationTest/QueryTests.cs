@@ -1,5 +1,6 @@
 using System;
 using AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest.Models;
+using AwesomeAssertions;
 using Microsoft.Data.Sqlite;
 using Xunit;
 using Xunit.Sdk;
@@ -30,14 +31,14 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest
         [Fact(DisplayName = "SELECT without matching alias should throw")]
         public void SelectWithoutMatchingAliasShouldThrow()
         {
-            Assert.Throws<SqliteException>(() =>
+            (() =>
             {
                 var query = SqlBuilder
                     .From("Person person")
                     .Select(new[] { "person.Id", "notAnAlias.Id" })
                     .SplitOn<Person>("Id");
 
-                var graphql = "{ person { id } }";
+                const string graphql = "{ person { id } }";
                 var selectionSet = _fixture.BuildGraphQlSelection(graphql);
                 if (selectionSet == null)
                 {
@@ -48,7 +49,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest
                 {
                     query.Execute<Person>(db, selectionSet);
                 }
-            });
+            }).Should().ThrowExactly<SqliteException>();
         }
     }
 }

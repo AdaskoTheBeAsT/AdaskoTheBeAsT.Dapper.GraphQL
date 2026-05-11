@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AdaskoTheBeAsT.Dapper.GraphQL.Oracle.Extensions;
 using AdaskoTheBeAsT.Dapper.GraphQL.Oracle.IntegrationTest.EntityMappers;
 using AdaskoTheBeAsT.Dapper.GraphQL.Oracle.IntegrationTest.Models;
+using AwesomeAssertions;
 using Dapper;
 using Xunit;
 using Xunit.Sdk;
@@ -115,7 +116,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Oracle.IntegrationTest
                         .SplitOn<Phone>("Id")
                         .Where("person.Id = :id", new { id = personId });
 
-                    var graphql = @"
+                    const string graphql = @"
 {
     person {
         firstName
@@ -141,9 +142,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Oracle.IntegrationTest
                         .Single();
                 }
 
-                Assert.NotNull(person);
+                person.Should().NotBeNull();
                 Assert.Equal(personId, person.Id);
-                Assert.Equal(NameSteven, person.FirstName);
+                person.FirstName.Should().Be(NameSteven);
                 Assert.Equal(NameRollman, person.LastName);
                 Assert.Single(person.Emails);
                 Assert.Equal(Email, person.Emails[0].Address);
@@ -273,7 +274,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Oracle.IntegrationTest
                         .SplitOn<Phone>("Id")
                         .Where("person.Id = :id", new { id = personId });
 
-                    var graphql = @"
+                    const string graphql = @"
 {
     person {
         firstName

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.Extensions;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
+using AwesomeAssertions;
 using Xunit;
 using Xunit.Sdk;
 
@@ -42,7 +43,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                     // Get the next identity aggressively, as we need to assign
                     // it to both Id/MergedToPersonId
                     personId = PostgreSqlIdentity.NextIdentity(db, (Person p) => p.Id);
-                    Assert.True(personId > 0);
+                    (personId > 0).Should().BeTrue();
 
                     person = new Person
                     {
@@ -112,7 +113,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                         .SplitOn<Phone>("Id")
                         .Where("person.Id = @id", new { id = personId });
 
-                    var graphql = @"
+                    const string graphql = @"
 {
     person {
         firstName
@@ -139,7 +140,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                 }
 
                 // Ensure all inserted data is present
-                Assert.NotNull(person);
+                person.Should().NotBeNull();
                 Assert.Equal(personId, person.Id);
                 Assert.Equal(NameSteven, person.FirstName);
                 Assert.Equal(NameRollman, person.LastName);
@@ -270,7 +271,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                         .SplitOn<Phone>("Id")
                         .Where("person.Id = @id", new { id = personId });
 
-                    var graphql = @"
+                    const string graphql = @"
 {
     person {
         firstName
