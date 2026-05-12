@@ -31,7 +31,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.SqlServer.IntegrationTest
         [Fact(DisplayName = "SELECT without matching alias should throw")]
         public void SelectWithoutMatchingAliasShouldThrow()
         {
-            (() =>
+            var action = () =>
             {
                 var query = SqlBuilder
                     .From("Person person")
@@ -49,7 +49,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.SqlServer.IntegrationTest
                 {
                     query.Execute<Person>(db, selectionSet);
                 }
-            }).Should().ThrowExactly<SqlException>();
+            };
+
+            action.Should().ThrowExactly<SqlException>();
         }
     }
 }

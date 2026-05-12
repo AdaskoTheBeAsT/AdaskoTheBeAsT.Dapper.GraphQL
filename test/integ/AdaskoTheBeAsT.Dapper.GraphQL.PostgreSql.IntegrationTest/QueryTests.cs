@@ -30,7 +30,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         [Fact(DisplayName = "SELECT without matching alias should throw")]
         public void SelectWithoutMatchingAliasShouldThrow()
         {
-            (() =>
+            var action = () =>
             {
                 var query = SqlBuilder
                     .From("Person person")
@@ -48,7 +48,9 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
                 {
                     query.Execute<Person>(db, selectionSet);
                 }
-            }).Should().ThrowExactly<Npgsql.PostgresException>();
+            };
+
+            action.Should().ThrowExactly<Npgsql.PostgresException>();
         }
     }
 }

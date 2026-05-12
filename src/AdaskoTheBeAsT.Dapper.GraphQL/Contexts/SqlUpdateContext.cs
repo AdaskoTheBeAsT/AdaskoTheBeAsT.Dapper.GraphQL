@@ -33,7 +33,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
             _template = _sqlBuilder.AddTemplate(
                 """
                 
-                    /**where**/
+                /**where**/
                 """);
 
             // Get parameter names from the flat properties if available, otherwise from DynamicParameters

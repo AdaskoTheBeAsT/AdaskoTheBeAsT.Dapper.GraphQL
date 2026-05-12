@@ -25,7 +25,8 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Contexts
             _sqlBuilder = new DapperSqlBuilder();
 
             // See https://github.com/StackExchange/Dapper/blob/master/Dapper.SqlBuilder/SqlBuilder.cs
-            _queryTemplate = _sqlBuilder.AddTemplate($@"SELECT
+            _queryTemplate = _sqlBuilder.AddTemplate(
+                $@"SELECT
 /**select**/
 FROM {from}/**innerjoin**//**leftjoin**//**rightjoin**//**join**/
 /**where**//**orderby**//**offset**//**top**/");
