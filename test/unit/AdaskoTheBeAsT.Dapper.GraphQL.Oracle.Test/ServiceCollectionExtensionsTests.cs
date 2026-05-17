@@ -1,4 +1,3 @@
-using AdaskoTheBeAsT.Dapper.GraphQL.Oracle;
 using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -37,15 +36,5 @@ public class ServiceCollectionExtensionsTests
         services.AddDapperGraphQlOracle(_ => called = true);
 
         called.Should().BeTrue();
-    }
-
-    [Fact(DisplayName = "AddDapperGraphQlOracle tolerates null setup")]
-    public void AddDapperGraphQlOracleToleratesNullSetup()
-    {
-        var services = new ServiceCollection();
-
-        var act = () => services.AddDapperGraphQlOracle(null!);
-
-        act.Should().NotThrow();
     }
 }

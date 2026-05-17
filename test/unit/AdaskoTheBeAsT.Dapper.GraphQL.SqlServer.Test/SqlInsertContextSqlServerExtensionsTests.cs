@@ -31,6 +31,7 @@ public class SqlInsertContextSqlServerExtensionsTests
 
         Func<Task<Guid>> act = () => context.ExecuteWithSqlServerIdentityAsync<Guid>(connection);
 
-        return act.Should().ThrowAsync<InvalidCastException>();
+        return act.Should().ThrowAsync<InvalidCastException>()
+            .WithMessage("*is not supported in this SQL Server context*");
     }
 }

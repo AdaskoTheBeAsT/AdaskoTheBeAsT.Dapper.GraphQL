@@ -48,8 +48,17 @@ public class SqlUpdateContextTests
 
         var sql = context.ToString();
 
-        sql.Should().Contain("SET FirstName = @FirstName");
-        sql.Should().NotContain("SET FirstName = @FirstName, id = @id");
+        var setIndex = sql.IndexOf("SET", System.StringComparison.OrdinalIgnoreCase);
+        var whereIndex = sql.IndexOf("WHERE", System.StringComparison.OrdinalIgnoreCase);
+
+        setIndex.Should().BeGreaterThanOrEqualTo(0);
+        whereIndex.Should().BeGreaterThan(setIndex);
+
+        var setClause = sql.Substring(setIndex, whereIndex - setIndex);
+
+        setClause.Should().Contain("FirstName");
+        setClause.Should().NotContain("id");
+        setClause.Should().NotContain("@id");
     }
 
     [Fact(DisplayName = "Multiple Where clauses are joined with AND")]

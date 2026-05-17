@@ -1,4 +1,3 @@
-using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql;
 using AwesomeAssertions;
 using Xunit;
 

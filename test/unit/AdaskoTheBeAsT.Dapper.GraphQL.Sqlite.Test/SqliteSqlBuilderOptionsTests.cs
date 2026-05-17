@@ -1,4 +1,3 @@
-using AdaskoTheBeAsT.Dapper.GraphQL.Sqlite;
 using AwesomeAssertions;
 using Xunit;
 

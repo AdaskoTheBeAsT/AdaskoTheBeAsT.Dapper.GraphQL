@@ -31,6 +31,7 @@ public class SqlInsertContextMySqlExtensionsTests
 
         Func<Task<Guid>> act = () => context.ExecuteWithMySqlIdentityAsync<Guid>(connection);
 
-        return act.Should().ThrowAsync<InvalidCastException>();
+        return act.Should().ThrowAsync<InvalidCastException>()
+            .WithMessage("*is not supported in the MySQL context*");
     }
 }

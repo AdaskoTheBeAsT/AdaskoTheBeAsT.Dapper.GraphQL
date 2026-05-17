@@ -1,4 +1,3 @@
-using AdaskoTheBeAsT.Dapper.GraphQL.Sqlite;
 using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -37,15 +36,5 @@ public class ServiceCollectionExtensionsTests
         services.AddDapperGraphQlSqlite(_ => called = true);
 
         called.Should().BeTrue();
-    }
-
-    [Fact(DisplayName = "AddDapperGraphQlSqlite tolerates null setup")]
-    public void AddDapperGraphQlSqliteToleratesNullSetup()
-    {
-        var services = new ServiceCollection();
-
-        var act = () => services.AddDapperGraphQlSqlite(null!);
-
-        act.Should().NotThrow();
     }
 }

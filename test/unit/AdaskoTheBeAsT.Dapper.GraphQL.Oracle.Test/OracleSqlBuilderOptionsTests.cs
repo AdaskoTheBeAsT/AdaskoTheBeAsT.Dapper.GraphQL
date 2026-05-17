@@ -1,4 +1,3 @@
-using AdaskoTheBeAsT.Dapper.GraphQL.Oracle;
 using AwesomeAssertions;
 using Xunit;
 

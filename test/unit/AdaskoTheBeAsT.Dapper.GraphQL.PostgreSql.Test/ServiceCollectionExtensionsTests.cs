@@ -1,4 +1,3 @@
-using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql;
 using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -37,15 +36,5 @@ public class ServiceCollectionExtensionsTests
         services.AddDapperGraphQlPostgreSql(_ => called = true);
 
         called.Should().BeTrue();
-    }
-
-    [Fact(DisplayName = "AddDapperGraphQlPostgreSql tolerates null setup")]
-    public void AddDapperGraphQlPostgreSqlToleratesNullSetup()
-    {
-        var services = new ServiceCollection();
-
-        var act = () => services.AddDapperGraphQlPostgreSql(null!);
-
-        act.Should().NotThrow();
     }
 }

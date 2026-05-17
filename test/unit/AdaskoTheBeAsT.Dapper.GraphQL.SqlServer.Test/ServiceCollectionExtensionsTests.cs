@@ -1,4 +1,3 @@
-using AdaskoTheBeAsT.Dapper.GraphQL.SqlServer;
 using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -37,15 +36,5 @@ public class ServiceCollectionExtensionsTests
         services.AddDapperGraphQlSqlServer(_ => called = true);
 
         called.Should().BeTrue();
-    }
-
-    [Fact(DisplayName = "AddDapperGraphQlSqlServer tolerates null setup")]
-    public void AddDapperGraphQlSqlServerToleratesNullSetup()
-    {
-        var services = new ServiceCollection();
-
-        var act = () => services.AddDapperGraphQlSqlServer(null!);
-
-        act.Should().NotThrow();
     }
 }

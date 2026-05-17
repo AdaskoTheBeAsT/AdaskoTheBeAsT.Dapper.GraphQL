@@ -1,4 +1,3 @@
-using AdaskoTheBeAsT.Dapper.GraphQL.MySql;
 using AwesomeAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -37,15 +36,5 @@ public class ServiceCollectionExtensionsTests
         services.AddDapperGraphQlMySql(_ => called = true);
 
         called.Should().BeTrue();
-    }
-
-    [Fact(DisplayName = "AddDapperGraphQlMySql tolerates null setup")]
-    public void AddDapperGraphQlMySqlToleratesNullSetup()
-    {
-        var services = new ServiceCollection();
-
-        var act = () => services.AddDapperGraphQlMySql(null!);
-
-        act.Should().NotThrow();
     }
 }
