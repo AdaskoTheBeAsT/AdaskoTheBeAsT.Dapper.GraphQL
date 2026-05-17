@@ -41,7 +41,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.SqlServer.IntegrationTest.QueryBuilders
                 var companyEmailAlias = $"{alias}CompanyEmail";
                 var emailAlias = $"{alias}Email";
                 query
-                    .LeftJoin($"CompanyEmail {companyEmailAlias} ON {alias}.Id = {companyEmailAlias}.PersonId")
+                    .LeftJoin($"CompanyEmail {companyEmailAlias} ON {alias}.Id = {companyEmailAlias}.CompanyId")
                     .LeftJoin($"Email {emailAlias} ON {companyEmailAlias}.EmailId = {emailAlias}.Id");
                 query = _emailQueryBuilder.Build(query, fields![emailsKey], emailAlias);
             }
@@ -53,7 +53,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.SqlServer.IntegrationTest.QueryBuilders
                 var companyPhoneAlias = $"{alias}CompanyPhone";
                 var phoneAlias = $"{alias}Phone";
                 query
-                    .LeftJoin($"CompanyPhone {companyPhoneAlias} ON {alias}.Id = {companyPhoneAlias}.PersonId")
+                    .LeftJoin($"CompanyPhone {companyPhoneAlias} ON {alias}.Id = {companyPhoneAlias}.CompanyId")
                     .LeftJoin($"Phone {phoneAlias} ON {companyPhoneAlias}.PhoneId = {phoneAlias}.Id");
                 query = _phoneQueryBuilder.Build(query, fields![phonesKey], phoneAlias);
             }

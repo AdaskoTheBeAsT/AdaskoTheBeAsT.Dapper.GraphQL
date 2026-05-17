@@ -25,7 +25,42 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
                 return default;
             }
 
-            return (T)Convert.ChangeType(decodedValue, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T), CultureInfo.InvariantCulture);
+            var targetType = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+
+#if NET6_0_OR_GREATER
+            if (targetType == typeof(DateOnly))
+            {
+                if (DateOnly.TryParseExact(decodedValue, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateOnly))
+                {
+                    return (T)(object)dateOnly;
+                }
+
+                return default;
+            }
+#endif
+
+            if (targetType == typeof(DateTime))
+            {
+                if (DateTime.TryParseExact(decodedValue, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTime))
+                {
+                    return (T)(object)dateTime;
+                }
+
+                return default;
+            }
+
+            try
+            {
+                return (T)Convert.ChangeType(decodedValue, targetType, CultureInfo.InvariantCulture);
+            }
+            catch (InvalidCastException)
+            {
+                return default;
+            }
+            catch (FormatException)
+            {
+                return default;
+            }
         }
 
         public static (string? FirstCursor, string? LastCursor) GetFirstAndLastCursor<TItem, TCursor>(

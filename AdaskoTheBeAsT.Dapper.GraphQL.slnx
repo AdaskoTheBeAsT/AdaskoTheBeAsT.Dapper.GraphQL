@@ -59,6 +59,11 @@
     <File Path="test/integ/Directory.Build.props" />
   </Folder>
   <Folder Name="/test/unit/">
+    <Project Path="test/unit/AdaskoTheBeAsT.Dapper.GraphQL.MySql.Test/AdaskoTheBeAsT.Dapper.GraphQL.MySql.Test.csproj" />
+    <Project Path="test/unit/AdaskoTheBeAsT.Dapper.GraphQL.Oracle.Test/AdaskoTheBeAsT.Dapper.GraphQL.Oracle.Test.csproj" />
+    <Project Path="test/unit/AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.Test/AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.Test.csproj" />
+    <Project Path="test/unit/AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.Test/AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.Test.csproj" />
+    <Project Path="test/unit/AdaskoTheBeAsT.Dapper.GraphQL.SqlServer.Test/AdaskoTheBeAsT.Dapper.GraphQL.SqlServer.Test.csproj" />
     <Project Path="test/unit/AdaskoTheBeAsT.Dapper.GraphQL.Test/AdaskoTheBeAsT.Dapper.GraphQL.Test.csproj" />
   </Folder>
 </Solution>

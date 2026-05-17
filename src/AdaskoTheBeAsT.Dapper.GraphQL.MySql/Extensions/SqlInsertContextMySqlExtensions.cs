@@ -52,7 +52,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql.Extensions
             }
             else
             {
-                throw new InvalidCastException($"Type {typeof(TIdentityType).Name} in not supported in MySQL context.");
+                throw new InvalidCastException($"Type {typeof(TIdentityType).Name} is not supported in the MySQL context.");
             }
 
             return sb;

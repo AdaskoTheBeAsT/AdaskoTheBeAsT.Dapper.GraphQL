@@ -34,7 +34,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Oracle.IntegrationTest.QueryBuilders
                         query.Select($"{alias}.\"Type\" AS \"Type\"");
                         break;
                     default:
-                        throw new Exception("Unexpected Case");
+                        throw new NotSupportedException($"Unexpected field '{kvp.Key.StringValue}'");
                 }
             }
 

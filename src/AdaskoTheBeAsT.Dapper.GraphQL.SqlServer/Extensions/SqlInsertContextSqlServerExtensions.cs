@@ -48,7 +48,7 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.SqlServer.Extensions
             }
             else
             {
-                throw new InvalidCastException($"Type {typeof(TIdentityType).Name} in not supported this SQL context.");
+                throw new InvalidCastException($"Type {typeof(TIdentityType).Name} is not supported in this SQL Server context.");
             }
 
             return sb;
