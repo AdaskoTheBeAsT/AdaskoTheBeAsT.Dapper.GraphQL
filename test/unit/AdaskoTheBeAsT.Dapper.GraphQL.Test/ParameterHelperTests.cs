@@ -17,7 +17,7 @@ public class ParameterHelperTests
 
         result.Should().ContainKey(nameof(FlatEntity.Id)).WhoseValue.Should().Be(7);
         result.Should().ContainKey(nameof(FlatEntity.Name)).WhoseValue.Should().Be("Bob");
-        result.Should().ContainKey(nameof(FlatEntity.Active)).WhoseValue.Should().Be(true);
+        result.Should().ContainKey(nameof(FlatEntity.Active)).WhoseValue.Should().Be(expected: true);
     }
 
     [Fact(DisplayName = "GetSetFlatProperties skips default value types")]
@@ -49,7 +49,7 @@ public class ParameterHelperTests
         var input = new EntityWithCollections
         {
             Id = 1,
-            Tags = new List<string> { "a", "b" },
+            Tags = ["a", "b"],
             Map = new Dictionary<string, int>(StringComparer.Ordinal) { ["x"] = 1 },
         };
 

@@ -81,7 +81,11 @@ public sealed class TestFixture
                 .WithPassword("TestPass123!")
                 .Build();
 
+#if NET8_0_OR_GREATER
+        await _msSqlContainer!.StartAsync(Xunit.TestContext.Current.CancellationToken);
+#else
         await _msSqlContainer!.StartAsync();
+#endif
 
 #if NET6_0_OR_GREATER
         global::Dapper.SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());

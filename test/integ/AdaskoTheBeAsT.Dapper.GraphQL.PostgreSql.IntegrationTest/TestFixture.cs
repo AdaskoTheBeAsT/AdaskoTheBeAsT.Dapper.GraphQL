@@ -48,6 +48,26 @@ public sealed class TestFixture
 
     private bool IsDisposing { get; set; }
 
+    public static IHasSelectionSetNode? BuildGraphQlSelection(string body)
+    {
+        var document = new GraphQLDocumentBuilder().Build(body);
+        return document
+            .Definitions
+            .OfType<IHasSelectionSetNode>()
+            .First()
+            .SelectionSet?
+            .Selections
+            .OfType<GraphQLField>()
+            .FirstOrDefault();
+    }
+
+    public static bool JsonEquals(string expectedJson, string actualJson)
+    {
+        // To ensure formatting doesn't affect our results, we first convert to JSON tokens
+        // and only compare the structure of the resulting objects.
+        return JToken.DeepEquals(JObject.Parse(expectedJson), JObject.Parse(actualJson));
+    }
+
 #if NET8_0_OR_GREATER
     public async ValueTask InitializeAsync()
 #else
@@ -59,10 +79,14 @@ public sealed class TestFixture
                 .WithDatabase(_databaseName)
                 .WithUsername("admin")
                 .WithPassword("TestPass123!")
-                .WithPortBinding(5432, true)
+                .WithPortBinding(5432, assignRandomHostPort: true)
                 .Build();
 
+#if NET8_0_OR_GREATER
+        await _postgreSqlContainer!.StartAsync(Xunit.TestContext.Current.CancellationToken);
+#else
         await _postgreSqlContainer!.StartAsync();
+#endif
 
         _documentExecuter = new DocumentExecuter();
         var serviceCollection = new ServiceCollection();
@@ -93,21 +117,6 @@ public sealed class TestFixture
         }
     }
 
-#pragma warning disable S2325 // Methods and properties that don't access instance data should be static
-    public IHasSelectionSetNode? BuildGraphQlSelection(string body)
-    {
-        var document = new GraphQLDocumentBuilder().Build(body);
-        return document
-            .Definitions
-            .OfType<IHasSelectionSetNode>()
-            .First()
-            .SelectionSet?
-            .Selections
-            .OfType<GraphQLField>()
-            .FirstOrDefault();
-    }
-#pragma warning restore S2325 // Methods and properties that don't access instance data should be static
-
     public void Dispose()
     {
         if (!IsDisposing)
@@ -128,15 +137,6 @@ public sealed class TestFixture
         return connection.WithDapperGraphQlOptions(options);
     }
 #pragma warning restore IDISP001, CA2000
-
-#pragma warning disable S2325 // Methods and properties that don't access instance data should be static
-    public bool JsonEquals(string expectedJson, string actualJson)
-    {
-        // To ensure formatting doesn't affect our results, we first convert to JSON tokens
-        // and only compare the structure of the resulting objects.
-        return JToken.DeepEquals(JObject.Parse(expectedJson), JObject.Parse(actualJson));
-    }
-#pragma warning restore S2325 // Methods and properties that don't access instance data should be static
 
     public async Task<string> QueryGraphQlAsync(string query)
     {

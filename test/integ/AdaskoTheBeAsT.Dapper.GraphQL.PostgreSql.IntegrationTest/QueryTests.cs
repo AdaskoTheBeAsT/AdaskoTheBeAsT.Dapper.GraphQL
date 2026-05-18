@@ -40,7 +40,7 @@ public class QueryTests : IClassFixture<TestFixture>
                 .SplitOn<Person>("Id");
 
             const string graphql = "{ person { id } }";
-            var selectionSet = _fixture.BuildGraphQlSelection(graphql);
+            var selectionSet = TestFixture.BuildGraphQlSelection(graphql);
             if (selectionSet == null)
             {
                 throw new XunitException("Selection set is null");

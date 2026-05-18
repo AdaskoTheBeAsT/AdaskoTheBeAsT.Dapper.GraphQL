@@ -6,6 +6,8 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.Test;
 
 public class SqlQueryContextTests
 {
+    private static readonly string[] SelectColumns = ["p.Id", "p.Name", "p.LastName"];
+
     [Fact(DisplayName = "Select adds column to generated SQL")]
     public void SelectAddsColumnToSql()
     {
@@ -24,7 +26,7 @@ public class SqlQueryContextTests
     {
         var context = new SqlQueryContext("Person p");
 
-        context.Select(new[] { "p.Id", "p.Name", "p.LastName" });
+        context.Select(SelectColumns);
 
         var sql = context.ToString();
         sql.Should().Contain("p.Id");
@@ -128,10 +130,11 @@ public class SqlQueryContextTests
     {
         var context = new SqlQueryContext("Person p");
 
-        var result = context.Select("p.Id").SplitOn("Id", typeof(PersonEntity));
+        var entityType = typeof(PersonEntity);
+        var result = context.Select("p.Id").SplitOn("Id", entityType);
 
         result.Should().BeSameAs(context);
-        context.GetSplitOnTypes().Should().Contain(typeof(PersonEntity));
+        context.GetSplitOnTypes().Should().Contain(entityType);
     }
 
     [Fact(DisplayName = "InnerJoin clears single-table type list when no SplitOn was used")]

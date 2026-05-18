@@ -53,8 +53,7 @@ public class InsertTests : IClassFixture<TestFixture>
                     MergedToPersonId = personId,
                 };
 
-                int insertedCount;
-                insertedCount = SqlBuilder
+                var insertedCount = SqlBuilder
                     .Insert(person)
                     .Execute(db);
                 insertedCount.Should().Be(1);
@@ -128,7 +127,7 @@ public class InsertTests : IClassFixture<TestFixture>
         }
     }
 }";
-                var selection = _fixture.BuildGraphQlSelection(graphql);
+                var selection = TestFixture.BuildGraphQlSelection(graphql);
                 if (selection == null)
                 {
                     throw new XunitException("Selection is null");
@@ -211,8 +210,7 @@ public class InsertTests : IClassFixture<TestFixture>
                     MergedToPersonId = personId,
                 };
 
-                int insertedCount;
-                insertedCount = await SqlBuilder
+                var insertedCount = await SqlBuilder
                     .Insert(person)
                     .ExecuteAsync(db);
                 insertedCount.Should().Be(1);
@@ -286,7 +284,7 @@ public class InsertTests : IClassFixture<TestFixture>
         }
     }
 }";
-                var selection = _fixture.BuildGraphQlSelection(graphql);
+                var selection = TestFixture.BuildGraphQlSelection(graphql);
                 if (selection == null)
                 {
                     throw new XunitException("Selection is null");

@@ -21,6 +21,10 @@ public static class EnumerableExtensions
         TAccumulate seed,
         Func<TAccumulate, TSource, Task<TAccumulate>> funcAsync)
     {
+#if NET8_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(funcAsync);
+#else
         if (source == null)
         {
             throw new ArgumentNullException(nameof(source));
@@ -30,6 +34,7 @@ public static class EnumerableExtensions
         {
             throw new ArgumentNullException(nameof(funcAsync));
         }
+#endif
 
         var result = seed;
         foreach (var element in source)

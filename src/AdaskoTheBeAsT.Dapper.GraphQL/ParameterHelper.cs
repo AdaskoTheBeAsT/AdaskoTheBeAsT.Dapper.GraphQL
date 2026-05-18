@@ -20,8 +20,8 @@ public static class ParameterHelper
     private static readonly object LockType = new();
 #endif
 
-    private static readonly Dictionary<Type, PropertyInfo[]> PropertyCache = new();
-    private static readonly Dictionary<Type, TypeInfo> TypeInfoCache = new();
+    private static readonly Dictionary<Type, PropertyInfo[]> PropertyCache = [];
+    private static readonly Dictionary<Type, TypeInfo> TypeInfoCache = [];
 
     /// <summary>
     /// Gets a list of flat properties that have been set on the object.

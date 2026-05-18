@@ -65,7 +65,11 @@ public sealed class TestFixture
             = new OracleBuilder("gvenzl/oracle-free:23-slim-faststart")
                 .Build();
 
+#if NET8_0_OR_GREATER
+        await _oracleContainer!.StartAsync(Xunit.TestContext.Current.CancellationToken);
+#else
         await _oracleContainer!.StartAsync();
+#endif
 
 #if NET6_0_OR_GREATER
         global::Dapper.SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());

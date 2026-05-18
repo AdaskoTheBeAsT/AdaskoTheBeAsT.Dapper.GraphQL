@@ -10,7 +10,7 @@ public static class PersonRepositoryExtensions
 {
     public static SqlQueryContext GetQuery(
         this IPersonRepository personRepository,
-        IResolveConnectionContext<object?>? context,
+        IResolveConnectionContext<object?> context,
         IQueryBuilder<Person> personQueryBuilder,
         string sWhere = "")
     {

@@ -179,7 +179,7 @@ public class PersonRepository : IPersonRepository
         }
 
         var formatted = value.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-        return string.Concat(alias, ".", column, " ", op, " '", formatted, "'");
+        return $"{alias}.{column} {op} '{formatted}'";
     }
 #else
         private static string BuildDateFilter(string alias, string column, string op, DateTime? value)
@@ -190,7 +190,7 @@ public class PersonRepository : IPersonRepository
             }
 
             var formatted = value.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            return string.Concat(alias, ".", column, " ", op, " '", formatted, "'");
+            return $"{alias}.{column} {op} '{formatted}'";
         }
 #endif
 }

@@ -87,7 +87,11 @@ public sealed class TestFixture
                 .WithCommand("--lower-case-table-names=1")
                 .Build();
 
+#if NET8_0_OR_GREATER
+        await _mySqlContainer!.StartAsync(Xunit.TestContext.Current.CancellationToken);
+#else
         await _mySqlContainer!.StartAsync();
+#endif
 
 #if NET6_0_OR_GREATER
         SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());

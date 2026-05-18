@@ -45,6 +45,6 @@ mutation ($person: PersonInput!) {
                 }
             }";
 
-        _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
+        TestFixture.JsonEquals(expectedJson, json).Should().BeTrue();
     }
 }

@@ -238,7 +238,7 @@ public class DapperGraphQlConnectionTests
 
     private sealed class FakeDbParameterCollection : DbParameterCollection
     {
-        private readonly System.Collections.Generic.List<object> _list = new();
+        private readonly System.Collections.Generic.List<object> _list = [];
 
         public override int Count => _list.Count;
 

@@ -51,8 +51,7 @@ public class InsertTests : IClassFixture<TestFixture>
                     MergedToPersonId = personId,
                 };
 
-                int insertedCount;
-                insertedCount = SqlBuilder
+                var insertedCount = SqlBuilder
                     .Insert(person)
                     .Execute(db);
                 insertedCount.Should().Be(1);
@@ -63,7 +62,7 @@ public class InsertTests : IClassFixture<TestFixture>
                     Id = emailId,
                     Address = Email,
                 };
-                personEmailId = SqlMapper.Query<int>(db, "SELECT PERSONEMAIL_ID_SEQ.NEXTVAL FROM DUAL").Single();
+                personEmailId = db.Query<int>("SELECT PERSONEMAIL_ID_SEQ.NEXTVAL FROM DUAL").Single();
                 var personEmail = new
                 {
                     Id = personEmailId,
@@ -78,7 +77,7 @@ public class InsertTests : IClassFixture<TestFixture>
                     Number = PhoneNumber,
                     Type = PhoneType.Mobile,
                 };
-                personPhoneId = SqlMapper.Query<int>(db, "SELECT PERSONPHONE_ID_SEQ.NEXTVAL FROM DUAL").Single();
+                personPhoneId = db.Query<int>("SELECT PERSONPHONE_ID_SEQ.NEXTVAL FROM DUAL").Single();
                 var personPhone = new
                 {
                     Id = personPhoneId,
@@ -91,8 +90,7 @@ public class InsertTests : IClassFixture<TestFixture>
                     .Insert("PersonEmail", personEmail)
                     .Execute(db);
 
-                insertedCount += SqlMapper.Execute(
-                    db,
+                insertedCount += db.Execute(
                     "INSERT INTO Phone (Id, \"Number\", \"Type\") VALUES (:p_id, :p_number, :p_type)",
                     new { p_id = phone.Id, p_number = phone.Number, p_type = (int)phone.Type });
 
@@ -209,8 +207,7 @@ public class InsertTests : IClassFixture<TestFixture>
                     MergedToPersonId = personId,
                 };
 
-                int insertedCount;
-                insertedCount = await SqlBuilder
+                var insertedCount = await SqlBuilder
                     .Insert(person)
                     .ExecuteAsync(db);
                 insertedCount.Should().Be(1);
@@ -221,7 +218,7 @@ public class InsertTests : IClassFixture<TestFixture>
                     Id = emailId,
                     Address = "srollman@landmarkhw.com",
                 };
-                personEmailId = (await SqlMapper.QueryAsync<int>(db, "SELECT PERSONEMAIL_ID_SEQ.NEXTVAL FROM DUAL")).Single();
+                personEmailId = (await db.QueryAsync<int>("SELECT PERSONEMAIL_ID_SEQ.NEXTVAL FROM DUAL")).Single();
                 var personEmail = new
                 {
                     Id = personEmailId,
@@ -236,7 +233,7 @@ public class InsertTests : IClassFixture<TestFixture>
                     Number = PhoneNumber,
                     Type = PhoneType.Mobile,
                 };
-                personPhoneId = (await SqlMapper.QueryAsync<int>(db, "SELECT PERSONPHONE_ID_SEQ.NEXTVAL FROM DUAL")).Single();
+                personPhoneId = (await db.QueryAsync<int>("SELECT PERSONPHONE_ID_SEQ.NEXTVAL FROM DUAL")).Single();
                 var personPhone = new
                 {
                     Id = personPhoneId,
@@ -249,8 +246,7 @@ public class InsertTests : IClassFixture<TestFixture>
                     .Insert("PersonEmail", personEmail)
                     .ExecuteAsync(db);
 
-                insertedCount += await SqlMapper.ExecuteAsync(
-                    db,
+                insertedCount += await db.ExecuteAsync(
                     "INSERT INTO Phone (Id, \"Number\", \"Type\") VALUES (:p_id, :p_number, :p_type)",
                     new { p_id = phone.Id, p_number = phone.Number, p_type = (int)phone.Type });
 

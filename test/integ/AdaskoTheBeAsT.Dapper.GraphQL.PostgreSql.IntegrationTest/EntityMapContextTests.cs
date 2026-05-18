@@ -7,15 +7,8 @@ using Xunit;
 
 namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest;
 
-public class EntityMapContextTests : IClassFixture<TestFixture>
+public class EntityMapContextTests
 {
-    private readonly TestFixture _fixture;
-
-    public EntityMapContextTests(TestFixture fixture)
-    {
-        _fixture = fixture;
-    }
-
     [Fact(DisplayName = "EntityMap properly deduplicates")]
 #pragma warning disable MA0051 // Method is too long
     public void EntityMapSucceeds()
@@ -82,7 +75,7 @@ public class EntityMapContextTests : IClassFixture<TestFixture>
     }
 }";
 
-        var selectionSet = _fixture.BuildGraphQlSelection(graphql);
+        var selectionSet = TestFixture.BuildGraphQlSelection(graphql);
         using (var context1 = new EntityMapContext
                {
                    Items = new object[]
@@ -98,7 +91,7 @@ public class EntityMapContextTests : IClassFixture<TestFixture>
             person1 = personEntityMapper.Map(context1);
             context1.MappedCount.Should().Be(3);
 
-            person1?.Id.Should().Be(2);
+            (person1?.Id).Should().Be(2);
             (person1?.FirstName).Should().Be("Doug");
             (person1?.Emails ?? Enumerable.Empty<Email>()).Should().ContainSingle();
             (person1?.Phones ?? Enumerable.Empty<Phone>()).Should().ContainSingle();
@@ -122,7 +115,7 @@ public class EntityMapContextTests : IClassFixture<TestFixture>
                 person2.Should().BeSameAs(person1);
 
                 // A 2nd email was added to person
-                person1?.Emails.Count.Should().Be(2);
+                (person1?.Emails.Count).Should().Be(2);
             }
         }
     }

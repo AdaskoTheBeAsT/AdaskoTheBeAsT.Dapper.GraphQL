@@ -123,7 +123,11 @@ public sealed class TestFixture
     public void Dispose()
     {
 #pragma warning disable VSTHRD002
+#if NET8_0_OR_GREATER
+        DisposeAsync().AsTask().GetAwaiter().GetResult();
+#else
         DisposeAsync().GetAwaiter().GetResult();
+#endif
 #pragma warning restore VSTHRD002
     }
 

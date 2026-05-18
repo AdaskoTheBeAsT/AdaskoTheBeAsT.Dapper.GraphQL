@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AdaskoTheBeAsT.Dapper.GraphQL.Oracle.IntegrationTest;
 
-public class EntityMapContextTests : IClassFixture<TestFixture>
+public class EntityMapContextTests
 {
     [Fact(DisplayName = "EntityMap properly deduplicates")]
 #pragma warning disable MA0051 // Method is too long
@@ -91,7 +91,7 @@ public class EntityMapContextTests : IClassFixture<TestFixture>
             person1 = personEntityMapper.Map(context1);
             context1.MappedCount.Should().Be(3);
 
-            person1?.Id.Should().Be(2);
+            (person1?.Id).Should().Be(2);
             (person1?.FirstName).Should().Be("Doug");
             (person1?.Emails ?? Enumerable.Empty<Email>()).Should().ContainSingle();
             (person1?.Phones ?? Enumerable.Empty<Phone>()).Should().ContainSingle();
@@ -115,7 +115,7 @@ public class EntityMapContextTests : IClassFixture<TestFixture>
                 person2.Should().BeSameAs(person1);
 
                 // A 2nd email was added to person
-                person1?.Emails.Count.Should().Be(2);
+                (person1?.Emails.Count).Should().Be(2);
             }
         }
     }

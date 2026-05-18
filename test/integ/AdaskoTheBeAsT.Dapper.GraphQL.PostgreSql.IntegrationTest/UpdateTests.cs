@@ -40,7 +40,7 @@ public class UpdateTests : IClassFixture<TestFixture>
     }
 }";
 
-            var selectionSet = _fixture.BuildGraphQlSelection(graphql);
+            var selectionSet = TestFixture.BuildGraphQlSelection(graphql);
             if (selectionSet == null)
             {
                 throw new XunitException("Selection set is null");
@@ -122,7 +122,7 @@ public class UpdateTests : IClassFixture<TestFixture>
     }
 }";
 
-                var selectionSet = _fixture.BuildGraphQlSelection(graphql);
+                var selectionSet = TestFixture.BuildGraphQlSelection(graphql);
                 if (selectionSet == null)
                 {
                     throw new XunitException("Selection set is null");
