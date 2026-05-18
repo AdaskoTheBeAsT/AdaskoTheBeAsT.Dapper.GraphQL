@@ -16,7 +16,6 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.SqlServer.IntegrationTest.Repositories;
 public class PersonRepository : IPersonRepository
 {
     private readonly IQueryBuilder<Person> _personQueryBuilder;
-    private readonly PersonEntityMapper _personMapper = new();
 #pragma warning disable CC0021 // Use nameof
     private readonly string _alias = "Person";
 #pragma warning restore CC0021 // Use nameof
@@ -42,7 +41,7 @@ public class PersonRepository : IPersonRepository
         using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
         {
             var results = await query
-                .ExecuteAsync(connection, Context.FieldAst, _personMapper)
+                .ExecuteAsync(connection, Context.FieldAst, new PersonEntityMapper())
                 .ConfigureAwait(false);
 
             return results.Distinct().Count();
@@ -69,7 +68,7 @@ public class PersonRepository : IPersonRepository
         using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
         {
             var results = await query
-                .ExecuteAsync(connection, Context.FieldAst, _personMapper)
+                .ExecuteAsync(connection, Context.FieldAst, new PersonEntityMapper())
                 .ConfigureAwait(false);
             var list = results
                 .Distinct()
@@ -100,7 +99,7 @@ public class PersonRepository : IPersonRepository
         using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
         {
             var results = await query
-                .ExecuteAsync(connection, Context.FieldAst, _personMapper)
+                .ExecuteAsync(connection, Context.FieldAst, new PersonEntityMapper())
                 .ConfigureAwait(false);
             var list = results
                 .Distinct()
@@ -131,7 +130,7 @@ public class PersonRepository : IPersonRepository
         using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
         {
             var results = await query
-                .ExecuteAsync(connection, Context.FieldAst, _personMapper)
+                .ExecuteAsync(connection, Context.FieldAst, new PersonEntityMapper())
                 .ConfigureAwait(false);
             return results
                 .Distinct()
@@ -160,7 +159,7 @@ public class PersonRepository : IPersonRepository
         using (var connection = _serviceProvider.GetRequiredService<IDbConnection>())
         {
             var results = await query
-                .ExecuteAsync(connection, Context.FieldAst, _personMapper)
+                .ExecuteAsync(connection, Context.FieldAst, new PersonEntityMapper())
                 .ConfigureAwait(false);
             var items = results
                 .Distinct()
