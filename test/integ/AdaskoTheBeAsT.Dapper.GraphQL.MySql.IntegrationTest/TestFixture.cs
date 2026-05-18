@@ -128,7 +128,20 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest
 #pragma warning disable S2325
         public bool JsonEquals(string expectedJson, string actualJson)
         {
-            return JToken.DeepEquals(JObject.Parse(expectedJson), JObject.Parse(actualJson));
+            var expectedToken = JObject.Parse(expectedJson);
+            var actualToken = JObject.Parse(actualJson);
+            if (!JToken.DeepEquals(expectedToken, actualToken))
+            {
+                System.Console.WriteLine("=== JsonEquals mismatch ===");
+                System.Console.WriteLine("--- expected ---");
+                System.Console.WriteLine(expectedToken.ToString(Newtonsoft.Json.Formatting.Indented));
+                System.Console.WriteLine("--- actual ---");
+                System.Console.WriteLine(actualToken.ToString(Newtonsoft.Json.Formatting.Indented));
+                System.Console.WriteLine("=== end mismatch ===");
+                return false;
+            }
+
+            return true;
         }
 #pragma warning restore S2325
 
