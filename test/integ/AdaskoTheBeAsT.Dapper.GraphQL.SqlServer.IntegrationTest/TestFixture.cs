@@ -8,6 +8,7 @@ using AdaskoTheBeAsT.Dapper.GraphQL.SqlServer.IntegrationTest.Models;
 using AdaskoTheBeAsT.Dapper.GraphQL.SqlServer.IntegrationTest.QueryBuilders;
 using AdaskoTheBeAsT.Dapper.GraphQL.SqlServer.IntegrationTest.Repositories;
 using DbUp;
+using DotNet.Testcontainers.Builders;
 using GraphQL;
 using GraphQL.Execution;
 using GraphQL.NewtonsoftJson;
@@ -45,7 +46,16 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.SqlServer.IntegrationTest
 #endif
         {
             _msSqlContainer
-                = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-latest")
+                = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2025-latest")
+                    .WithEnvironment("ACCEPT_EULA", "Y")
+                    .WithExposedPort(1433)
+                    .WithWaitStrategy(
+                        Wait.ForUnixContainer()
+                            .UntilCommandIsCompleted(
+                                "/opt/mssql-tools18/bin/sqlcmd",
+                                "-C",
+                                "-Q",
+                                "SELECT 1;"))
                     .WithPassword("TestPass123!")
                     .Build();
 
