@@ -4,62 +4,110 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.GraphQL;
+
+public static class Cursor
 {
-    public static class Cursor
+    public static T? FromCursor<T>(string? cursor)
     {
-        public static T? FromCursor<T>(string? cursor)
+        if (string.IsNullOrEmpty(cursor))
         {
-            if (string.IsNullOrEmpty(cursor))
-            {
-                return default;
-            }
-
-            string decodedValue;
-            try
-            {
-                decodedValue = Base64Decode(cursor!);
-            }
-            catch (FormatException)
-            {
-                return default;
-            }
-
-            return (T)Convert.ChangeType(decodedValue, Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T), CultureInfo.InvariantCulture);
+            return default;
         }
 
-        public static (string? FirstCursor, string? LastCursor) GetFirstAndLastCursor<TItem, TCursor>(
-            IEnumerable<TItem> enumerable,
-            Func<TItem, TCursor> getCursorProperty)
+        string decodedValue;
+        try
         {
-            if (getCursorProperty == null)
-            {
-                throw new ArgumentNullException(nameof(getCursorProperty));
-            }
-
-            if (!enumerable.Any())
-            {
-                return (null, null);
-            }
-
-            var firstCursor = ToCursor(getCursorProperty(enumerable.First()));
-            var lastCursor = ToCursor(getCursorProperty(enumerable.Last()));
-
-            return (firstCursor, lastCursor);
+            decodedValue = Base64Decode(cursor!);
+        }
+        catch (FormatException)
+        {
+            return default;
         }
 
-        public static string ToCursor<T>(T value)
+        var targetType = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
+
+#if NET6_0_OR_GREATER
+        if (targetType == typeof(DateOnly))
         {
-            if (EqualityComparer<T?>.Default.Equals(value, default))
+            if (DateOnly.TryParseExact(decodedValue, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateOnly))
             {
-                throw new ArgumentNullException(nameof(value));
+                return (T)(object)dateOnly;
             }
 
-            return Base64Encode(value!.ToString() ?? string.Empty);
+            return default;
+        }
+#endif
+
+        if (targetType == typeof(DateTime))
+        {
+            if (DateTime.TryParseExact(decodedValue, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dateTime))
+            {
+                return (T)(object)dateTime;
+            }
+
+            return default;
         }
 
-        private static string Base64Decode(string value) => Encoding.UTF8.GetString(Convert.FromBase64String(value));
-
-        private static string Base64Encode(string value) => Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
+        try
+        {
+            return (T)Convert.ChangeType(decodedValue, targetType, CultureInfo.InvariantCulture);
+        }
+        catch (InvalidCastException)
+        {
+            return default;
+        }
+        catch (FormatException)
+        {
+            return default;
+        }
     }
+
+    public static (string? FirstCursor, string? LastCursor) GetFirstAndLastCursor<TItem, TCursor>(
+        IEnumerable<TItem> enumerable,
+        Func<TItem, TCursor> getCursorProperty)
+    {
+#if NET8_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(getCursorProperty);
+#else
+        if (getCursorProperty == null)
+        {
+            throw new ArgumentNullException(nameof(getCursorProperty));
+        }
+#endif
+
+        if (!enumerable.Any())
+        {
+            return (null, null);
+        }
+
+        var firstCursor = ToCursor(getCursorProperty(enumerable.First()));
+        var lastCursor = ToCursor(getCursorProperty(enumerable.Last()));
+
+        return (firstCursor, lastCursor);
+    }
+
+    public static string ToCursor<T>(T value)
+    {
+        if (EqualityComparer<T?>.Default.Equals(value, default))
+        {
+            throw new ArgumentNullException(nameof(value));
+        }
+
+        var text = value switch
+        {
+#if NET6_0_OR_GREATER
+                DateOnly d => d.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+#endif
+            DateTime dt => dt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
+            IFormattable f => f.ToString(format: null, formatProvider: CultureInfo.InvariantCulture),
+            _ => value!.ToString() ?? string.Empty,
+        };
+
+        return Base64Encode(text);
+    }
+
+    private static string Base64Decode(string value) => Encoding.UTF8.GetString(Convert.FromBase64String(value));
+
+    private static string Base64Encode(string value) => Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
 }

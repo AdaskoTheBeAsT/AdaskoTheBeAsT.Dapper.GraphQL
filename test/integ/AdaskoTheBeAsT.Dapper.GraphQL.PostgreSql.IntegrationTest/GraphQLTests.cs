@@ -2,24 +2,24 @@ using System.Threading.Tasks;
 using AwesomeAssertions;
 using Xunit;
 
-namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest;
+
+public class GraphQlTests
+    : IClassFixture<TestFixture>
 {
-    public class GraphQlTests
-        : IClassFixture<TestFixture>
+    private readonly TestFixture _fixture;
+
+    public GraphQlTests(TestFixture fixture)
     {
-        private readonly TestFixture _fixture;
+        _fixture = fixture;
+    }
 
-        public GraphQlTests(TestFixture fixture)
-        {
-            _fixture = fixture;
-        }
-
-        [Fact(DisplayName = "Full people query should succeed")]
+    [Fact(DisplayName = "Full people query should succeed")]
 #pragma warning disable MA0051 // Method is too long
-        public async Task FullPeopleQueryAsync()
+    public async Task FullPeopleQueryAsync()
 #pragma warning restore MA0051 // Method is too long
-        {
-            var json = await _fixture.QueryGraphQlAsync(@"
+    {
+        var json = await _fixture.QueryGraphQlAsync(@"
 query {
     people {
         id
@@ -69,133 +69,134 @@ query {
     }
 }");
 
-            var expectedJson = @"
-{
-    ""data"": {
-        ""people"": [{
-                ""id"": 1,
-                ""firstName"": ""Hyrum"",
-                ""lastName"": ""Clyde"",
-                ""emails"": [{
-                    ""id"": 1,
-                    ""address"": ""hclyde@landmarkhw.com""
-                }],
-                ""phones"": [],
-                ""companies"": [{
-                    ""id"": 1,
-                    ""name"": ""Landmark Home Warranty, LLC""
-                }],
-                ""supervisor"": null,
-                ""careerCounselor"": null
-            },
+        const string expectedJson = """
             {
-                ""id"": 2,
-                ""firstName"": ""Doug"",
-                ""lastName"": ""Day"",
-                ""emails"": [{
-                        ""id"": 2,
-                        ""address"": ""dday@landmarkhw.com""
-                    },
-                    {
-                        ""id"": 3,
-                        ""address"": ""dougrday@gmail.com""
-                    }
-                ],
-                ""phones"": [{
-                    ""id"": 1,
-                    ""number"": ""8011234567"",
-                    ""type"": ""Mobile""
-                }],
-                ""companies"": [{
-                        ""id"": 1,
-                        ""name"": ""Landmark Home Warranty, LLC""
-                    },
-                    {
-                        ""id"": 2,
-                        ""name"": ""Navitaire, LLC""
-                    }
-                ],
-                ""supervisor"": null,
-                ""careerCounselor"": {
-                    ""id"": 1,
-                    ""firstName"": ""Hyrum"",
-                    ""lastName"": ""Clyde"",
-                    ""emails"": [{
-                        ""id"": 1,
-                        ""address"": ""hclyde@landmarkhw.com""
-                    }],
-                    ""phones"": []
-                }
-            },
-            {
-                ""id"": 3,
-                ""firstName"": ""Kevin"",
-                ""lastName"": ""Russon"",
-                ""emails"": [{
-                    ""id"": 4,
-                    ""address"": ""krusson@landmarkhw.com""
-                }],
-                ""phones"": [{
-                        ""id"": 2,
-                        ""number"": ""8019876543"",
-                        ""type"": ""Mobile""
-                    },
-                    {
-                        ""id"": 3,
-                        ""number"": ""8011111111"",
-                        ""type"": ""Home""
-                    }
-                ],
-                ""companies"": [{
-                        ""id"": 2,
-                        ""name"": ""Navitaire, LLC""
-                    },
-                    {
-                        ""id"": 1,
-                        ""name"": ""Landmark Home Warranty, LLC""
-                    }
-                ],
-                ""supervisor"": {
-                    ""id"": 1,
-                    ""firstName"": ""Hyrum"",
-                    ""lastName"": ""Clyde"",
-                    ""emails"": [{
-                        ""id"": 1,
-                        ""address"": ""hclyde@landmarkhw.com""
-                    }],
-                    ""phones"": []
-                },
-                ""careerCounselor"": {
-                    ""id"": 2,
-                    ""firstName"": ""Doug"",
-                    ""lastName"": ""Day"",
-                    ""emails"": [{
-                            ""id"": 2,
-                            ""address"": ""dday@landmarkhw.com""
+                "data": {
+                    "people": [{
+                            "id": 1,
+                            "firstName": "Hyrum",
+                            "lastName": "Clyde",
+                            "emails": [{
+                                "id": 1,
+                                "address": "hclyde@landmarkhw.com"
+                            }],
+                            "phones": [],
+                            "companies": [{
+                                "id": 1,
+                                "name": "Landmark Home Warranty, LLC"
+                            }],
+                            "supervisor": null,
+                            "careerCounselor": null
                         },
                         {
-                            ""id"": 3,
-                            ""address"": ""dougrday@gmail.com""
+                            "id": 2,
+                            "firstName": "Doug",
+                            "lastName": "Day",
+                            "emails": [{
+                                    "id": 2,
+                                    "address": "dday@landmarkhw.com"
+                                },
+                                {
+                                    "id": 3,
+                                    "address": "dougrday@gmail.com"
+                                }
+                            ],
+                            "phones": [{
+                                "id": 1,
+                                "number": "8011234567",
+                                "type": "Mobile"
+                            }],
+                            "companies": [{
+                                    "id": 1,
+                                    "name": "Landmark Home Warranty, LLC"
+                                },
+                                {
+                                    "id": 2,
+                                    "name": "Navitaire, LLC"
+                                }
+                            ],
+                            "supervisor": null,
+                            "careerCounselor": {
+                                "id": 1,
+                                "firstName": "Hyrum",
+                                "lastName": "Clyde",
+                                "emails": [{
+                                    "id": 1,
+                                    "address": "hclyde@landmarkhw.com"
+                                }],
+                                "phones": []
+                            }
+                        },
+                        {
+                            "id": 3,
+                            "firstName": "Kevin",
+                            "lastName": "Russon",
+                            "emails": [{
+                                "id": 4,
+                                "address": "krusson@landmarkhw.com"
+                            }],
+                            "phones": [{
+                                    "id": 2,
+                                    "number": "8019876543",
+                                    "type": "Mobile"
+                                },
+                                {
+                                    "id": 3,
+                                    "number": "8011111111",
+                                    "type": "Home"
+                                }
+                            ],
+                            "companies": [{
+                                    "id": 2,
+                                    "name": "Navitaire, LLC"
+                                },
+                                {
+                                    "id": 1,
+                                    "name": "Landmark Home Warranty, LLC"
+                                }
+                            ],
+                            "supervisor": {
+                                "id": 1,
+                                "firstName": "Hyrum",
+                                "lastName": "Clyde",
+                                "emails": [{
+                                    "id": 1,
+                                    "address": "hclyde@landmarkhw.com"
+                                }],
+                                "phones": []
+                            },
+                            "careerCounselor": {
+                                "id": 2,
+                                "firstName": "Doug",
+                                "lastName": "Day",
+                                "emails": [{
+                                        "id": 2,
+                                        "address": "dday@landmarkhw.com"
+                                    },
+                                    {
+                                        "id": 3,
+                                        "address": "dougrday@gmail.com"
+                                    }
+                                ],
+                                "phones": [{
+                                    "id": 1,
+                                    "number": "8011234567",
+                                    "type": "Mobile"
+                                }]
+                            }
                         }
-                    ],
-                    ""phones"": [{
-                        ""id"": 1,
-                        ""number"": ""8011234567"",
-                        ""type"": ""Mobile""
-                    }]
+                    ]
                 }
             }
-        ]
+            """;
+
+        TestFixture.JsonEquals(expectedJson, json).Should().BeTrue();
     }
-}";
 
-            Assert.True(_fixture.JsonEquals(expectedJson, json));
-        }
-
-        [Fact(DisplayName = "Async query should succeed")]
-        public async Task PeopleAsyncQueryAsync()
-        {
-            var json = await _fixture.QueryGraphQlAsync(@"
+    [Fact(DisplayName = "Async query should succeed")]
+    public async Task PeopleAsyncQueryAsync()
+    {
+        var json = await _fixture.QueryGraphQlAsync(@"
 query {
     peopleAsync {
         id
@@ -204,36 +205,37 @@ query {
     }
 }");
 
-            var expectedJson = @"
-{
-  ""data"": {
-    ""peopleAsync"": [
-      {
-        ""id"": 1,
-        ""firstName"": ""Hyrum"",
-        ""lastName"": ""Clyde""
-      },
-      {
-        ""id"": 2,
-        ""firstName"": ""Doug"",
-        ""lastName"": ""Day""
-      },
-      {
-        ""id"": 3,
-        ""firstName"": ""Kevin"",
-        ""lastName"": ""Russon""
-      }
-    ]
-  }
-}";
+        const string expectedJson = """
+            {
+              "data": {
+                "peopleAsync": [
+                  {
+                    "id": 1,
+                    "firstName": "Hyrum",
+                    "lastName": "Clyde"
+                  },
+                  {
+                    "id": 2,
+                    "firstName": "Doug",
+                    "lastName": "Day"
+                  },
+                  {
+                    "id": 3,
+                    "firstName": "Kevin",
+                    "lastName": "Russon"
+                  }
+                ]
+              }
+            }
+            """;
 
-            Assert.True(_fixture.JsonEquals(expectedJson, json));
-        }
+        TestFixture.JsonEquals(expectedJson, json).Should().BeTrue();
+    }
 
-        [Fact(DisplayName = "Person query should succeed")]
-        public async Task PersonQueryAsync()
-        {
-            var json = await _fixture.QueryGraphQlAsync(@"
+    [Fact(DisplayName = "Person query should succeed")]
+    public async Task PersonQueryAsync()
+    {
+        var json = await _fixture.QueryGraphQlAsync(@"
 query {
     person (id: 2) {
         id
@@ -251,36 +253,37 @@ query {
     }
 }");
 
-            var expectedJson = @"
-{
-    data: {
-        person: {
-            id: 2,
-            firstName: 'Doug',
-            lastName: 'Day',
-            emails: [{
-                id: 2,
-                address: 'dday@landmarkhw.com'
-            }, {
-                id: 3,
-                address: 'dougrday@gmail.com'
-            }],
-            phones: [{
-                id: 1,
-                number: '8011234567',
-                type: ""Mobile""
-            }]
-        }
+        const string expectedJson = """
+            {
+                data: {
+                    person: {
+                        id: 2,
+                        firstName: 'Doug',
+                        lastName: 'Day',
+                        emails: [{
+                            id: 2,
+                            address: 'dday@landmarkhw.com'
+                        }, {
+                            id: 3,
+                            address: 'dougrday@gmail.com'
+                        }],
+                        phones: [{
+                            id: 1,
+                            number: '8011234567',
+                            type: "Mobile"
+                        }]
+                    }
+                }
+            }
+            """;
+
+        TestFixture.JsonEquals(expectedJson, json).Should().BeTrue();
     }
-}";
 
-            Assert.True(_fixture.JsonEquals(expectedJson, json));
-        }
-
-        [Fact(DisplayName = "Simple people query should succeed")]
-        public async Task SimplePeopleQueryAsync()
-        {
-            var json = await _fixture.QueryGraphQlAsync(@"
+    [Fact(DisplayName = "Simple people query should succeed")]
+    public async Task SimplePeopleQueryAsync()
+    {
+        var json = await _fixture.QueryGraphQlAsync(@"
 query {
     people {
         firstName
@@ -288,7 +291,7 @@ query {
     }
 }");
 
-            var expectedJson = @"
+        const string expectedJson = @"
 {
   data: {
     people: [
@@ -308,13 +311,13 @@ query {
   }
 }";
 
-            Assert.True(_fixture.JsonEquals(expectedJson, json));
-        }
+        TestFixture.JsonEquals(expectedJson, json).Should().BeTrue();
+    }
 
-        [Fact(DisplayName = "Simple person query should succeed")]
-        public async Task SimplePersonQueryAsync()
-        {
-            var json = await _fixture.QueryGraphQlAsync(@"
+    [Fact(DisplayName = "Simple person query should succeed")]
+    public async Task SimplePersonQueryAsync()
+    {
+        var json = await _fixture.QueryGraphQlAsync(@"
 query {
     person (id: 2) {
         id
@@ -323,7 +326,7 @@ query {
     }
 }");
 
-            var expectedJson = @"
+        const string expectedJson = @"
 {
     data: {
         person: {
@@ -334,15 +337,15 @@ query {
     }
 }";
 
-            Assert.True(_fixture.JsonEquals(expectedJson, json));
-        }
+        TestFixture.JsonEquals(expectedJson, json).Should().BeTrue();
+    }
 
-        [Fact(DisplayName = "People connection query should succeed")]
+    [Fact(DisplayName = "People connection query should succeed")]
 #pragma warning disable MA0051 // Method is too long
-        public async Task PeopleConnectionQueryAsync()
+    public async Task PeopleConnectionQueryAsync()
 #pragma warning restore MA0051 // Method is too long
-        {
-            var json = await _fixture.QueryGraphQlAsync(@"
+    {
+        var json = await _fixture.QueryGraphQlAsync(@"
 query {
     personConnection(first:2) {
     edges {
@@ -362,8 +365,8 @@ query {
 }");
 
 #if NET6_0_OR_GREATER
-            // GraphQL.NET v8 with DateOnly (NET 6+) uses culture-invariant date formatting without time
-            var expectedJson = @"
+        // Cursor encodes DateOnly as ISO yyyy-MM-dd via InvariantCulture
+        const string expectedJson = @"
 {
   'data': {
     'personConnection': {
@@ -373,28 +376,28 @@ query {
             'firstName': 'Hyrum',
             'lastName': 'Clyde'
           },
-          'cursor': 'MS4wMS4yMDE5'
+          'cursor': 'MjAxOS0wMS0wMQ=='
         },
         {
           'node': {
             'firstName': 'Doug',
             'lastName': 'Day'
           },
-          'cursor': 'Mi4wMS4yMDE5'
+          'cursor': 'MjAxOS0wMS0wMg=='
         }
       ],
       'pageInfo': {
         'hasNextPage': true,
         'hasPreviousPage': false,
-        'endCursor': 'Mi4wMS4yMDE5',
-        'startCursor': 'MS4wMS4yMDE5'
+        'endCursor': 'MjAxOS0wMS0wMg==',
+        'startCursor': 'MjAxOS0wMS0wMQ=='
       }
     }
   }
 }";
 #else
-            // GraphQL.NET v8 with DateTime (.NET Framework) uses culture-invariant date formatting with time
-            var expectedJson = @"
+            // Cursor encodes DateTime as yyyy-MM-dd HH:mm:ss via InvariantCulture
+        const string expectedJson = @"
 {
   'data': {
     'personConnection': {
@@ -404,28 +407,27 @@ query {
             'firstName': 'Hyrum',
             'lastName': 'Clyde'
           },
-          'cursor': 'MS4wMS4yMDE5IDAwOjAwOjAw'
+          'cursor': 'MjAxOS0wMS0wMSAwMDowMDowMA=='
         },
         {
           'node': {
             'firstName': 'Doug',
             'lastName': 'Day'
           },
-          'cursor': 'Mi4wMS4yMDE5IDAwOjAwOjAw'
+          'cursor': 'MjAxOS0wMS0wMiAwMDowMDowMA=='
         }
       ],
       'pageInfo': {
         'hasNextPage': true,
         'hasPreviousPage': false,
-        'endCursor': 'Mi4wMS4yMDE5IDAwOjAwOjAw',
-        'startCursor': 'MS4wMS4yMDE5IDAwOjAwOjAw'
+        'endCursor': 'MjAxOS0wMS0wMiAwMDowMDowMA==',
+        'startCursor': 'MjAxOS0wMS0wMSAwMDowMDowMA=='
       }
     }
   }
 }";
 #endif
 
-            _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
-        }
+        TestFixture.JsonEquals(expectedJson, json).Should().BeTrue();
     }
 }

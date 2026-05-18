@@ -10,16 +10,24 @@ public static class PersonRepositoryExtensions
 {
     public static SqlQueryContext GetQuery(
         this IPersonRepository personRepository,
-        IResolveConnectionContext<object?>? context,
+        IResolveConnectionContext<object?> context,
         IQueryBuilder<Person> personQueryBuilder,
         string sWhere = "")
     {
-#pragma warning disable RCS1256 // Invalid argument null check
+#if NET8_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(personRepository);
+        ArgumentNullException.ThrowIfNull(context);
+#else
+        if (personRepository == null)
+        {
+            throw new ArgumentNullException(nameof(personRepository));
+        }
+
         if (context == null)
         {
             throw new ArgumentNullException(nameof(context));
         }
-#pragma warning restore RCS1256 // Invalid argument null check
+#endif
 
         const string alias = nameof(Person);
 

@@ -1,0 +1,40 @@
+using System;
+using System.Collections.Generic;
+
+namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest.Models;
+
+public class Person
+{
+    public Person()
+    {
+        Companies = [];
+        Emails = [];
+        Phones = [];
+    }
+
+    public Person? CareerCounselor { get; set; }
+
+    public IList<Company> Companies { get; set; }
+
+    public IList<Email> Emails { get; set; }
+
+    public string? FirstName { get; set; }
+
+    public int Id { get; set; }
+
+    public string? LastName { get; set; }
+
+    public int MergedToPersonId { get; set; }
+
+    public IList<Phone> Phones { get; set; }
+
+    public Person? Supervisor { get; set; }
+
+#if NET6_0_OR_GREATER
+    // .NET 6+ uses DateOnly for DATE columns
+    public DateOnly CreateDate { get; set; }
+#else
+    // .NET Framework uses DateTime for DATE columns
+    public DateTime CreateDate { get; set; }
+#endif
+}

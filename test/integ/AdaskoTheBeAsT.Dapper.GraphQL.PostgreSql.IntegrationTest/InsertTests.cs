@@ -1,117 +1,118 @@
 using System.Linq;
 using System.Threading.Tasks;
+using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.Extensions;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.EntityMappers;
 using AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest.Models;
+using AwesomeAssertions;
 using Xunit;
 using Xunit.Sdk;
 
-namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest;
+
+public class InsertTests : IClassFixture<TestFixture>
 {
-    public class InsertTests : IClassFixture<TestFixture>
+    public const string NameSteven = "Steven";
+    public const string NameRollman = "Rollman";
+    public const string PhoneNumber = "8011115555";
+    public const string Email = "srollman@landmarkhw.com";
+    private readonly TestFixture _fixture;
+
+    public InsertTests(TestFixture fixture)
     {
-        public const string NameSteven = "Steven";
-        public const string NameRollman = "Rollman";
-        public const string PhoneNumber = "8011115555";
-        public const string Email = "srollman@landmarkhw.com";
-        private readonly TestFixture _fixture;
+        _fixture = fixture;
+    }
 
-        public InsertTests(TestFixture fixture)
-        {
-            _fixture = fixture;
-        }
-
-        [Fact(DisplayName = "INSERT person succeeds")]
+    [Fact(DisplayName = "INSERT person succeeds")]
 #pragma warning disable MA0051 // Method is too long
-        public void InsertPerson()
+    public void InsertPerson()
 #pragma warning restore MA0051 // Method is too long
+    {
+        Person? person = null;
+
+        // Ensure inserting a person works and we get IDs back
+        var emailId = -1;
+        var personId = -1;
+        var phoneId = -1;
+
+        try
         {
-            Person? person = null;
-
-            // Ensure inserting a person works and we get IDs back
-            var emailId = -1;
-            var personId = -1;
-            var phoneId = -1;
-
-            try
+            using (var db = _fixture.GetDbConnection())
             {
-                using (var db = _fixture.GetDbConnection())
+                db.Open();
+
+                // Get the next identity aggressively, as we need to assign
+                // it to both Id/MergedToPersonId
+                personId = PostgreSqlIdentity.NextIdentity(db, (Person p) => p.Id);
+                (personId > 0).Should().BeTrue();
+
+                person = new Person
                 {
-                    db.Open();
+                    Id = personId,
+                    FirstName = NameSteven,
+                    LastName = NameRollman,
+                    MergedToPersonId = personId,
+                };
 
-                    // Get the next identity aggressively, as we need to assign
-                    // it to both Id/MergedToPersonId
-                    personId = Extensions.PostgreSql.NextIdentity(db, (Person p) => p.Id);
-                    Assert.True(personId > 0);
+                var insertedCount = SqlBuilder
+                    .Insert(person)
+                    .Execute(db);
+                insertedCount.Should().Be(1);
 
-                    person = new Person
-                    {
-                        Id = personId,
-                        FirstName = NameSteven,
-                        LastName = NameRollman,
-                        MergedToPersonId = personId,
-                    };
+                emailId = PostgreSqlIdentity.NextIdentity(db, (Email e) => e.Id);
+                var email = new Email
+                {
+                    Id = emailId,
+                    Address = Email,
+                };
 
-                    int insertedCount;
-                    insertedCount = SqlBuilder
-                        .Insert(person)
-                        .Execute(db);
-                    Assert.Equal(1, insertedCount);
+                var personEmail = new
+                {
+                    PersonId = personId,
+                    EmailId = emailId,
+                };
 
-                    emailId = Extensions.PostgreSql.NextIdentity(db, (Email e) => e.Id);
-                    var email = new Email
-                    {
-                        Id = emailId,
-                        Address = Email,
-                    };
+                phoneId = PostgreSqlIdentity.NextIdentity(db, (Phone p) => p.Id);
+                var phone = new Phone
+                {
+                    Id = phoneId,
+                    Number = PhoneNumber,
+                    Type = PhoneType.Mobile,
+                };
 
-                    var personEmail = new
-                    {
-                        PersonId = personId,
-                        EmailId = emailId,
-                    };
+                var personPhone = new
+                {
+                    PersonId = personId,
+                    PhoneId = phoneId,
+                };
 
-                    phoneId = Extensions.PostgreSql.NextIdentity(db, (Phone p) => p.Id);
-                    var phone = new Phone
-                    {
-                        Id = phoneId,
-                        Number = PhoneNumber,
-                        Type = PhoneType.Mobile,
-                    };
+                // Add email and phone number to the person
+                insertedCount = SqlBuilder
+                    .Insert(email)
+                    .Insert(phone)
+                    .Insert("PersonEmail", personEmail)
+                    .Insert("PersonPhone", personPhone)
+                    .Execute(db);
 
-                    var personPhone = new
-                    {
-                        PersonId = personId,
-                        PhoneId = phoneId,
-                    };
+                // Ensure all were inserted properly
+                insertedCount.Should().Be(4);
 
-                    // Add email and phone number to the person
-                    insertedCount = SqlBuilder
-                        .Insert(email)
-                        .Insert(phone)
-                        .Insert("PersonEmail", personEmail)
-                        .Insert("PersonPhone", personPhone)
-                        .Execute(db);
+                // Build an entity mapper for person
+                var personMapper = new PersonEntityMapper();
 
-                    // Ensure all were inserted properly
-                    Assert.Equal(4, insertedCount);
+                // Query the person from the database
+                var query = SqlBuilder
+                    .From<Person>(nameof(person))
+                    .LeftJoin("PersonEmail personEmail on person.Id = personEmail.Id")
+                    .LeftJoin("Email email on personEmail.EmailId = email.Id")
+                    .LeftJoin("PersonPhone personPhone on person.Id = personPhone.PersonId")
+                    .LeftJoin("Phone phone on personPhone.PhoneId = phone.Id")
+                    .Select("person.*, email.*, phone.*")
+                    .SplitOn<Person>("Id")
+                    .SplitOn<Email>("Id")
+                    .SplitOn<Phone>("Id")
+                    .Where("person.Id = @id", new { id = personId });
 
-                    // Build an entity mapper for person
-                    var personMapper = new PersonEntityMapper();
-
-                    // Query the person from the database
-                    var query = SqlBuilder
-                        .From<Person>(nameof(person))
-                        .LeftJoin("PersonEmail personEmail on person.Id = personEmail.Id")
-                        .LeftJoin("Email email on personEmail.EmailId = email.Id")
-                        .LeftJoin("PersonPhone personPhone on person.Id = personPhone.PersonId")
-                        .LeftJoin("Phone phone on personPhone.PhoneId = phone.Id")
-                        .Select("person.*, email.*, phone.*")
-                        .SplitOn<Person>("Id")
-                        .SplitOn<Email>("Id")
-                        .SplitOn<Phone>("Id")
-                        .Where("person.Id = @id", new { id = personId });
-
-                    var graphql = @"
+                const string graphql = @"
 {
     person {
         firstName
@@ -126,150 +127,149 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         }
     }
 }";
-                    var selection = _fixture.BuildGraphQlSelection(graphql);
-                    if (selection == null)
-                    {
-                        throw new XunitException("Selection is null");
-                    }
-
-                    person = query
-                        .Execute(db, selection, personMapper)
-                        .Single();
+                var selection = TestFixture.BuildGraphQlSelection(graphql);
+                if (selection == null)
+                {
+                    throw new XunitException("Selection is null");
                 }
 
-                // Ensure all inserted data is present
-                Assert.NotNull(person);
-                Assert.Equal(personId, person.Id);
-                Assert.Equal(NameSteven, person.FirstName);
-                Assert.Equal(NameRollman, person.LastName);
-                Assert.Single(person.Emails);
-                Assert.Equal(Email, person.Emails[0].Address);
-                Assert.Single(person.Phones);
-                Assert.Equal(PhoneNumber, person.Phones[0].Number);
+                person = query
+                    .Execute(db, selection, personMapper)
+                    .Single();
             }
-            finally
+
+            // Ensure all inserted data is present
+            person.Should().NotBeNull();
+            person.Id.Should().Be(personId);
+            person.FirstName.Should().Be(NameSteven);
+            person.LastName.Should().Be(NameRollman);
+            person.Emails.Should().ContainSingle();
+            person.Emails[0].Address.Should().Be(Email);
+            person.Phones.Should().ContainSingle();
+            person.Phones[0].Number.Should().Be(PhoneNumber);
+        }
+        finally
+        {
+            // Ensure the changes here don't affect other unit tests
+            using (var db = _fixture.GetDbConnection())
             {
-                // Ensure the changes here don't affect other unit tests
-                using (var db = _fixture.GetDbConnection())
+                if (emailId != default(int))
                 {
-                    if (emailId != default(int))
-                    {
-                        SqlBuilder
-                            .Delete("PersonEmail", new { EmailId = emailId })
-                            .Delete(nameof(Email), new { Id = emailId })
-                            .Execute(db);
-                    }
+                    SqlBuilder
+                        .Delete("PersonEmail", new { EmailId = emailId })
+                        .Delete(nameof(Email), new { Id = emailId })
+                        .Execute(db);
+                }
 
-                    if (phoneId != default(int))
-                    {
-                        SqlBuilder
-                            .Delete("PersonPhone", new { PhoneId = phoneId })
-                            .Delete(nameof(Phone), new { Id = phoneId })
-                            .Execute(db);
-                    }
+                if (phoneId != default(int))
+                {
+                    SqlBuilder
+                        .Delete("PersonPhone", new { PhoneId = phoneId })
+                        .Delete(nameof(Phone), new { Id = phoneId })
+                        .Execute(db);
+                }
 
-                    if (personId != default(int))
-                    {
-                        SqlBuilder
-                            .Delete<Person>(new { Id = personId })
-                            .Execute(db);
-                    }
+                if (personId != default(int))
+                {
+                    SqlBuilder
+                        .Delete<Person>(new { Id = personId })
+                        .Execute(db);
                 }
             }
         }
+    }
 
-        [Fact(DisplayName = "INSERT person asynchronously succeeds")]
+    [Fact(DisplayName = "INSERT person asynchronously succeeds")]
 #pragma warning disable MA0051 // Method is too long
-        public async Task InsertPersonAsync()
+    public async Task InsertPersonAsync()
 #pragma warning restore MA0051 // Method is too long
+    {
+        Person? person = null;
+
+        // Ensure inserting a person works and we get IDs back
+        var emailId = -1;
+        var personId = -1;
+        var phoneId = -1;
+
+        try
         {
-            Person? person = null;
-
-            // Ensure inserting a person works and we get IDs back
-            var emailId = -1;
-            var personId = -1;
-            var phoneId = -1;
-
-            try
+            using (var db = _fixture.GetDbConnection())
             {
-                using (var db = _fixture.GetDbConnection())
+                db.Open();
+
+                // Get the next identity aggressively, as we need to assign
+                // it to both Id/MergedToPersonId
+                personId = await PostgreSqlIdentity.NextIdentityAsync(db, (Person p) => p.Id);
+                personId.Should().BePositive();
+
+                person = new Person
                 {
-                    db.Open();
+                    Id = personId,
+                    FirstName = NameSteven,
+                    LastName = NameRollman,
+                    MergedToPersonId = personId,
+                };
 
-                    // Get the next identity aggressively, as we need to assign
-                    // it to both Id/MergedToPersonId
-                    personId = await Extensions.PostgreSql.NextIdentityAsync(db, (Person p) => p.Id);
-                    Assert.True(personId > 0);
+                var insertedCount = await SqlBuilder
+                    .Insert(person)
+                    .ExecuteAsync(db);
+                insertedCount.Should().Be(1);
 
-                    person = new Person
-                    {
-                        Id = personId,
-                        FirstName = NameSteven,
-                        LastName = NameRollman,
-                        MergedToPersonId = personId,
-                    };
+                emailId = await PostgreSqlIdentity.NextIdentityAsync(db, (Email e) => e.Id);
+                var email = new Email
+                {
+                    Id = emailId,
+                    Address = "srollman@landmarkhw.com",
+                };
 
-                    int insertedCount;
-                    insertedCount = await SqlBuilder
-                        .Insert(person)
-                        .ExecuteAsync(db);
-                    Assert.Equal(1, insertedCount);
+                var personEmail = new
+                {
+                    PersonId = personId,
+                    EmailId = emailId,
+                };
 
-                    emailId = await Extensions.PostgreSql.NextIdentityAsync(db, (Email e) => e.Id);
-                    var email = new Email
-                    {
-                        Id = emailId,
-                        Address = "srollman@landmarkhw.com",
-                    };
+                phoneId = await PostgreSqlIdentity.NextIdentityAsync(db, (Phone p) => p.Id);
+                var phone = new Phone
+                {
+                    Id = phoneId,
+                    Number = PhoneNumber,
+                    Type = PhoneType.Mobile,
+                };
 
-                    var personEmail = new
-                    {
-                        PersonId = personId,
-                        EmailId = emailId,
-                    };
+                var personPhone = new
+                {
+                    PersonId = personId,
+                    PhoneId = phoneId,
+                };
 
-                    phoneId = await Extensions.PostgreSql.NextIdentityAsync(db, (Phone p) => p.Id);
-                    var phone = new Phone
-                    {
-                        Id = phoneId,
-                        Number = PhoneNumber,
-                        Type = PhoneType.Mobile,
-                    };
+                // Add email and phone number to the person
+                insertedCount = await SqlBuilder
+                    .Insert(email)
+                    .Insert(phone)
+                    .Insert("PersonEmail", personEmail)
+                    .Insert("PersonPhone", personPhone)
+                    .ExecuteAsync(db);
 
-                    var personPhone = new
-                    {
-                        PersonId = personId,
-                        PhoneId = phoneId,
-                    };
+                // Ensure all were inserted properly
+                insertedCount.Should().Be(4);
 
-                    // Add email and phone number to the person
-                    insertedCount = await SqlBuilder
-                        .Insert(email)
-                        .Insert(phone)
-                        .Insert("PersonEmail", personEmail)
-                        .Insert("PersonPhone", personPhone)
-                        .ExecuteAsync(db);
+                // Build an entity mapper for person
+                var personMapper = new PersonEntityMapper();
 
-                    // Ensure all were inserted properly
-                    Assert.Equal(4, insertedCount);
+                // Query the person from the database
+                var query = SqlBuilder
+                    .From<Person>(nameof(person))
+                    .LeftJoin("PersonEmail personEmail on person.Id = personEmail.Id")
+                    .LeftJoin("Email email on personEmail.EmailId = email.Id")
+                    .LeftJoin("PersonPhone personPhone on person.Id = personPhone.PersonId")
+                    .LeftJoin("Phone phone on personPhone.PhoneId = phone.Id")
+                    .Select("person.*, email.*, phone.*")
+                    .SplitOn<Person>("Id")
+                    .SplitOn<Email>("Id")
+                    .SplitOn<Phone>("Id")
+                    .Where("person.Id = @id", new { id = personId });
 
-                    // Build an entity mapper for person
-                    var personMapper = new PersonEntityMapper();
-
-                    // Query the person from the database
-                    var query = SqlBuilder
-                        .From<Person>(nameof(person))
-                        .LeftJoin("PersonEmail personEmail on person.Id = personEmail.Id")
-                        .LeftJoin("Email email on personEmail.EmailId = email.Id")
-                        .LeftJoin("PersonPhone personPhone on person.Id = personPhone.PersonId")
-                        .LeftJoin("Phone phone on personPhone.PhoneId = phone.Id")
-                        .Select("person.*, email.*, phone.*")
-                        .SplitOn<Person>("Id")
-                        .SplitOn<Email>("Id")
-                        .SplitOn<Phone>("Id")
-                        .Where("person.Id = @id", new { id = personId });
-
-                    var graphql = @"
+                const string graphql = @"
 {
     person {
         firstName
@@ -284,54 +284,53 @@ namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.IntegrationTest
         }
     }
 }";
-                    var selection = _fixture.BuildGraphQlSelection(graphql);
-                    if (selection == null)
-                    {
-                        throw new XunitException("Selection is null");
-                    }
-
-                    var people = await query.ExecuteAsync(db, selection, personMapper);
-                    person = people
-                        .FirstOrDefault();
+                var selection = TestFixture.BuildGraphQlSelection(graphql);
+                if (selection == null)
+                {
+                    throw new XunitException("Selection is null");
                 }
 
-                // Ensure all inserted data is present
-                Assert.NotNull(person);
-                Assert.Equal(personId, person.Id);
-                Assert.Equal(NameSteven, person.FirstName);
-                Assert.Equal(NameRollman, person.LastName);
-                Assert.Single(person.Emails);
-                Assert.Equal(Email, person.Emails[0].Address);
-                Assert.Single(person.Phones);
-                Assert.Equal(PhoneNumber, person.Phones[0].Number);
+                var people = await query.ExecuteAsync(db, selection, personMapper);
+                person = people
+                    .FirstOrDefault();
             }
-            finally
+
+            // Ensure all inserted data is present
+            person.Should().NotBeNull();
+            person.Id.Should().Be(personId);
+            person.FirstName.Should().Be(NameSteven);
+            person.LastName.Should().Be(NameRollman);
+            person.Emails.Should().ContainSingle();
+            person.Emails[0].Address.Should().Be(Email);
+            person.Phones.Should().ContainSingle();
+            person.Phones[0].Number.Should().Be(PhoneNumber);
+        }
+        finally
+        {
+            // Ensure the changes here don't affect other unit tests
+            using (var db = _fixture.GetDbConnection())
             {
-                // Ensure the changes here don't affect other unit tests
-                using (var db = _fixture.GetDbConnection())
+                if (emailId != default(int))
                 {
-                    if (emailId != default(int))
-                    {
-                        await SqlBuilder
-                            .Delete("PersonEmail", new { EmailId = emailId })
-                            .Delete(nameof(Email), new { Id = emailId })
-                            .ExecuteAsync(db);
-                    }
+                    await SqlBuilder
+                        .Delete("PersonEmail", new { EmailId = emailId })
+                        .Delete(nameof(Email), new { Id = emailId })
+                        .ExecuteAsync(db);
+                }
 
-                    if (phoneId != default(int))
-                    {
-                        await SqlBuilder
-                            .Delete("PersonPhone", new { PhoneId = phoneId })
-                            .Delete(nameof(Phone), new { Id = phoneId })
-                            .ExecuteAsync(db);
-                    }
+                if (phoneId != default(int))
+                {
+                    await SqlBuilder
+                        .Delete("PersonPhone", new { PhoneId = phoneId })
+                        .Delete(nameof(Phone), new { Id = phoneId })
+                        .ExecuteAsync(db);
+                }
 
-                    if (personId != default(int))
-                    {
-                        await SqlBuilder
-                            .Delete<Person>(new { Id = personId })
-                            .ExecuteAsync(db);
-                    }
+                if (personId != default(int))
+                {
+                    await SqlBuilder
+                        .Delete<Person>(new { Id = personId })
+                        .ExecuteAsync(db);
                 }
             }
         }
