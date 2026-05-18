@@ -1,14 +1,13 @@
 using System.Data.Common;
 
-namespace AdaskoTheBeAsT.Dapper.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL;
+
+public static class DbConnectionExtensions
 {
-    public static class DbConnectionExtensions
+    public static IDapperGraphQlConnection WithDapperGraphQlOptions(
+        this DbConnection connection,
+        SqlBuilderOptions options)
     {
-        public static IDapperGraphQlConnection WithDapperGraphQlOptions(
-            this DbConnection connection,
-            SqlBuilderOptions options)
-        {
-            return new DapperGraphQlConnection(connection, options);
-        }
+        return new DapperGraphQlConnection(connection, options);
     }
 }

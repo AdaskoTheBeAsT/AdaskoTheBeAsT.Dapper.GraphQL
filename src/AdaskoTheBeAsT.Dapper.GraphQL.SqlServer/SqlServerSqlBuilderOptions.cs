@@ -1,10 +1,9 @@
-namespace AdaskoTheBeAsT.Dapper.GraphQL.SqlServer
+namespace AdaskoTheBeAsT.Dapper.GraphQL.SqlServer;
+
+public class SqlServerSqlBuilderOptions : SqlBuilderOptions
 {
-    public class SqlServerSqlBuilderOptions : SqlBuilderOptions
+    public SqlServerSqlBuilderOptions()
     {
-        public SqlServerSqlBuilderOptions()
-        {
-            ParameterPrefix = "@";
-        }
+        ParameterPrefix = "@";
     }
 }

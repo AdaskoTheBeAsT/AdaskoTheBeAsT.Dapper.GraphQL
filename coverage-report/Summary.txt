@@ -1,0 +1,35 @@
+Summary
+  Generated on: 18.05.2026 - 09:32:48
+  Parser: DynamicCodeCoverage
+  Assemblies: 1
+  Classes: 17
+  Files: 19
+  Line coverage: 53.2%
+  Covered lines: 362
+  Uncovered lines: 318
+  Coverable lines: 680
+  Total lines: 2015
+  Method coverage: 65% (69 of 106)
+  Full method coverage: 61.3% (65 of 106)
+  Covered methods: 69
+  Fully covered methods: 65
+  Total methods: 106
+
+AdaskoTheBeAsT.Dapper.GraphQL.dll                                          53.2%
+  AdaskoTheBeAsT.Dapper.GraphQL.Contexts.EntityMapContext                     0%
+  AdaskoTheBeAsT.Dapper.GraphQL.Contexts.SqlDeleteContext                  67.4%
+  AdaskoTheBeAsT.Dapper.GraphQL.Contexts.SqlInsertContext                    60%
+  AdaskoTheBeAsT.Dapper.GraphQL.Contexts.SqlQueryContext                   66.1%
+  AdaskoTheBeAsT.Dapper.GraphQL.Contexts.SqlUpdateContext                  68.5%
+  AdaskoTheBeAsT.Dapper.GraphQL.DapperGraphQlConnection                     100%
+  AdaskoTheBeAsT.Dapper.GraphQL.DapperGraphQlOptions                        100%
+  AdaskoTheBeAsT.Dapper.GraphQL.DapperSqlBuilder                             88%
+  AdaskoTheBeAsT.Dapper.GraphQL.DbConnectionExtensions                      100%
+  AdaskoTheBeAsT.Dapper.GraphQL.DeduplicatingEntityMapper                     0%
+  AdaskoTheBeAsT.Dapper.GraphQL.EntityMapper                                  0%
+  AdaskoTheBeAsT.Dapper.GraphQL.Extensions.EntityMapContextExtensions         0%
+  AdaskoTheBeAsT.Dapper.GraphQL.Extensions.HasSelectionSetNodeExtensions      0%
+  AdaskoTheBeAsT.Dapper.GraphQL.ParameterHelper                            87.9%
+  AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilder                                   25%
+  AdaskoTheBeAsT.Dapper.GraphQL.SqlBuilderOptions                           100%
+  AdaskoTheBeAsT.Dapper.GraphQL.SqlMapperOptions                              0%

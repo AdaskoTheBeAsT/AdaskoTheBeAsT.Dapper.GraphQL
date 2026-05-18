@@ -1,10 +1,9 @@
-namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql
+namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql;
+
+public class MySqlSqlBuilderOptions : SqlBuilderOptions
 {
-    public class MySqlSqlBuilderOptions : SqlBuilderOptions
+    public MySqlSqlBuilderOptions()
     {
-        public MySqlSqlBuilderOptions()
-        {
-            ParameterPrefix = "@";
-        }
+        ParameterPrefix = "@";
     }
 }

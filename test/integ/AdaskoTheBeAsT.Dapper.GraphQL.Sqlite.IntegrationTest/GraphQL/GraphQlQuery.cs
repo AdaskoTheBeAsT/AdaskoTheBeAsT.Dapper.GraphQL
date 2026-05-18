@@ -1,15 +1,14 @@
 using Newtonsoft.Json.Linq;
 
-namespace AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL.Sqlite.IntegrationTest.GraphQL;
+
+public class GraphQlQuery
 {
-    public class GraphQlQuery
-    {
-        public string? OperationName { get; set; }
+    public string? OperationName { get; set; }
 
-        public string? NamedQuery { get; set; }
+    public string? NamedQuery { get; set; }
 
-        public string? Query { get; set; }
+    public string? Query { get; set; }
 
-        public JObject? Variables { get; set; }
-    }
+    public JObject? Variables { get; set; }
 }

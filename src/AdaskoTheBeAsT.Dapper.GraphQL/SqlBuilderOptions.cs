@@ -1,9 +1,8 @@
-namespace AdaskoTheBeAsT.Dapper.GraphQL
-{
-    public class SqlBuilderOptions
-    {
-        public static SqlBuilderOptions Default { get; } = new();
+namespace AdaskoTheBeAsT.Dapper.GraphQL;
 
-        public string ParameterPrefix { get; set; } = "@";
-    }
+public class SqlBuilderOptions
+{
+    public static SqlBuilderOptions Default { get; } = new();
+
+    public string ParameterPrefix { get; set; } = "@";
 }

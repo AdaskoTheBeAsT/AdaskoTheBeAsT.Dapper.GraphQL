@@ -29,8 +29,10 @@ public class DapperGraphQlOptionsTests
     {
         var services = new ServiceCollection();
         var sut = new DapperGraphQlOptions(services);
+        var modelType = typeof(DummyModel);
+        var builderType = typeof(DummyQueryBuilder);
 
-        var result = sut.AddQueryBuilder(typeof(DummyModel), typeof(DummyQueryBuilder));
+        var result = sut.AddQueryBuilder(modelType, builderType);
 
         result.Should().BeSameAs(sut);
         using var provider = services.BuildServiceProvider();
@@ -41,8 +43,10 @@ public class DapperGraphQlOptionsTests
     public void AddQueryBuilderTypeThrowsForAbstract()
     {
         var sut = new DapperGraphQlOptions(new ServiceCollection());
+        var modelType = typeof(DummyModel);
+        var builderType = typeof(AbstractQueryBuilder);
 
-        var act = () => sut.AddQueryBuilder(typeof(DummyModel), typeof(AbstractQueryBuilder));
+        var act = () => sut.AddQueryBuilder(modelType, builderType);
 
         act.Should().Throw<ArgumentException>();
     }
@@ -51,8 +55,10 @@ public class DapperGraphQlOptionsTests
     public void AddQueryBuilderTypeThrowsForNonImplementer()
     {
         var sut = new DapperGraphQlOptions(new ServiceCollection());
+        var modelType = typeof(DummyModel);
+        var builderType = typeof(DummyModel);
 
-        var act = () => sut.AddQueryBuilder(typeof(DummyModel), typeof(DummyModel));
+        var act = () => sut.AddQueryBuilder(modelType, builderType);
 
         act.Should().Throw<ArgumentException>();
     }
@@ -75,8 +81,9 @@ public class DapperGraphQlOptionsTests
     {
         var services = new ServiceCollection();
         var sut = new DapperGraphQlOptions(services);
+        var graphType = typeof(DummyGraphType);
 
-        var result = sut.AddType(typeof(DummyGraphType));
+        var result = sut.AddType(graphType);
 
         result.Should().BeSameAs(sut);
         using var provider = services.BuildServiceProvider();
@@ -87,8 +94,9 @@ public class DapperGraphQlOptionsTests
     public void AddTypeTypeThrowsForAbstract()
     {
         var sut = new DapperGraphQlOptions(new ServiceCollection());
+        var graphType = typeof(AbstractGraphType);
 
-        var act = () => sut.AddType(typeof(AbstractGraphType));
+        var act = () => sut.AddType(graphType);
 
         act.Should().Throw<ArgumentException>();
     }
@@ -97,8 +105,9 @@ public class DapperGraphQlOptionsTests
     public void AddTypeTypeThrowsForNonImplementer()
     {
         var sut = new DapperGraphQlOptions(new ServiceCollection());
+        var graphType = typeof(DummyModel);
 
-        var act = () => sut.AddType(typeof(DummyModel));
+        var act = () => sut.AddType(graphType);
 
         act.Should().Throw<ArgumentException>();
     }
@@ -121,8 +130,9 @@ public class DapperGraphQlOptionsTests
     {
         var services = new ServiceCollection();
         var sut = new DapperGraphQlOptions(services);
+        var schemaType = typeof(DummySchema);
 
-        var result = sut.AddSchema(typeof(DummySchema));
+        var result = sut.AddSchema(schemaType);
 
         result.Should().BeSameAs(sut);
         using var provider = services.BuildServiceProvider();
@@ -133,8 +143,9 @@ public class DapperGraphQlOptionsTests
     public void AddSchemaTypeThrowsForAbstract()
     {
         var sut = new DapperGraphQlOptions(new ServiceCollection());
+        var schemaType = typeof(AbstractSchema);
 
-        var act = () => sut.AddSchema(typeof(AbstractSchema));
+        var act = () => sut.AddSchema(schemaType);
 
         act.Should().Throw<ArgumentException>();
     }
@@ -143,8 +154,9 @@ public class DapperGraphQlOptionsTests
     public void AddSchemaTypeThrowsForNonImplementer()
     {
         var sut = new DapperGraphQlOptions(new ServiceCollection());
+        var schemaType = typeof(DummyModel);
 
-        var act = () => sut.AddSchema(typeof(DummyModel));
+        var act = () => sut.AddSchema(schemaType);
 
         act.Should().Throw<ArgumentException>();
     }

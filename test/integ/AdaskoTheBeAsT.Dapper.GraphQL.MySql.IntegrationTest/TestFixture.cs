@@ -22,218 +22,217 @@ using Testcontainers.MySql;
 using Xunit;
 using PhoneType = AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest.GraphQL.PhoneType;
 
-namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest
+namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest;
+
+public sealed class TestFixture
+    : IAsyncLifetime,
+        IDisposable
 {
-    public sealed class TestFixture
-        : IAsyncLifetime,
-            IDisposable
+    private DocumentExecuter? _documentExecuter;
+
+    private MySqlContainer? _mySqlContainer;
+
+    public PersonSchema? Schema { get; set; }
+
+    public IServiceProvider? ServiceProvider { get; private set; }
+
+    private string? ConnectionString { get; set; }
+
+    private bool IsDisposing { get; set; }
+
+    public static IHasSelectionSetNode? BuildGraphQlSelection(string body)
     {
-        private DocumentExecuter? _documentExecuter;
+        var document = new GraphQLDocumentBuilder().Build(body);
+        return document
+            .Definitions
+            .OfType<IHasSelectionSetNode>()
+            .First()
+            .SelectionSet?
+            .Selections
+            .OfType<GraphQLField>()
+            .FirstOrDefault();
+    }
 
-        private MySqlContainer? _mySqlContainer;
+    public static bool JsonEquals(
+        string expectedJson,
+        string actualJson)
+    {
+        var expectedToken = JObject.Parse(expectedJson);
+        var actualToken = JObject.Parse(actualJson);
+        if (!JToken.DeepEquals(expectedToken, actualToken))
+        {
+            Console.WriteLine("=== JsonEquals mismatch ===");
+            Console.WriteLine("--- expected ---");
+            Console.WriteLine(expectedToken.ToString(Newtonsoft.Json.Formatting.Indented));
+            Console.WriteLine("--- actual ---");
+            Console.WriteLine(actualToken.ToString(Newtonsoft.Json.Formatting.Indented));
+            Console.WriteLine("=== end mismatch ===");
+            return false;
+        }
 
-        public PersonSchema? Schema { get; set; }
-
-        public IServiceProvider? ServiceProvider { get; private set; }
-
-        private string? ConnectionString { get; set; }
-
-        private bool IsDisposing { get; set; } = false;
+        return true;
+    }
 
 #if NET8_0_OR_GREATER
-        public async ValueTask InitializeAsync()
+    public async ValueTask InitializeAsync()
 #else
-        public async Task InitializeAsync()
+    public async Task InitializeAsync()
 #endif
-        {
-            _mySqlContainer
-                = new MySqlBuilder("mysql:8.4")
-                    .WithDatabase("testdb")
-                    .WithUsername("root")
-                    .WithPassword("TestPass123!")
-                    .WithCommand("--lower-case-table-names=1")
-                    .Build();
+    {
+        _mySqlContainer
+            = new MySqlBuilder("mysql:8.4")
+                .WithDatabase("testdb")
+                .WithUsername("root")
+                .WithPassword("TestPass123!")
+                .WithCommand("--lower-case-table-names=1")
+                .Build();
 
-            await _mySqlContainer!.StartAsync();
+        await _mySqlContainer!.StartAsync();
 
 #if NET6_0_OR_GREATER
-            SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
+        SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
 #endif
 
-            _documentExecuter = new DocumentExecuter();
-            var serviceCollection = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+        _documentExecuter = new DocumentExecuter();
+        var serviceCollection = new ServiceCollection();
 
-            SetupDatabaseConnection();
-            SetupDapperGraphQl(serviceCollection);
+        SetupDatabaseConnection();
+        SetupDapperGraphQl(serviceCollection);
 
-            (ServiceProvider as IDisposable)?.Dispose();
-            ServiceProvider = serviceCollection.BuildServiceProvider();
-            Schema = ServiceProvider.GetRequiredService<PersonSchema>();
-        }
+        (ServiceProvider as IDisposable)?.Dispose();
+        ServiceProvider = serviceCollection.BuildServiceProvider();
+        Schema = ServiceProvider.GetRequiredService<PersonSchema>();
+    }
 
 #if NET8_0_OR_GREATER
-        public async ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
 #else
-        public async Task DisposeAsync()
+    public async Task DisposeAsync()
 #endif
+    {
+        if (!IsDisposing)
         {
-            if (!IsDisposing)
+            IsDisposing = true;
+            if (_mySqlContainer != null)
             {
-                IsDisposing = true;
-                if (_mySqlContainer != null)
-                {
-                    await _mySqlContainer.DisposeAsync().AsTask();
-                }
-
-                (ServiceProvider as IDisposable)?.Dispose();
+                await _mySqlContainer.DisposeAsync().AsTask();
             }
-        }
 
-#pragma warning disable S2325
-        public IHasSelectionSetNode? BuildGraphQlSelection(string body)
-        {
-            var document = new GraphQLDocumentBuilder().Build(body);
-            return document
-                .Definitions
-                .OfType<IHasSelectionSetNode>()
-                .First()
-                .SelectionSet?
-                .Selections
-                .OfType<GraphQLField>()
-                .FirstOrDefault();
+            (ServiceProvider as IDisposable)?.Dispose();
         }
-#pragma warning restore S2325
+    }
 
-        public void Dispose()
+    public void Dispose()
+    {
+        if (!IsDisposing)
         {
-            if (!IsDisposing)
-            {
-                IsDisposing = true;
+            IsDisposing = true;
 #pragma warning disable VSTHRD002
-                _mySqlContainer?.DisposeAsync().GetAwaiter().GetResult();
+            _mySqlContainer?.DisposeAsync().AsTask().GetAwaiter().GetResult();
 #pragma warning restore VSTHRD002
-                (ServiceProvider as IDisposable)?.Dispose();
-            }
+            (ServiceProvider as IDisposable)?.Dispose();
         }
+    }
 
 #pragma warning disable IDISP001, CA2000
-        public IDbConnection GetDbConnection()
-        {
-            var connection = new MySqlConnection(ConnectionString);
-            var options = ServiceProvider?.GetService<MySqlSqlBuilderOptions>() ?? new MySqlSqlBuilderOptions();
-            return connection.WithDapperGraphQlOptions(options);
-        }
+    public IDbConnection GetDbConnection()
+    {
+        var connection = new MySqlConnection(ConnectionString);
+        var options = ServiceProvider?.GetService<MySqlSqlBuilderOptions>() ?? new MySqlSqlBuilderOptions();
+        return connection.WithDapperGraphQlOptions(options);
+    }
 #pragma warning restore IDISP001, CA2000
 
-#pragma warning disable S2325
-        public bool JsonEquals(string expectedJson, string actualJson)
-        {
-            var expectedToken = JObject.Parse(expectedJson);
-            var actualToken = JObject.Parse(actualJson);
-            if (!JToken.DeepEquals(expectedToken, actualToken))
+    public async Task<string> QueryGraphQlAsync(string query)
+    {
+        var result = await _documentExecuter!
+            .ExecuteAsync(options =>
             {
-                System.Console.WriteLine("=== JsonEquals mismatch ===");
-                System.Console.WriteLine("--- expected ---");
-                System.Console.WriteLine(expectedToken.ToString(Newtonsoft.Json.Formatting.Indented));
-                System.Console.WriteLine("--- actual ---");
-                System.Console.WriteLine(actualToken.ToString(Newtonsoft.Json.Formatting.Indented));
-                System.Console.WriteLine("=== end mismatch ===");
-                return false;
-            }
+                options.Schema = Schema;
+                options.Query = query;
+            })
+            .ConfigureAwait(false);
 
-            return true;
-        }
-#pragma warning restore S2325
+        var json = new GraphQLSerializer(indent: true).Serialize(result);
+        return json;
+    }
 
-        public async Task<string> QueryGraphQlAsync(string query)
-        {
-            var result = await _documentExecuter!
-                .ExecuteAsync(options =>
-                {
-                    options.Schema = Schema;
-                    options.Query = query;
-                })
-                .ConfigureAwait(false);
+    public async Task<string> QueryGraphQlAsync(GraphQlQuery query)
+    {
+        var serializer = new GraphQLSerializer();
+        var inputs = serializer.ReadNode<Inputs>(query.Variables) ?? Inputs.Empty;
+        var result = await _documentExecuter!
+            .ExecuteAsync(options =>
+            {
+                options.Schema = Schema;
+                options.Query = query.Query;
+                options.Variables = inputs;
+            })
+            .ConfigureAwait(false);
 
-            var json = new GraphQLSerializer(indent: true).Serialize(result);
-            return json;
-        }
+        var json = new GraphQLSerializer(indent: true).Serialize(result);
+        return json;
+    }
 
-        public async Task<string> QueryGraphQlAsync(GraphQlQuery query)
-        {
-            var serializer = new GraphQLSerializer();
-            var inputs = serializer.ReadNode<Inputs>(query.Variables) ?? Inputs.Empty;
-            var result = await _documentExecuter!
-                .ExecuteAsync(options =>
-                {
-                    options.Schema = Schema;
-                    options.Query = query.Query;
-                    options.Variables = inputs;
-                })
-                .ConfigureAwait(false);
-
-            var json = new GraphQLSerializer(indent: true).Serialize(result);
-            return json;
-        }
-
-        public void SetupDatabaseConnection()
-        {
-            ConnectionString = _mySqlContainer?.GetConnectionString();
+    public void SetupDatabaseConnection()
+    {
+        ConnectionString = _mySqlContainer?.GetConnectionString();
 
 #if !NET6_0_OR_GREATER
 #pragma warning disable S125
-            if (!string.IsNullOrEmpty(ConnectionString)
-                && ConnectionString!.IndexOf("SslMode", System.StringComparison.OrdinalIgnoreCase) < 0)
-            {
-                ConnectionString += ";SslMode=None";
-            }
+        if (!string.IsNullOrEmpty(ConnectionString)
+            && ConnectionString!.IndexOf("SslMode", StringComparison.OrdinalIgnoreCase) < 0)
+        {
+            ConnectionString += ";SslMode=None";
+        }
 #pragma warning restore S125
 #endif
 
-            EnsureDatabase.For.MySqlDatabase(ConnectionString);
+        EnsureDatabase.For.MySqlDatabase(ConnectionString);
 
-            var upgrader = DeployChanges.To
-                .MySqlDatabase(ConnectionString)
-                .WithScriptsEmbeddedInAssembly(typeof(Person).GetTypeInfo().Assembly)
-                .LogToConsole()
-                .Build();
+        var upgrader = DeployChanges.To
+            .MySqlDatabase(ConnectionString)
+            .WithScriptsEmbeddedInAssembly(typeof(Person).GetTypeInfo().Assembly)
+            .LogToConsole()
+            .Build();
 
-            var upgradeResult = upgrader.PerformUpgrade();
-            if (!upgradeResult.Successful)
-            {
-                throw new InvalidOperationException("The database upgrade did not succeed for unit testing.", upgradeResult.Error);
-            }
-        }
-
-        private void SetupDapperGraphQl(IServiceCollection serviceCollection)
+        var upgradeResult = upgrader.PerformUpgrade();
+        if (!upgradeResult.Successful)
         {
-            serviceCollection.AddDapperGraphQlMySql(options =>
-            {
-                options.AddType<CompanyType>();
-                options.AddType<EmailType>();
-                options.AddType<PersonType>();
-                options.AddType<PhoneEnumType>();
-                options.AddType<PhoneType>();
-                options.AddType<PersonQuery>();
-                options.AddType<PersonMutation>();
-                options.AddType<PersonInputType>();
-
-                options.AddSchema<PersonSchema>();
-
-                options.AddQueryBuilder<Company, CompanyQueryBuilder>();
-                options.AddQueryBuilder<Email, EmailQueryBuilder>();
-                options.AddQueryBuilder<Person, PersonQueryBuilder>();
-                options.AddQueryBuilder<Phone, PhoneQueryBuilder>();
-            });
-
-            serviceCollection.AddSingleton<IPersonRepository, PersonRepository>();
-
-            serviceCollection.AddTransient(typeof(ConnectionType<>));
-            serviceCollection.AddTransient(typeof(ConnectionType<,>));
-            serviceCollection.AddTransient(typeof(EdgeType<>));
-            serviceCollection.AddTransient<PageInfoType>();
-
-            serviceCollection.AddTransient<IDbConnection>(_ => GetDbConnection());
+            throw new InvalidOperationException(
+                "The database upgrade did not succeed for unit testing.",
+                upgradeResult.Error);
         }
+    }
+
+    private void SetupDapperGraphQl(IServiceCollection serviceCollection)
+    {
+        serviceCollection.AddDapperGraphQlMySql(options =>
+        {
+            options.AddType<CompanyType>();
+            options.AddType<EmailType>();
+            options.AddType<PersonType>();
+            options.AddType<PhoneEnumType>();
+            options.AddType<PhoneType>();
+            options.AddType<PersonQuery>();
+            options.AddType<PersonMutation>();
+            options.AddType<PersonInputType>();
+
+            options.AddSchema<PersonSchema>();
+
+            options.AddQueryBuilder<Company, CompanyQueryBuilder>();
+            options.AddQueryBuilder<Email, EmailQueryBuilder>();
+            options.AddQueryBuilder<Person, PersonQueryBuilder>();
+            options.AddQueryBuilder<Phone, PhoneQueryBuilder>();
+        });
+
+        serviceCollection.AddSingleton<IPersonRepository, PersonRepository>();
+
+        serviceCollection.AddTransient(typeof(ConnectionType<>));
+        serviceCollection.AddTransient(typeof(ConnectionType<,>));
+        serviceCollection.AddTransient(typeof(EdgeType<>));
+        serviceCollection.AddTransient<PageInfoType>();
+
+        serviceCollection.AddTransient<IDbConnection>(_ => GetDbConnection());
     }
 }

@@ -15,7 +15,7 @@ public class SqlInsertContextPostgreSqlExtensionsTests
     public void ExecuteWithPostgreSqlIdentityThrowsForNonMemberExpression()
     {
         var context = new SqlInsertContext<Entity>(nameof(Entity), new Entity());
-        var connection = new Mock<IDbConnection>(MockBehavior.Loose).Object;
+        var connection = new Mock<IDbConnection>(MockBehavior.Strict).Object;
 
         var act = () => context.ExecuteWithPostgreSqlIdentity<Entity, int>(connection, e => e.Id + 1);
 
@@ -23,10 +23,10 @@ public class SqlInsertContextPostgreSqlExtensionsTests
     }
 
     [Fact(DisplayName = "ExecuteWithPostgreSqlIdentityAsync throws for non-member expression")]
-    public Task ExecuteWithPostgreSqlIdentityAsyncThrowsForNonMemberExpression()
+    public Task ExecuteWithPostgreSqlIdentityAsyncThrowsForNonMemberExpressionAsync()
     {
         var context = new SqlInsertContext<Entity>(nameof(Entity), new Entity());
-        var connection = new Mock<IDbConnection>(MockBehavior.Loose).Object;
+        var connection = new Mock<IDbConnection>(MockBehavior.Strict).Object;
 
         Func<Task<int>> act = () => context.ExecuteWithPostgreSqlIdentityAsync<Entity, int>(connection, e => e.Id + 1);
 

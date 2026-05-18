@@ -15,7 +15,7 @@ public class SqlInsertContextOracleExtensionsTests
     public void ExecuteWithOracleIdentityThrowsForNonMemberExpression()
     {
         var context = new SqlInsertContext<Entity>(nameof(Entity), new Entity());
-        var connection = new Mock<IDbConnection>(MockBehavior.Loose).Object;
+        var connection = new Mock<IDbConnection>(MockBehavior.Strict).Object;
 
         var act = () => context.ExecuteWithOracleIdentity<Entity, int>(connection, e => e.Id + 1);
 
@@ -23,10 +23,10 @@ public class SqlInsertContextOracleExtensionsTests
     }
 
     [Fact(DisplayName = "ExecuteWithOracleIdentityAsync throws for non-member expression")]
-    public Task ExecuteWithOracleIdentityAsyncThrowsForNonMemberExpression()
+    public Task ExecuteWithOracleIdentityAsyncThrowsForNonMemberExpressionAsync()
     {
         var context = new SqlInsertContext<Entity>(nameof(Entity), new Entity());
-        var connection = new Mock<IDbConnection>(MockBehavior.Loose).Object;
+        var connection = new Mock<IDbConnection>(MockBehavior.Strict).Object;
 
         Func<Task<int>> act = () => context.ExecuteWithOracleIdentityAsync<Entity, int>(connection, e => e.Id + 1);
 

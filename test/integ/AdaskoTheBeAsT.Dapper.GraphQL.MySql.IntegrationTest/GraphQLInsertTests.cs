@@ -4,38 +4,38 @@ using AwesomeAssertions;
 using Newtonsoft.Json.Linq;
 using Xunit;
 
-namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest
+namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest;
+
+public class GraphQlInsertTests
+    : IClassFixture<TestFixture>
 {
-    public class GraphQlInsertTests
-        : IClassFixture<TestFixture>
+    private readonly TestFixture _fixture;
+
+    public GraphQlInsertTests(
+        TestFixture fixture)
     {
-        private readonly TestFixture _fixture;
+        _fixture = fixture;
+    }
 
-        public GraphQlInsertTests(
-            TestFixture fixture)
+    [Fact(DisplayName = "Simple person insert should succeed")]
+    public async Task SimplePersonInsertAsync()
+    {
+        var graphQuery = new GraphQlQuery
         {
-            _fixture = fixture;
-        }
-
-        [Fact(DisplayName = "Simple person insert should succeed")]
-        public async Task SimplePersonInsertAsync()
-        {
-            var graphQuery = new GraphQlQuery
-            {
-                OperationName = "addPerson",
-                Variables = JObject.Parse(@"{""person"":{""firstName"":""Joe"",""lastName"":""Doe""}}"),
-                Query = @"
+            OperationName = "addPerson",
+            Variables = JObject.Parse(@"{""person"":{""firstName"":""Joe"",""lastName"":""Doe""}}"),
+            Query = @"
 mutation ($person: PersonInput!) {
   addPerson(person: $person) {
     firstName
     lastName
   }
 }",
-            };
+        };
 
-            var json = await _fixture.QueryGraphQlAsync(graphQuery);
+        var json = await _fixture.QueryGraphQlAsync(graphQuery);
 
-            const string expectedJson = @"
+        const string expectedJson = @"
             {
                 data: {
                     addPerson: {
@@ -45,7 +45,6 @@ mutation ($person: PersonInput!) {
                 }
             }";
 
-            _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
-        }
+        TestFixture.JsonEquals(expectedJson, json).Should().BeTrue();
     }
 }

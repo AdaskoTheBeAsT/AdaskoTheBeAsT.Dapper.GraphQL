@@ -1,11 +1,10 @@
-namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest.Models
+namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest.Models;
+
+public class Phone
 {
-    public class Phone
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public string? Number { get; set; }
+    public string? Number { get; set; }
 
-        public PhoneType Type { get; set; }
-    }
+    public PhoneType Type { get; set; }
 }

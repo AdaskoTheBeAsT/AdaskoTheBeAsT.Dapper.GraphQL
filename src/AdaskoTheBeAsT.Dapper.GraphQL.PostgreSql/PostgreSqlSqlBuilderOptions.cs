@@ -1,10 +1,9 @@
-namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql;
+
+public class PostgreSqlSqlBuilderOptions : SqlBuilderOptions
 {
-    public class PostgreSqlSqlBuilderOptions : SqlBuilderOptions
+    public PostgreSqlSqlBuilderOptions()
     {
-        public PostgreSqlSqlBuilderOptions()
-        {
-            ParameterPrefix = "@";
-        }
+        ParameterPrefix = "@";
     }
 }

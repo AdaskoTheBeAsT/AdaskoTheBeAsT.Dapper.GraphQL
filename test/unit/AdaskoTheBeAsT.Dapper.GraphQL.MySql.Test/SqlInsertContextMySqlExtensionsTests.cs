@@ -15,7 +15,7 @@ public class SqlInsertContextMySqlExtensionsTests
     public void ExecuteWithMySqlIdentityThrowsForUnsupportedType()
     {
         var context = new SqlInsertContext("Foo", new { Id = 1 });
-        var connection = new Mock<IDbConnection>(MockBehavior.Loose).Object;
+        var connection = new Mock<IDbConnection>(MockBehavior.Strict).Object;
 
         var act = () => context.ExecuteWithMySqlIdentity<Guid>(connection);
 
@@ -24,10 +24,10 @@ public class SqlInsertContextMySqlExtensionsTests
     }
 
     [Fact(DisplayName = "ExecuteWithMySqlIdentityAsync throws for unsupported identity type")]
-    public Task ExecuteWithMySqlIdentityAsyncThrowsForUnsupportedType()
+    public Task ExecuteWithMySqlIdentityAsyncThrowsForUnsupportedTypeAsync()
     {
         var context = new SqlInsertContext("Foo", new { Id = 1 });
-        var connection = new Mock<IDbConnection>(MockBehavior.Loose).Object;
+        var connection = new Mock<IDbConnection>(MockBehavior.Strict).Object;
 
         Func<Task<Guid>> act = () => context.ExecuteWithMySqlIdentityAsync<Guid>(connection);
 

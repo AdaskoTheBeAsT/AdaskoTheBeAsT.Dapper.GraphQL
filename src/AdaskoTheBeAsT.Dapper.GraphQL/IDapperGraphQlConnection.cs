@@ -1,9 +1,8 @@
 using System.Data;
 
-namespace AdaskoTheBeAsT.Dapper.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL;
+
+public interface IDapperGraphQlConnection : IDbConnection
 {
-    public interface IDapperGraphQlConnection : IDbConnection
-    {
-        SqlBuilderOptions Options { get; }
-    }
+    SqlBuilderOptions Options { get; }
 }

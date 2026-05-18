@@ -9,48 +9,47 @@ using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AdaskoTheBeAsT.Dapper.GraphQL.SqlServer.IntegrationTest.GraphQL
+namespace AdaskoTheBeAsT.Dapper.GraphQL.SqlServer.IntegrationTest.GraphQL;
+
+public class PersonMutation : ObjectGraphType
 {
-    public class PersonMutation : ObjectGraphType
+    public PersonMutation(IServiceProvider serviceProvider)
     {
-        public PersonMutation(IQueryBuilder<Person> personQueryBuilder, IServiceProvider serviceProvider)
-        {
 #pragma warning disable MA0056
-            Field<PersonType>("addPerson")
-                .Description("Adds new person.")
-                .Arguments(new QueryArguments(
-                    new QueryArgument<PersonInputType> { Name = "person" }))
-                .Resolve(context =>
-                {
-                    var person = context.GetArgument<Person>("person");
+        Field<PersonType>("addPerson")
+            .Description("Adds new person.")
+            .Arguments(new QueryArguments(
+                new QueryArgument<PersonInputType> { Name = "person" }))
+            .Resolve(context =>
+            {
+                var person = context.GetArgument<Person>("person");
 
-                    using var connection = serviceProvider.GetRequiredService<IDbConnection>();
-                    connection.Open();
+                using var connection = serviceProvider.GetRequiredService<IDbConnection>();
+                connection.Open();
 
-                    var newId = SqlBuilder
-                        .Insert(person)
-                        .ExecuteWithSqlServerIdentity<int>(connection);
+                var newId = SqlBuilder
+                    .Insert(person)
+                    .ExecuteWithSqlServerIdentity<int>(connection);
 
-                    person.Id = person.MergedToPersonId = newId;
+                person.Id = person.MergedToPersonId = newId;
 
-                    SqlBuilder
-                        .Update(nameof(Person), new { MergedToPersonId = newId })
-                        .Where("Id = @id", new { id = newId })
-                        .Execute(connection);
+                SqlBuilder
+                    .Update(nameof(Person), new { MergedToPersonId = newId })
+                    .Where("Id = @id", new { id = newId })
+                    .Execute(connection);
 
-                    var personMapper = new PersonEntityMapper();
+                var personMapper = new PersonEntityMapper();
 
-                    var query = SqlBuilder
-                        .From<Person>(nameof(Person))
-                        .Select(["FirstName, LastName"])
-                        .Where("ID = @personId", new { personId = person.Id });
+                var query = SqlBuilder
+                    .From<Person>(nameof(Person))
+                    .Select(["FirstName, LastName"])
+                    .Where("ID = @personId", new { personId = person.Id });
 
-                    var results = query
-                        .Execute(connection, context.FieldAst, personMapper)
-                        .Distinct();
-                    return results.FirstOrDefault();
-                });
+                var results = query
+                    .Execute(connection, context.FieldAst, personMapper)
+                    .Distinct();
+                return results.FirstOrDefault();
+            });
 #pragma warning restore MA0056
-        }
     }
 }

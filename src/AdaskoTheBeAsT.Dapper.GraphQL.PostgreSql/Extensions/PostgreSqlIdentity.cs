@@ -7,50 +7,49 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 
-namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.Extensions
+namespace AdaskoTheBeAsT.Dapper.GraphQL.PostgreSql.Extensions;
+
+public static class PostgreSqlIdentity
 {
-    public static class PostgreSqlIdentity
+    public static TIdentityType NextIdentity<TEntityType, TIdentityType>(IDbConnection dbConnection, Expression<Func<TEntityType, TIdentityType>> identityNameSelector)
+        where TEntityType : class
     {
-        public static TIdentityType NextIdentity<TEntityType, TIdentityType>(IDbConnection dbConnection, Expression<Func<TEntityType, TIdentityType>> identityNameSelector)
-            where TEntityType : class
+        if (identityNameSelector.Body.NodeType != ExpressionType.MemberAccess)
         {
-            if (identityNameSelector.Body.NodeType != ExpressionType.MemberAccess)
-            {
-                throw new NotSupportedException("Cannot execute a PostgreSQL identity with an expression of type " + identityNameSelector.Body.NodeType);
-            }
-
-            var memberExpression = identityNameSelector.Body as MemberExpression;
-
-            var sb = new StringBuilder();
-            sb.Append("SELECT nextval(pg_get_serial_sequence('")
-                .Append(typeof(TEntityType).Name.ToLower(CultureInfo.InvariantCulture))
-                .Append("', '")
-                .Append(memberExpression?.Member.Name.ToLower(CultureInfo.InvariantCulture))
-                .AppendLine("'));");
-
-            return dbConnection
-                .Query<TIdentityType>(sb.ToString())
-                .Single();
+            throw new NotSupportedException("Cannot execute a PostgreSQL identity with an expression of type " + identityNameSelector.Body.NodeType);
         }
 
-        public static async Task<TIdentityType> NextIdentityAsync<TEntityType, TIdentityType>(IDbConnection dbConnection, Expression<Func<TEntityType, TIdentityType>> identityNameSelector)
-            where TEntityType : class
+        var memberExpression = identityNameSelector.Body as MemberExpression;
+
+        var sb = new StringBuilder();
+        sb.Append("SELECT nextval(pg_get_serial_sequence('")
+            .Append(typeof(TEntityType).Name.ToLower(CultureInfo.InvariantCulture))
+            .Append("', '")
+            .Append(memberExpression?.Member.Name.ToLower(CultureInfo.InvariantCulture))
+            .AppendLine("'));");
+
+        return dbConnection
+            .Query<TIdentityType>(sb.ToString())
+            .Single();
+    }
+
+    public static async Task<TIdentityType> NextIdentityAsync<TEntityType, TIdentityType>(IDbConnection dbConnection, Expression<Func<TEntityType, TIdentityType>> identityNameSelector)
+        where TEntityType : class
+    {
+        if (identityNameSelector.Body.NodeType != ExpressionType.MemberAccess)
         {
-            if (identityNameSelector.Body.NodeType != ExpressionType.MemberAccess)
-            {
-                throw new NotSupportedException("Cannot execute a PostgreSQL identity with an expression of type " + identityNameSelector.Body.NodeType);
-            }
-
-            var memberExpression = identityNameSelector.Body as MemberExpression;
-
-            var sb = new StringBuilder();
-            sb.Append("SELECT nextval(pg_get_serial_sequence('")
-                .Append(typeof(TEntityType).Name.ToLower(CultureInfo.InvariantCulture))
-                .Append("', '").Append(memberExpression?.Member.Name.ToLower(CultureInfo.InvariantCulture))
-                .AppendLine("'));");
-
-            var result = await dbConnection.QueryAsync<TIdentityType>(sb.ToString()).ConfigureAwait(false);
-            return result.Single();
+            throw new NotSupportedException("Cannot execute a PostgreSQL identity with an expression of type " + identityNameSelector.Body.NodeType);
         }
+
+        var memberExpression = identityNameSelector.Body as MemberExpression;
+
+        var sb = new StringBuilder();
+        sb.Append("SELECT nextval(pg_get_serial_sequence('")
+            .Append(typeof(TEntityType).Name.ToLower(CultureInfo.InvariantCulture))
+            .Append("', '").Append(memberExpression?.Member.Name.ToLower(CultureInfo.InvariantCulture))
+            .AppendLine("'));");
+
+        var result = await dbConnection.QueryAsync<TIdentityType>(sb.ToString()).ConfigureAwait(false);
+        return result.Single();
     }
 }

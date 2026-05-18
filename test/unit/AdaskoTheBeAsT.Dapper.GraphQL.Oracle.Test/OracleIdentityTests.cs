@@ -13,7 +13,7 @@ public class OracleIdentityTests
     [Fact(DisplayName = "NextIdentity throws for non-member expression")]
     public void NextIdentityThrowsForNonMemberExpression()
     {
-        var connection = new Mock<IDbConnection>(MockBehavior.Loose).Object;
+        var connection = new Mock<IDbConnection>(MockBehavior.Strict).Object;
 
         var act = () => OracleIdentity.NextIdentity<Entity, int>(connection, e => e.Id + 1);
 
@@ -21,9 +21,9 @@ public class OracleIdentityTests
     }
 
     [Fact(DisplayName = "NextIdentityAsync throws for non-member expression")]
-    public Task NextIdentityAsyncThrowsForNonMemberExpression()
+    public Task NextIdentityAsyncThrowsForNonMemberExpressionAsync()
     {
-        var connection = new Mock<IDbConnection>(MockBehavior.Loose).Object;
+        var connection = new Mock<IDbConnection>(MockBehavior.Strict).Object;
 
         Func<Task<int>> act = () => OracleIdentity.NextIdentityAsync<Entity, int>(connection, e => e.Id + 1);
 

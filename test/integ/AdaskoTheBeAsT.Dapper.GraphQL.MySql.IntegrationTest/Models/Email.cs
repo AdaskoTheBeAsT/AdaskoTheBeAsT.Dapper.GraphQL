@@ -1,9 +1,8 @@
-namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest.Models
-{
-    public class Email
-    {
-        public string? Address { get; set; }
+namespace AdaskoTheBeAsT.Dapper.GraphQL.MySql.IntegrationTest.Models;
 
-        public int Id { get; set; }
-    }
+public class Email
+{
+    public string? Address { get; set; }
+
+    public int Id { get; set; }
 }

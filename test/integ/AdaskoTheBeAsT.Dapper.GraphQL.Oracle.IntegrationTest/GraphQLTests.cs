@@ -2,24 +2,24 @@ using System.Threading.Tasks;
 using AwesomeAssertions;
 using Xunit;
 
-namespace AdaskoTheBeAsT.Dapper.GraphQL.Oracle.IntegrationTest
+namespace AdaskoTheBeAsT.Dapper.GraphQL.Oracle.IntegrationTest;
+
+public class GraphQlTests
+    : IClassFixture<TestFixture>
 {
-    public class GraphQlTests
-        : IClassFixture<TestFixture>
+    private readonly TestFixture _fixture;
+
+    public GraphQlTests(TestFixture fixture)
     {
-        private readonly TestFixture _fixture;
+        _fixture = fixture;
+    }
 
-        public GraphQlTests(TestFixture fixture)
-        {
-            _fixture = fixture;
-        }
-
-        [Fact(DisplayName = "Full people query should succeed")]
+    [Fact(DisplayName = "Full people query should succeed")]
 #pragma warning disable MA0051 // Method is too long
-        public async Task FullPeopleQueryAsync()
+    public async Task FullPeopleQueryAsync()
 #pragma warning restore MA0051 // Method is too long
-        {
-            var json = await _fixture.QueryGraphQlAsync(@"
+    {
+        var json = await _fixture.QueryGraphQlAsync(@"
 query {
     people {
         id
@@ -69,7 +69,7 @@ query {
     }
 }");
 
-            const string expectedJson = @"
+        const string expectedJson = @"
 {
     ""data"": {
         ""people"": [{
@@ -189,13 +189,13 @@ query {
     }
 }";
 
-            _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
-        }
+        TestFixture.JsonEquals(expectedJson, json).Should().BeTrue();
+    }
 
-        [Fact(DisplayName = "Async query should succeed")]
-        public async Task PeopleAsyncQueryAsync()
-        {
-            var json = await _fixture.QueryGraphQlAsync(@"
+    [Fact(DisplayName = "Async query should succeed")]
+    public async Task PeopleAsyncQueryAsync()
+    {
+        var json = await _fixture.QueryGraphQlAsync(@"
 query {
     peopleAsync {
         id
@@ -204,7 +204,7 @@ query {
     }
 }");
 
-            const string expectedJson = @"
+        const string expectedJson = @"
 {
   ""data"": {
     ""peopleAsync"": [
@@ -227,13 +227,13 @@ query {
   }
 }";
 
-            _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
-        }
+        TestFixture.JsonEquals(expectedJson, json).Should().BeTrue();
+    }
 
-        [Fact(DisplayName = "Person query should succeed")]
-        public async Task PersonQueryAsync()
-        {
-            var json = await _fixture.QueryGraphQlAsync(@"
+    [Fact(DisplayName = "Person query should succeed")]
+    public async Task PersonQueryAsync()
+    {
+        var json = await _fixture.QueryGraphQlAsync(@"
 query {
     person (id: 2) {
         id
@@ -251,7 +251,7 @@ query {
     }
 }");
 
-            const string expectedJson = @"
+        const string expectedJson = @"
 {
     data: {
         person: {
@@ -274,13 +274,13 @@ query {
     }
 }";
 
-            _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
-        }
+        TestFixture.JsonEquals(expectedJson, json).Should().BeTrue();
+    }
 
-        [Fact(DisplayName = "Simple people query should succeed")]
-        public async Task SimplePeopleQueryAsync()
-        {
-            var json = await _fixture.QueryGraphQlAsync(@"
+    [Fact(DisplayName = "Simple people query should succeed")]
+    public async Task SimplePeopleQueryAsync()
+    {
+        var json = await _fixture.QueryGraphQlAsync(@"
 query {
     people {
         firstName
@@ -288,7 +288,7 @@ query {
     }
 }");
 
-            const string expectedJson = @"
+        const string expectedJson = @"
 {
   data: {
     people: [
@@ -308,13 +308,13 @@ query {
   }
 }";
 
-            _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
-        }
+        TestFixture.JsonEquals(expectedJson, json).Should().BeTrue();
+    }
 
-        [Fact(DisplayName = "Simple person query should succeed")]
-        public async Task SimplePersonQueryAsync()
-        {
-            var json = await _fixture.QueryGraphQlAsync(@"
+    [Fact(DisplayName = "Simple person query should succeed")]
+    public async Task SimplePersonQueryAsync()
+    {
+        var json = await _fixture.QueryGraphQlAsync(@"
 query {
     person (id: 2) {
         id
@@ -323,7 +323,7 @@ query {
     }
 }");
 
-            const string expectedJson = @"
+        const string expectedJson = @"
 {
     data: {
         person: {
@@ -334,15 +334,15 @@ query {
     }
 }";
 
-            _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
-        }
+        TestFixture.JsonEquals(expectedJson, json).Should().BeTrue();
+    }
 
-        [Fact(DisplayName = "People connection query should succeed")]
+    [Fact(DisplayName = "People connection query should succeed")]
 #pragma warning disable MA0051 // Method is too long
-        public async Task PeopleConnectionQueryAsync()
+    public async Task PeopleConnectionQueryAsync()
 #pragma warning restore MA0051 // Method is too long
-        {
-            var json = await _fixture.QueryGraphQlAsync(@"
+    {
+        var json = await _fixture.QueryGraphQlAsync(@"
 query {
     personConnection(first:2) {
     edges {
@@ -362,8 +362,8 @@ query {
 }");
 
 #if NET6_0_OR_GREATER
-            // Cursor encodes DateOnly as ISO yyyy-MM-dd via InvariantCulture
-            const string expectedJson = @"
+        // Cursor encodes DateOnly as ISO yyyy-MM-dd via InvariantCulture
+        const string expectedJson = @"
 {
   'data': {
     'personConnection': {
@@ -425,7 +425,6 @@ query {
 }";
 #endif
 
-            _fixture.JsonEquals(expectedJson, json).Should().BeTrue();
-        }
+        TestFixture.JsonEquals(expectedJson, json).Should().BeTrue();
     }
 }

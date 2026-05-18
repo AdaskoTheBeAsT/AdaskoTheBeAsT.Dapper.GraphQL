@@ -1,10 +1,9 @@
-namespace AdaskoTheBeAsT.Dapper.GraphQL.Oracle
+namespace AdaskoTheBeAsT.Dapper.GraphQL.Oracle;
+
+public class OracleSqlBuilderOptions : SqlBuilderOptions
 {
-    public class OracleSqlBuilderOptions : SqlBuilderOptions
+    public OracleSqlBuilderOptions()
     {
-        public OracleSqlBuilderOptions()
-        {
-            ParameterPrefix = ":";
-        }
+        ParameterPrefix = ":";
     }
 }

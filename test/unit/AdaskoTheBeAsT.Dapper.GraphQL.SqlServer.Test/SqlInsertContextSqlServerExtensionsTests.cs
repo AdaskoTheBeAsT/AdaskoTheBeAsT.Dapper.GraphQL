@@ -15,7 +15,7 @@ public class SqlInsertContextSqlServerExtensionsTests
     public void ExecuteWithSqlServerIdentityThrowsForUnsupportedType()
     {
         var context = new SqlInsertContext("Foo", new { Id = 1 });
-        var connection = new Mock<IDbConnection>(MockBehavior.Loose).Object;
+        var connection = new Mock<IDbConnection>(MockBehavior.Strict).Object;
 
         var act = () => context.ExecuteWithSqlServerIdentity<Guid>(connection);
 
@@ -24,10 +24,10 @@ public class SqlInsertContextSqlServerExtensionsTests
     }
 
     [Fact(DisplayName = "ExecuteWithSqlServerIdentityAsync throws for unsupported identity type")]
-    public Task ExecuteWithSqlServerIdentityAsyncThrowsForUnsupportedType()
+    public Task ExecuteWithSqlServerIdentityAsyncThrowsForUnsupportedTypeAsync()
     {
         var context = new SqlInsertContext("Foo", new { Id = 1 });
-        var connection = new Mock<IDbConnection>(MockBehavior.Loose).Object;
+        var connection = new Mock<IDbConnection>(MockBehavior.Strict).Object;
 
         Func<Task<Guid>> act = () => context.ExecuteWithSqlServerIdentityAsync<Guid>(connection);
 

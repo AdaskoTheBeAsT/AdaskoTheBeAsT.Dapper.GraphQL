@@ -76,4 +76,20 @@ public class SqlUpdateContextTests
         sql.Should().Contain("Id = @id");
         sql.Should().Contain("LastName = @lastName");
     }
+
+    [Fact(DisplayName = "OrWhere adds WHERE clauses joined by OR")]
+    public void OrWhereJoinsWithOr()
+    {
+        var context = new SqlUpdateContext(
+            "Person",
+            new { FirstName = "Douglas" });
+
+        context.Where("Id = @id", new { id = 42 });
+        var result = context.OrWhere("Status = @status", new { status = "Active" });
+
+        result.Should().BeSameAs(context);
+        var sql = context.ToString();
+        sql.Should().Contain("Id = @id");
+        sql.Should().Contain("Status = @status");
+    }
 }
